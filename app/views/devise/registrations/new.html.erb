@@ -1,0 +1,212 @@
+<% content_for(:page_title) { "Create Your Account" } %>
+<% content_for(:page_subtitle) { "Join thousands of professionals optimizing their careers with AI" } %>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), 
+             html: { 
+               class: "space-y-4",
+               data: { 
+                 controller: "country-selector",
+                 country_selector_auto_detect_value: true,
+                 country_selector_default_country_value: "US"
+               }
+             }) do |f| %>
+  
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <!-- Personal Information -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :first_name, 
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+          placeholder: "John",
+          autocomplete: "given-name" %>
+    </div>
+    
+    <div>
+      <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :last_name, 
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+          placeholder: "Doe",
+          autocomplete: "family-name" %>
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div>
+    <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.email_field :email, 
+        class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+        placeholder: "john@example.com",
+        autofocus: true,
+        autocomplete: "email" %>
+  </div>
+
+  <!-- Location & Phone -->
+  <div class="space-y-3">
+    <div>
+      <%= f.label :country_code, "Country", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :country_code, 
+          options_for_select(country_select_options(params[:country] || 'US')),
+          { prompt: "Select your country" },
+          { 
+            class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+            data: { country_selector_target: "countrySelect", action: "change->country-selector#countryChanged" }
+          } %>
+    </div>
+
+    <div>
+      <%= f.label :phone, "Phone Number", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="flex rounded-lg shadow-sm">
+        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium"
+              data-country-selector-target="phoneCode">+1</span>
+        <%= f.telephone_field :phone, 
+            class: "flex-1 px-3 py-2 border border-gray-300 rounded-r-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+            placeholder: "(555) 123-4567",
+            data: { country_selector_target: "phoneInput" },
+            autocomplete: "tel" %>
+      </div>
+      <p class="mt-1 text-xs text-gray-500" data-country-selector-target="phoneExample">e.g., (555) 123-4567</p>
+    </div>
+  </div>
+
+  <!-- Password Fields -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <% if @minimum_password_length %>
+        <p class="text-xs text-gray-500 mb-1"><%= @minimum_password_length %> characters minimum</p>
+      <% end %>
+      <%= f.password_field :password, 
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+          placeholder: "Enter your password",
+          autocomplete: "new-password" %>
+    </div>
+    
+    <div>
+      <%= f.label :password_confirmation, "Confirm Password", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.password_field :password_confirmation, 
+          class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+          placeholder: "Confirm your password",
+          autocomplete: "new-password" %>
+    </div>
+  </div>
+
+  <!-- Professional Information -->
+  <div class="border-t border-gray-200 pt-4">
+    <h3 class="text-lg font-medium text-gray-900 mb-3">Professional Details</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= f.label :job_title, "Current Job Title", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :job_title, 
+            class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors",
+            placeholder: "Software Engineer",
+            autocomplete: "organization-title" %>
+      </div>
+      
+      <div>
+        <%= f.label :experience_level, "Experience Level", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.select :experience_level, 
+            options_for_select([
+              ['Entry Level (0-2 years)', 'entry'],
+              ['Mid Level (3-5 years)', 'mid'],
+              ['Senior Level (6-10 years)', 'senior'],
+              ['Expert Level (10+ years)', 'expert']
+            ]),
+            { prompt: "Select your level" },
+            { class: "w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Country-specific Information Display -->
+  <div class="space-y-3">
+    <!-- Currency Display -->
+    <div class="hidden" data-country-selector-target="currencyDisplay">
+      <div class="text-sm text-gray-600">
+        <span class="font-medium">Pricing in:</span>
+        <span class="ml-1" data-country-selector-target="currencyDisplay"></span>
+      </div>
+    </div>
+
+    <!-- VAT Information -->
+    <div class="hidden" data-country-selector-target="vatInfo"></div>
+
+    <!-- Timezone & Business Hours -->
+    <div class="hidden" data-country-selector-target="timezoneDisplay">
+      <div class="text-sm text-gray-600">
+        <span class="font-medium">Local time:</span>
+        <span class="ml-1" data-country-selector-target="timezoneDisplay"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms and Privacy -->
+  <div class="space-y-3">
+    <label class="flex items-start space-x-3">
+      <%= check_box_tag :terms_accepted, "1", false, 
+          required: true,
+          class: "mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
+      <span class="text-sm text-gray-600">
+        I agree to the 
+        <%= link_to "Terms of Service", "#", class: "text-blue-600 hover:text-blue-500 underline" %> 
+        and 
+        <%= link_to "Privacy Policy", "#", class: "text-blue-600 hover:text-blue-500 underline" %>
+      </span>
+    </label>
+    
+    <label class="flex items-start space-x-3">
+      <%= check_box_tag :marketing_emails, "1", false,
+          class: "mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
+      <span class="text-sm text-gray-600">
+        Send me job hunting tips and product updates (optional)
+      </span>
+    </label>
+  </div>
+
+  <!-- Submit Button -->
+  <div>
+    <%= f.submit "Create Account", 
+        class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-medium text-sm transition-all duration-200 transform hover:scale-[1.02]" %>
+  </div>
+
+  <!-- OAuth Options -->
+  <div class="relative">
+    <div class="absolute inset-0 flex items-center">
+      <div class="w-full border-t border-gray-300"></div>
+    </div>
+    <div class="relative flex justify-center text-sm">
+      <span class="px-2 bg-white text-gray-500">Or continue with</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <%= link_to user_google_oauth2_omniauth_authorize_path, method: :post,
+        class: "w-full inline-flex justify-center py-2 px-3 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors" do %>
+      <svg class="w-5 h-5" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      <span class="ml-2">Google</span>
+    <% end %>
+    
+    <%= link_to "#", 
+        class: "w-full inline-flex justify-center py-2 px-3 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors" do %>
+      <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      <span class="ml-2">LinkedIn</span>
+    <% end %>
+  </div>
+<% end %>
+
+<% content_for(:footer_links) do %>
+  <p class="text-center text-sm text-gray-600">
+    Already have an account?
+    <%= link_to "Sign in", new_session_path(resource_name), 
+        class: "font-medium text-blue-600 hover:text-blue-500 transition-colors" %>
+  </p>
+<% end %>
