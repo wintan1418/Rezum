@@ -8,9 +8,9 @@ if [ ! -f .env ]; then
     echo "📝 Creating .env file..."
     cat > .env << 'ENVEOF'
 # Stripe Configuration (Test Mode)
-STRIPE_PUBLISHABLE_KEY=pk_test_51234567890abcdefghijklmnopqrstuvwxyz
-STRIPE_SECRET_KEY=sk_test_51234567890abcdefghijklmnopqrstuvwxyz
-STRIPE_WEBHOOK_SECRET=whsec_1234567890abcdefghijklmnopqrstuvwxyz
+STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_PUBLISHABLE_KEY_HERE
+STRIPE_SECRET_KEY=sk_test_YOUR_SECRET_KEY_HERE
+STRIPE_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET_HERE
 
 # Note: Replace these with your actual Stripe test keys from:
 # https://dashboard.stripe.com/test/apikeys
