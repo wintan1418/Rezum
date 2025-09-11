@@ -1,7 +1,14 @@
-[phases.build]
+[phases.setup]
+nixPkgs = ['nodejs', 'yarn']
+
+[phases.install]
 cmds = [
     'bundle install',
-    'yarn install --frozen-lockfile',
+    'yarn install --frozen-lockfile'
+]
+
+[phases.build]
+cmds = [
     'bundle exec rake assets:precompile'
 ]
 
