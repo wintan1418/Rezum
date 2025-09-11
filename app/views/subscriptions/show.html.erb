@@ -1,0 +1,263 @@
+<div class="min-h-full">
+  <!-- Flash Messages -->
+  <% if notice %>
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative mx-4 mt-4" role="alert">
+      <span class="block sm:inline"><%= notice %></span>
+    </div>
+  <% end %>
+  
+  <% if alert %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mx-4 mt-4" role="alert">
+      <span class="block sm:inline"><%= alert %></span>
+    </div>
+  <% end %>
+
+  <main class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8"><div class="min-h-full">
+  <main class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="px-4 py-6 sm:px-0">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Subscription Management</h1>
+          <p class="mt-2 text-gray-600">Manage your Pro subscription and billing settings</p>
+        </div>
+        
+        <%= link_to billing_index_path, 
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          Back to Billing
+        <% end %>
+      </div>
+    </div>
+
+    <div class="px-4 sm:px-0">
+      <!-- Payment Intent Confirmation (if needed) -->
+      <% if @payment_intent_client_secret %>
+        <div class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-medium text-blue-800 mb-4">Complete Your Subscription</h3>
+          <p class="text-blue-700 mb-4">Please confirm your payment to activate your subscription.</p>
+          
+          <div id="payment-element">
+            <!-- Stripe Elements will be inserted here -->
+          </div>
+          
+          <button id="submit-payment" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Confirm Payment
+          </button>
+          
+          <div id="payment-status" class="mt-4 text-sm"></div>
+        </div>
+
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+          const stripe = Stripe('<%= Rails.application.config.x.stripe.publishable_key %>');
+          const clientSecret = '<%= @payment_intent_client_secret %>';
+          
+          const elements = stripe.elements({ clientSecret });
+          const paymentElement = elements.create('payment');
+          paymentElement.mount('#payment-element');
+          
+          const form = document.getElementById('payment-form');
+          
+          document.getElementById('submit-payment').addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            const {error} = await stripe.confirmPayment({
+              elements,
+              confirmParams: {
+                return_url: '<%= subscription_url(@subscription) %>',
+              }
+            });
+            
+            if (error) {
+              document.getElementById('payment-status').innerHTML = 
+                `<div class="text-red-600">${error.message}</div>`;
+            }
+          });
+        </script>
+      <% end %>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Current Subscription -->
+          <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900">Current Subscription</h3>
+            </div>
+            
+            <div class="px-6 py-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-xl font-semibold text-gray-900"><%= @subscription.plan_name %></h4>
+                  <p class="text-gray-600">$<%= @subscription.plan_price %> per <%= @subscription.billing_cycle %></p>
+                  
+                  <div class="mt-3 flex items-center space-x-4 text-sm">
+                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                      <%= case @subscription.status
+                          when 'active' then 'bg-green-100 text-green-800'
+                          when 'trialing' then 'bg-blue-100 text-blue-800'
+                          when 'past_due' then 'bg-yellow-100 text-yellow-800'
+                          when 'canceled' then 'bg-red-100 text-red-800'
+                          else 'bg-gray-100 text-gray-800'
+                          end %>">
+                      <%= @subscription.status.humanize %>
+                    </span>
+                    
+                    <% if @subscription.cancel_at_period_end? %>
+                      <span class="text-orange-600 font-medium">
+                        Cancels on <%= @subscription.current_period_end.strftime("%B %d, %Y") %>
+                      </span>
+                    <% elsif @subscription.active? %>
+                      <span class="text-gray-500">
+                        Renews on <%= @subscription.current_period_end.strftime("%B %d, %Y") %>
+                      </span>
+                    <% end %>
+                  </div>
+                </div>
+                
+                <div class="text-right">
+                  <div class="text-3xl font-bold text-green-600">∞</div>
+                  <p class="text-sm text-gray-500">Unlimited usage</p>
+                </div>
+              </div>
+              
+              <% if @subscription.trialing? %>
+                <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                      <p class="text-sm font-medium text-blue-800">Trial Active</p>
+                      <p class="text-xs text-blue-600">Your trial ends on <%= @subscription.trial_end.strftime("%B %d, %Y") %></p>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Subscription Actions -->
+          <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900">Subscription Actions</h3>
+            </div>
+            
+            <div class="px-6 py-6 space-y-4">
+              <% if @subscription.active? && !@subscription.cancel_at_period_end? %>
+                <!-- Cancel Subscription -->
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div>
+                    <h4 class="text-sm font-medium text-gray-900">Cancel Subscription</h4>
+                    <p class="text-xs text-gray-500">You'll retain access until your current period ends</p>
+                  </div>
+                  
+                  <%= form_with url: cancel_subscription_path(@subscription), method: :post, local: true, 
+                      data: { confirm: "Are you sure you want to cancel your subscription? You'll retain access until #{@subscription.current_period_end.strftime('%B %d, %Y')}." } do %>
+                    <%= submit_tag "Cancel Subscription", 
+                        class: "px-3 py-2 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100" %>
+                  <% end %>
+                </div>
+              <% elsif @subscription.cancel_at_period_end? %>
+                <!-- Reactivate Subscription -->
+                <div class="flex items-center justify-between p-4 border border-green-200 rounded-lg bg-green-50">
+                  <div>
+                    <h4 class="text-sm font-medium text-green-800">Reactivate Subscription</h4>
+                    <p class="text-xs text-green-600">Resume your subscription and continue with unlimited access</p>
+                  </div>
+                  
+                  <%= form_with url: reactivate_subscription_path(@subscription), method: :post, local: true do %>
+                    <%= submit_tag "Reactivate", 
+                        class: "px-3 py-2 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200" %>
+                  <% end %>
+                </div>
+              <% end %>
+              
+              <% if @subscription.active? || @subscription.cancel_at_period_end? %>
+                <!-- Immediate Cancellation -->
+                <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+                  <div>
+                    <h4 class="text-sm font-medium text-gray-900">Cancel Immediately</h4>
+                    <p class="text-xs text-gray-500">End your subscription now without waiting for the period to end</p>
+                  </div>
+                  
+                  <%= form_with model: @subscription, url: subscription_path(@subscription), method: :delete, local: true,
+                      data: { confirm: "This will immediately cancel your subscription and end your access. This action cannot be undone. Are you sure?" } do %>
+                    <%= submit_tag "Cancel Now", 
+                        class: "px-3 py-2 border border-red-500 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700" %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+          <!-- Billing Summary -->
+          <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900">Billing Summary</h3>
+            </div>
+            
+            <div class="px-6 py-4 space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Next Billing Date</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @subscription.current_period_end.strftime("%B %d, %Y") %>
+                </dd>
+              </div>
+              
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Amount</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  $<%= @subscription.plan_price %> <%= @subscription.billing_cycle == 'month' ? 'monthly' : 'annually' %>
+                </dd>
+              </div>
+              
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Payment Method</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="inline-flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Card ending in ****
+                  </span>
+                </dd>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900">Quick Actions</h3>
+            </div>
+            
+            <div class="px-6 py-4 space-y-3">
+              <%= link_to history_billing_index_path, 
+                  class: "flex items-center text-sm text-gray-700 hover:text-gray-900" do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+                Payment History
+              <% end %>
+              
+              <%= link_to resumes_path, 
+                  class: "flex items-center text-sm text-gray-700 hover:text-gray-900" do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Back to Resumes
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -69,35 +69,13 @@
       animation: gradientShift 3s ease infinite;
     }
     
-    /* Scroll Animations */
-    .scroll-fade-in {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .scroll-fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    .scroll-fade-left {
-      opacity: 0;
-      transform: translateX(-40px);
-      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .scroll-fade-left.visible {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    
+    /* Scroll Animations - removed to prevent blank page issue */
+    .scroll-fade-in,
+    .scroll-fade-left, 
     .scroll-fade-right {
-      opacity: 0;
-      transform: translateX(40px);
-      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .scroll-fade-right.visible {
       opacity: 1;
-      transform: translateX(0);
+      transform: none;
+      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     /* Hover Effects */
@@ -212,15 +190,33 @@
             Success Stories
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full"></span>
           </a>
-          <%= link_to "Sign In", new_user_session_path, class: "text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium" %>
-          
-          <div class="gradient-border p-0.5 rounded-xl">
-            <%= link_to new_user_registration_path, 
-                class: "bg-white px-6 py-3 rounded-xl text-gray-900 font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" do %>
-              Get Started Free
-              <span class="ml-2">✨</span>
+          <% if user_signed_in? %>
+            <%= link_to resumes_path, class: "text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium" do %>
+              My Resumes
             <% end %>
-          </div>
+            <%= link_to cover_letters_path, class: "text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium" do %>
+              My Cover Letters
+            <% end %>
+            <%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium" %>
+          <% else %>
+            <%= link_to "Sign In", new_user_session_path, class: "text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium" %>
+            
+            <div class="gradient-border p-0.5 rounded-xl">
+              <% if user_signed_in? %>
+                <%= link_to billing_index_path, 
+                    class: "bg-white px-6 py-3 rounded-xl text-gray-900 font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" do %>
+                  Dashboard
+                  <span class="ml-2">✨</span>
+                <% end %>
+              <% else %>
+                <%= link_to new_user_registration_path, 
+                    class: "bg-white px-6 py-3 rounded-xl text-gray-900 font-semibold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" do %>
+                  Get Started Free
+                  <span class="ml-2">✨</span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
         </div>
 
         <!-- Mobile menu button -->
@@ -278,13 +274,24 @@
 
           <div class="mt-12 flex flex-col sm:flex-row gap-6 scroll-fade-left">
             <div class="gradient-border p-1 rounded-2xl">
-              <%= link_to new_user_registration_path, 
-                  class: "inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 text-lg font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl" do %>
-                <span class="mr-2">✨</span>
-                Start Free Trial
-                <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
+              <% if user_signed_in? %>
+                <%= link_to new_resume_path, 
+                    class: "inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 text-lg font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl" do %>
+                  <span class="mr-2">📄</span>
+                  Upload Resume
+                  <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                  </svg>
+                <% end %>
+              <% else %>
+                <%= link_to new_user_registration_path, 
+                    class: "inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 text-lg font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl" do %>
+                  <span class="mr-2">✨</span>
+                  Start Free Trial
+                  <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                  </svg>
+                <% end %>
               <% end %>
             </div>
             
@@ -561,13 +568,24 @@
       <!-- Additional CTA -->
       <div class="mt-20 text-center scroll-fade-in">
         <div class="gradient-border p-1 rounded-2xl inline-block">
-          <%= link_to new_user_registration_path, 
-              class: "inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 text-lg font-bold rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg" do %>
-            <span class="mr-2">🚀</span>
-            Experience the Magic - Start Free
-            <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-            </svg>
+          <% if user_signed_in? %>
+            <%= link_to billing_index_path, 
+                class: "inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 text-lg font-bold rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg" do %>
+              <span class="mr-2">💳</span>
+              Manage Billing
+              <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            <% end %>
+          <% else %>
+            <%= link_to new_user_registration_path, 
+                class: "inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 text-lg font-bold rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg" do %>
+              <span class="mr-2">🚀</span>
+              Experience the Magic - Start Free
+              <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -726,9 +744,16 @@
           </ul>
           
           <div class="mt-8">
-            <%= link_to new_user_registration_path, 
-                class: "w-full block text-center bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold" do %>
-              Get Started
+            <% if user_signed_in? %>
+              <%= link_to billing_index_path, 
+                  class: "w-full block text-center bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold" do %>
+                Buy Credits
+              <% end %>
+            <% else %>
+              <%= link_to new_user_registration_path, 
+                  class: "w-full block text-center bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold" do %>
+                Get Started
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -782,9 +807,16 @@
           </ul>
           
           <div class="mt-8">
-            <%= link_to new_user_registration_path, 
-                class: "w-full block text-center bg-white text-blue-600 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors font-semibold" do %>
-              Start Free Trial
+            <% if user_signed_in? %>
+              <%= link_to new_subscription_path, 
+                  class: "w-full block text-center bg-white text-blue-600 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors font-semibold" do %>
+                Subscribe Now
+              <% end %>
+            <% else %>
+              <%= link_to new_user_registration_path, 
+                  class: "w-full block text-center bg-white text-blue-600 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors font-semibold" do %>
+                Start Free Trial
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -827,7 +859,7 @@
           </ul>
           
           <div class="mt-8">
-            <a href="#" class="w-full block text-center bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold">
+            <a href="mailto:sales@rezum.ai?subject=Enterprise%20Inquiry" class="w-full block text-center bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold">
               Contact Sales
             </a>
           </div>
@@ -874,13 +906,24 @@
       
       <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12 scroll-fade-in">
         <div class="gradient-border p-1.5 rounded-2xl">
-          <%= link_to new_user_registration_path, 
-              class: "inline-flex items-center justify-center px-12 py-5 bg-white text-gray-900 text-xl font-black rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-110 shadow-2xl hover:shadow-3xl hover-glow" do %>
-            <span class="mr-3 text-2xl">🚀</span>
-            Start Free Trial Now
-            <svg class="ml-4 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-            </svg>
+          <% if user_signed_in? %>
+            <%= link_to billing_index_path, 
+                class: "inline-flex items-center justify-center px-12 py-5 bg-white text-gray-900 text-xl font-black rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-110 shadow-2xl hover:shadow-3xl hover-glow" do %>
+              <span class="mr-3 text-2xl">💰</span>
+              Go to Dashboard
+              <svg class="ml-4 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            <% end %>
+          <% else %>
+            <%= link_to new_user_registration_path, 
+                class: "inline-flex items-center justify-center px-12 py-5 bg-white text-gray-900 text-xl font-black rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-110 shadow-2xl hover:shadow-3xl hover-glow" do %>
+              <span class="mr-3 text-2xl">🚀</span>
+              Start Free Trial Now
+              <svg class="ml-4 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            <% end %>
           <% end %>
         </div>
         
@@ -1202,23 +1245,25 @@
 
   <!-- Scroll Animation Script -->
   <script>
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
+    // Function to reset and init animations
+    function initAnimations() {
+      // First, make all animated elements visible by default
+      document.querySelectorAll('.scroll-fade-in, .scroll-fade-left, .scroll-fade-right').forEach(el => {
+        el.classList.add('visible');
       });
-    }, observerOptions);
+    }
 
-    // Observe all elements with scroll animation classes
-    document.querySelectorAll('.scroll-fade-in, .scroll-fade-left, .scroll-fade-right').forEach(el => {
-      observer.observe(el);
+    // Initialize animations on page load
+    document.addEventListener('DOMContentLoaded', initAnimations);
+    
+    // Re-initialize animations when navigating back with Turbo
+    document.addEventListener('turbo:load', initAnimations);
+    
+    // Also handle page show event for browser back button
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        initAnimations();
+      }
     });
 
     // Smooth scrolling for navigation links

@@ -1,0 +1,219 @@
+<div class="min-h-full">
+  <!-- Flash Messages -->
+  <% if notice %>
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative mx-4 mt-4" role="alert">
+      <span class="block sm:inline"><%= notice %></span>
+    </div>
+  <% end %>
+  
+  <% if alert %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mx-4 mt-4" role="alert">
+      <span class="block sm:inline"><%= alert %></span>
+    </div>
+  <% end %>
+
+  <main class="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">Payment Details</h3>
+        </div>
+        
+        <div class="px-6 py-6">
+          <% if @payment.succeeded? %>
+            <div class="rounded-md bg-green-50 p-4 mb-6">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 h-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-green-800">
+                    Payment Successful!
+                  </h3>
+                  <div class="mt-2 text-sm text-green-700">
+                    <p>Your payment has been processed successfully. 
+                    <% if @payment.credits_purchased.present? %>
+                      <%= @payment.credits_purchased %> credits have been added to your account.
+                    <% end %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% elsif @payment.failed? %>
+            <div class="rounded-md bg-red-50 p-4 mb-6">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    Payment Failed
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <p>Your payment could not be processed. Please try again or use a different payment method.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% elsif @payment.requires_payment_method? || @payment.requires_action? %>
+            <!-- Payment Form -->
+            <div class="rounded-md bg-blue-50 p-4 mb-6">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-blue-800">
+                    Complete Your Payment
+                  </h3>
+                  <div class="mt-2 text-sm text-blue-700">
+                    <p>Please enter your payment details to complete the purchase.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stripe Payment Form -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <form id="payment-form">
+                <div id="payment-element">
+                  <!-- Stripe Elements will be inserted here -->
+                </div>
+                <button id="submit-payment" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
+                  <span id="button-text">Pay <%= @payment.amount_display %></span>
+                </button>
+                <div id="payment-message" class="mt-4 text-sm"></div>
+              </form>
+            </div>
+
+            <!-- Stripe Scripts -->
+            <script src="https://js.stripe.com/v3/"></script>
+            <script>
+              const stripe = Stripe('<%= Rails.application.config.stripe.publishable_key %>');
+              const clientSecret = '<%= @payment.client_secret %>';
+              
+              const elements = stripe.elements({
+                clientSecret: clientSecret,
+                appearance: {
+                  theme: 'stripe',
+                }
+              });
+              
+              const paymentElement = elements.create('payment');
+              paymentElement.mount('#payment-element');
+              
+              const form = document.getElementById('payment-form');
+              const submitButton = document.getElementById('submit-payment');
+              const buttonText = document.getElementById('button-text');
+              const paymentMessage = document.getElementById('payment-message');
+              
+              form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                
+                submitButton.disabled = true;
+                buttonText.textContent = 'Processing...';
+                
+                const {error} = await stripe.confirmPayment({
+                  elements,
+                  confirmParams: {
+                    return_url: '<%= billing_url(@payment) %>',
+                  }
+                });
+                
+                if (error) {
+                  paymentMessage.innerHTML = `<div class="text-red-600">${error.message}</div>`;
+                  submitButton.disabled = false;
+                  buttonText.textContent = 'Pay <%= @payment.amount_display %>';
+                } else {
+                  paymentMessage.innerHTML = '<div class="text-green-600">Payment processing...</div>';
+                }
+              });
+            </script>
+          <% else %>
+            <div class="rounded-md bg-yellow-50 p-4 mb-6">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-yellow-800">
+                    Payment Processing
+                  </h3>
+                  <div class="mt-2 text-sm text-yellow-700">
+                    <p>Your payment is being processed. This may take a few moments.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+          
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Payment ID</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @payment.stripe_payment_intent_id&.last(12) || @payment.id %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Amount</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @payment.amount_display %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Status</dt>
+              <dd class="mt-1">
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                  <%= case @payment.status
+                      when 'succeeded' then 'bg-green-100 text-green-800'
+                      when 'canceled' then 'bg-red-100 text-red-800'
+                      else 'bg-yellow-100 text-yellow-800'
+                      end %>">
+                  <%= @payment.status.humanize %>
+                </span>
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Date</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @payment.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+            </div>
+            
+            <% if @payment.description.present? %>
+              <div class="sm:col-span-2">
+                <dt class="text-sm font-medium text-gray-500">Description</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @payment.description %></dd>
+              </div>
+            <% end %>
+            
+            <% if @payment.credits_purchased.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Credits Purchased</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @payment.credits_purchased %></dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+        
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
+          <%= link_to billing_index_path, 
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+            ← Back to Billing
+          <% end %>
+          
+          <% if @payment.pending? %>
+            <%= button_to "Refresh Status", billing_path(@payment), method: :get,
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

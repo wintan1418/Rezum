@@ -1,0 +1,199 @@
+<div id="resume_content">
+  <% if resume.processing? %>
+    <!-- Processing State with Auto-refresh -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6"
+         data-controller="auto-refresh"
+         data-auto-refresh-url-value="<%= resume_path(resume) %>"
+         data-auto-refresh-interval-value="3000">
+      <div class="flex items-center">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600 mr-3"></div>
+        <div>
+          <h3 class="text-lg font-medium text-yellow-800">Optimizing Your Resume...</h3>
+          <p class="mt-1 text-sm text-yellow-700">
+            Our AI is analyzing and optimizing your resume. This usually takes 30-60 seconds.
+          </p>
+          <p class="mt-1 text-xs text-yellow-600">
+            <span class="inline-flex items-center">
+              <svg class="animate-pulse w-3 h-3 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                <circle cx="10" cy="10" r="10"/>
+              </svg>
+              Auto-updating...
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% elsif resume.failed? %>
+    <!-- Failed State -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+      <div class="flex items-center">
+        <svg class="h-6 w-6 text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+        </svg>
+        <div>
+          <h3 class="text-lg font-medium text-red-800">Optimization Failed</h3>
+          <p class="mt-1 text-sm text-red-700">
+            We encountered an error while optimizing your resume. Please try again.
+          </p>
+          <div class="mt-3">
+            <%= link_to optimize_resume_path(resume), data: { turbo_method: :post },
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" do %>
+              Try Again
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% elsif resume.optimized? && resume.optimized_content.present? %>
+    <!-- Before/After Comparison View -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-medium text-gray-900">Before & After Comparison</h3>
+          <div class="flex items-center space-x-2">
+            <button type="button" id="toggle-view" 
+                    class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+              </svg>
+              <span id="view-mode-text">Side by Side</span>
+            </button>
+            
+            <!-- Download Options -->
+            <div class="relative inline-block text-left" data-controller="dropdown">
+              <button type="button" 
+                      class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                      data-action="click->dropdown#toggle" data-dropdown-target="button">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Download
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              
+              <div class="hidden absolute right-0 z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                   data-dropdown-target="menu" data-action="click->dropdown#hide">
+                <div class="py-1">
+                  <%= link_to download_resume_path(resume, format: 'pdf'), class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download as PDF
+                  <% end %>
+                  <%= link_to download_resume_path(resume, format: 'docx'), class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download as DOCX
+                  <% end %>
+                  <%= link_to download_resume_path(resume, format: 'txt'), class: "group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download as TXT
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-6">
+        <!-- Side by Side View (default) -->
+        <div id="side-by-side-view" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Original -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="flex items-center mb-3">
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+              <h4 class="text-sm font-medium text-gray-700">Original Resume</h4>
+            </div>
+            <div class="prose prose-sm max-w-none text-xs">
+              <%= simple_format(resume.original_content, class: "whitespace-pre-wrap text-gray-700 leading-relaxed text-xs") %>
+            </div>
+          </div>
+          
+          <!-- Optimized -->
+          <div class="bg-green-50 rounded-lg p-4">
+            <div class="flex items-center mb-3">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+              <h4 class="text-sm font-medium text-gray-700">Optimized Resume</h4>
+            </div>
+            <div class="prose prose-sm max-w-none text-xs">
+              <%= simple_format(resume.optimized_content, class: "whitespace-pre-wrap text-gray-800 leading-relaxed text-xs") %>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Full Width View (hidden by default) -->
+        <div id="full-width-view" class="hidden space-y-6">
+          <!-- Optimized (Primary) -->
+          <div class="bg-white border border-green-200 rounded-lg p-6">
+            <div class="flex items-center mb-4">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+              <h4 class="text-lg font-medium text-gray-900">Optimized Resume</h4>
+              <span class="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                AI Enhanced
+              </span>
+            </div>
+            <div class="prose max-w-none">
+              <%= simple_format(resume.optimized_content, class: "whitespace-pre-wrap text-gray-900 leading-relaxed") %>
+            </div>
+          </div>
+          
+          <!-- Original (Collapsed by default) -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg">
+            <div class="px-6 py-4 cursor-pointer" data-controller="toggle" data-action="click->toggle#toggle">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+                  <h4 class="text-sm font-medium text-gray-700">Original Resume</h4>
+                  <span class="ml-2 text-xs text-gray-500">(Click to expand)</span>
+                </div>
+                <svg class="w-5 h-5 text-gray-400 transform transition-transform" data-toggle-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+            </div>
+            <div class="hidden px-6 pb-6" data-toggle-target="content">
+              <div class="prose max-w-none">
+                <%= simple_format(resume.original_content, class: "whitespace-pre-wrap text-gray-700 leading-relaxed") %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- Single Resume Content View -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">
+          <% if resume.optimized? %>
+            Optimized Resume Content
+          <% else %>
+            Original Resume Content
+          <% end %>
+        </h3>
+      </div>
+      
+      <div class="px-6 py-6">
+        <% if resume.original_content.present? %>
+          <div class="prose max-w-none">
+            <%= simple_format(resume.original_content, class: "whitespace-pre-wrap text-gray-900 leading-relaxed") %>
+          </div>
+        <% else %>
+          <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No content available</h3>
+            <p class="mt-1 text-sm text-gray-500">Upload a file or paste resume text to get started.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

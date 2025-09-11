@@ -4,5 +4,14 @@
 
 import { application } from "./application"
 
+import AutoRefreshController from "./auto_refresh_controller"
+application.register("auto-refresh", AutoRefreshController)
+
+import DropdownController from "./dropdown_controller"
+application.register("dropdown", DropdownController)
+
+import GenerationAnimationController from "./generation_animation_controller"
+application.register("generation-animation", GenerationAnimationController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
