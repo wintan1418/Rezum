@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "Setting up database for Railway production..."
+
+# Create database if it doesn't exist
+bundle exec rake db:create 2>/dev/null || echo "Database might already exist"
+
+# Run migrations
+bundle exec rake db:migrate
+
+# Optionally seed data
+# bundle exec rake db:seed
+
+echo "Database setup completed!"
