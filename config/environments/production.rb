@@ -98,8 +98,9 @@ Rails.application.configure do
   # Enable DNS rebinding protection and other `Host` header attacks.
   # Allow Railway hosts
   config.hosts = [
-    /.*\.railway\.app/,     # Railway domains
-    /.*\.up\.railway\.app/  # Railway preview domains
+    "web-production-4f019.up.railway.app",  # Your specific Railway domain
+    /.*\.railway\.app$/,                     # Railway domains
+    /.*\.up\.railway\.app$/                  # Railway preview domains
   ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
