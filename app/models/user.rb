@@ -19,6 +19,9 @@ class User < ApplicationRecord
   belongs_to :referred_by, class_name: 'User', optional: true
   has_many :referrals, class_name: 'User', foreign_key: 'referred_by_id'
   
+  # Phone number normalization and validation
+  phony_normalize :phone, default_country_code: lambda { |user| user.country_code || 'US' }
+  
   # Validations
   validates :first_name, :last_name, presence: true
   validates :referral_code, uniqueness: true, allow_nil: true
@@ -26,6 +29,7 @@ class User < ApplicationRecord
   validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
   validates :language, inclusion: { in: %w[en es fr de pt it nl sv da no] }
   validates :credits_remaining, numericality: { greater_than_or_equal_to: 0 }
+  validates :phone, phony_plausible: true, allow_blank: true
   
   # Callbacks
   before_create :generate_referral_code
@@ -66,7 +70,44 @@ class User < ApplicationRecord
   end
   
   def in_timezone(&block)
-    Time.use_zone(timezone || 'UTC', &block)
+    Time.use_zone(timezone || country&.timezone || 'UTC', &block)
+  end
+  
+  # Phone number helpers
+  def formatted_phone
+    return nil if phone.blank?
+    Phony.formatted(phone, format: :international, spaces: '-')
+  rescue
+    phone
+  end
+  
+  def phone_country_code
+    return nil if phone.blank?
+    Phony.country_code_from(phone)&.to_s
+  rescue
+    nil
+  end
+  
+  def phone_national_number
+    return nil if phone.blank?
+    Phony.national(phone)
+  rescue
+    phone
+  end
+  
+  # Location helpers
+  def location_display
+    parts = [country&.name, timezone&.split('/')&.last&.humanize].compact
+    parts.join(', ')
+  end
+  
+  def local_time
+    in_timezone { Time.current }
+  end
+  
+  def business_hours?
+    hour = local_time.hour
+    (9..17).include?(hour) && !local_time.weekend?
   end
   
   # OAuth methods

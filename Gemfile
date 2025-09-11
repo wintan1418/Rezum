@@ -43,7 +43,8 @@ gem "omniauth-rails_csrf_protection"
 
 # Internationalization & Localization
 gem "countries"
-gem "geocoder"
+gem "phony_rails" # International phone number validation
+gem "geocoder" # IP-based location detection
 gem "money-rails"
 
 # SEO & URLs
