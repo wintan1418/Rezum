@@ -96,12 +96,10 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # Allow Railway hosts
-  config.hosts = [
-    "web-production-4f019.up.railway.app",  # Your specific Railway domain
-    /.*\.railway\.app$/,                     # Railway domains
-    /.*\.up\.railway\.app$/                  # Railway preview domains
-  ]
+  # Allow Railway hosts - use the exact syntax Rails recommends
+  config.hosts << "web-production-4f019.up.railway.app"
+  config.hosts << /.*\.railway\.app$/
+  config.hosts << /.*\.up\.railway\.app$/
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
