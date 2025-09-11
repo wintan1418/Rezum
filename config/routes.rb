@@ -1,9 +1,53 @@
 Rails.application.routes.draw do
+  get "webhooks/stripe"
   devise_for :users
+  
+  # Main AI features - protected by authentication
+  authenticate :user do
+    resources :resumes do
+      member do
+        post :optimize
+        post :ats_score
+        get :keywords
+        get :download
+      end
+      
+      resources :cover_letters, except: [:index] do
+        member do
+          post :generate_variations
+          get :preview
+          get :download
+        end
+      end
+    end
+    
+    resources :cover_letters, only: [:index]
+    
+    # Billing and subscriptions
+    resources :subscriptions, only: [:new, :create, :show, :update, :destroy] do
+      member do
+        post :cancel
+        post :reactivate
+      end
+    end
+    
+    resources :billing, only: [:index, :show] do
+      collection do
+        get :history
+        post :purchase_credits
+      end
+    end
+    
+    # Stripe webhooks (not authenticated)
+  end
+  
+  # Stripe webhooks (outside authentication)
+  post '/webhooks/stripe', to: 'webhooks#stripe'
   
   # API routes
   namespace :api do
     get 'detect-country', to: 'country_detection#detect'
+    post 'fetch-job-posting', to: 'job_posting#fetch'
   end
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

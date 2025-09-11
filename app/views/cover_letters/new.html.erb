@@ -1,0 +1,299 @@
+<style>
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="min-h-full">
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-8 fade-in">
+      <div class="flex items-center space-x-2 text-sm text-gray-500 mb-4 justify-center">
+        <%= link_to resumes_path, class: "hover:text-gray-700" do %>
+          My Resumes
+        <% end %>
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <%= link_to resume_path(@resume), class: "hover:text-gray-700" do %>
+          <%= @resume.target_role %>
+        <% end %>
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <span>New Cover Letter</span>
+      </div>
+      
+      <h1 class="text-3xl font-bold text-gray-900">Create Cover Letter</h1>
+      <p class="mt-2 text-lg text-gray-600">
+        Generate a personalized cover letter powered by AI for your target job
+      </p>
+      <div class="mt-4 flex justify-center">
+        <div class="flex items-center space-x-6 text-sm text-gray-500">
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>AI-Powered</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>30s Generation</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span>Multiple Variations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with model: [@resume, @cover_letter], local: true, 
+        html: { 
+          class: "space-y-8"
+        } do |f| %>
+      
+      <!-- Display errors -->
+      <% if @cover_letter.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 fade-in">
+          <div class="flex">
+            <svg class="w-5 h-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+              <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                <% @cover_letter.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Job & Company Information -->
+      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.1s;">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Job & Company Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Company Name -->
+          <div>
+            <%= f.label :company_name, "Company Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :company_name, 
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                placeholder: "e.g., Google, Microsoft, Apple" %>
+            <p class="mt-1 text-xs text-gray-500">The company you're applying to</p>
+          </div>
+
+          <!-- Target Role -->
+          <div>
+            <%= f.label :target_role, "Job Title", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :target_role, 
+                value: @cover_letter.target_role || @resume.target_role,
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                placeholder: "e.g., Senior Software Engineer" %>
+            <p class="mt-1 text-xs text-gray-500">The specific role you're applying for</p>
+          </div>
+
+          <!-- Hiring Manager -->
+          <div class="md:col-span-2">
+            <%= f.label :hiring_manager_name, "Hiring Manager Name (Optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :hiring_manager_name, 
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                placeholder: "e.g., Sarah Johnson, John Smith" %>
+            <p class="mt-1 text-xs text-gray-500">If you know the hiring manager's name, it will personalize your letter</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cover Letter Style -->
+      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.2s;">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Cover Letter Style</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Tone -->
+          <div>
+            <%= f.label :tone, "Tone", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.select :tone,
+                options_for_select([
+                  ['Professional & Formal', 'professional'],
+                  ['Friendly & Approachable', 'friendly'],
+                  ['Confident & Assertive', 'confident'],
+                  ['Casual & Conversational', 'casual'],
+                  ['Enthusiastic & Energetic', 'enthusiastic']
+                ], @cover_letter.tone || 'professional'),
+                {},
+                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+            <p class="mt-1 text-xs text-gray-500">The overall tone and voice of your cover letter</p>
+          </div>
+
+          <!-- Length -->
+          <div>
+            <%= f.label :length, "Length", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.select :length,
+                options_for_select([
+                  ['Short (200-250 words)', 'short'],
+                  ['Medium (300-400 words)', 'medium'],
+                  ['Long (450-600 words)', 'long']
+                ], @cover_letter.length || 'medium'),
+                {},
+                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+            <p class="mt-1 text-xs text-gray-500">How detailed should your cover letter be</p>
+          </div>
+
+          <!-- AI Provider -->
+          <div class="md:col-span-2">
+            <%= f.label :provider, "AI Provider", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.select :provider,
+                options_for_select([
+                  ['OpenAI GPT-4 (Recommended)', 'openai'],
+                  ['Anthropic Claude', 'anthropic'],
+                  ['Google Gemini', 'google']
+                ], 'openai'),
+                {},
+                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+            <p class="mt-1 text-xs text-gray-500">Choose your preferred AI model for generation</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resume Information Display -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 fade-in" style="animation-delay: 0.3s;">
+        <h4 class="text-md font-semibold text-blue-900 mb-4">Resume Information</h4>
+        <p class="text-sm text-blue-800 mb-3">
+          This cover letter will be based on your resume: <span class="font-medium"><%= @resume.target_role %></span>
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="font-medium text-blue-900">Industry:</span>
+            <span class="text-blue-700"><%= @resume.industry || 'Not specified' %></span>
+          </div>
+          <div>
+            <span class="font-medium text-blue-900">Experience Level:</span>
+            <span class="text-blue-700"><%= @resume.experience_level&.humanize || 'Not specified' %></span>
+          </div>
+          <% if @resume.keywords.present? %>
+            <div class="md:col-span-2">
+              <span class="font-medium text-blue-900">Key Skills:</span>
+              <span class="text-blue-700"><%= @resume.keywords %></span>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="mt-4">
+          <%= link_to edit_resume_path(@resume), 
+              class: "text-blue-600 hover:text-blue-500 text-sm font-medium" do %>
+            Edit Resume Details →
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Job Description (Optional) -->
+      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.4s;">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Job Description (Optional but Recommended)</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          Paste the job description to create a highly targeted cover letter. Our AI will analyze the requirements and tailor your letter accordingly.
+        </p>
+        
+        <% if @resume.job_description.present? %>
+          <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm font-medium text-green-800">Using job description from your resume</p>
+            </div>
+            <p class="text-xs text-green-600 mt-1">You can update it below if needed</p>
+          </div>
+        <% end %>
+        
+        <textarea 
+          name="job_description"
+          rows="10"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          placeholder="Paste the job description here...
+
+Example:
+We are seeking a Senior Software Engineer to join our dynamic team...
+
+Key Responsibilities:
+• Design and develop scalable web applications
+• Collaborate with cross-functional teams
+• Mentor junior developers
+
+Requirements:
+• 5+ years of experience with React and Node.js
+• Strong problem-solving skills
+• Experience with cloud platforms (AWS, GCP)"
+        ><%= @resume.job_description %></textarea>
+        
+        <p class="mt-2 text-xs text-gray-500">
+          The more detailed the job description, the better we can tailor your cover letter to match the role requirements.
+        </p>
+      </div>
+
+      <!-- Credits Information -->
+      <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6 fade-in" style="animation-delay: 0.5s;">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="text-md font-semibold text-purple-900">Generation Credits</h4>
+            <p class="text-sm text-purple-700 mt-1">
+              <% if current_user.can_generate? %>
+                <span class="font-medium text-green-600">✓ Ready to generate</span>
+                <% if current_user.credits_remaining > 0 %>
+                  • <%= current_user.credits_remaining %> credits remaining
+                <% elsif current_user.trial_active? %>
+                  • Trial active until <%= current_user.trial_ends_at&.strftime("%B %d") %>
+                <% else %>
+                  • Active subscription
+                <% end %>
+              <% else %>
+                <span class="font-medium text-red-600">⚠ Insufficient credits</span>
+                • Please upgrade your plan to continue
+              <% end %>
+            </p>
+          </div>
+          
+          <% unless current_user.can_generate? %>
+            <%= link_to "#", 
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" do %>
+              Upgrade Plan
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-center fade-in" style="animation-delay: 0.6s;">
+        <% if current_user.can_generate? %>
+          <%= f.submit "Generate Cover Letter with AI", 
+              class: "px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-200",
+              data: { disable_with: "Generating..." } %>
+        <% else %>
+          <button type="button" disabled
+              class="px-8 py-4 bg-gray-400 text-white font-semibold rounded-lg shadow-lg cursor-not-allowed">
+            Insufficient Credits
+          </button>
+        <% end %>
+      </div>
+
+      <!-- Help Text -->
+      <div class="text-center text-sm text-gray-500 fade-in" style="animation-delay: 0.7s;">
+        <p>Your cover letter will be generated using advanced AI and tailored to the job requirements.</p>
+        <p class="mt-1">Generation typically takes 30-45 seconds and includes multiple variations.</p>
+      </div>
+    <% end %>
+  </main>
+</div>

@@ -1,0 +1,478 @@
+<div class="min-h-full">
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="px-4 py-6 sm:px-0">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+              <%= link_to resumes_path, class: "hover:text-gray-700" do %>
+                My Resumes
+              <% end %>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+              </svg>
+              <span><%= @resume.target_role %></span>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-gray-900"><%= @resume.target_role %></h1>
+            
+            <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
+              <span>
+                Created <%= time_ago_in_words(@resume.created_at) %> ago
+              </span>
+              <span>•</span>
+              <span>
+                <% if @resume.file.attached? %>
+                  <%= @resume.file.filename %>
+                <% else %>
+                  Text resume
+                <% end %>
+              </span>
+              <% if @resume.industry.present? %>
+                <span>•</span>
+                <span><%= @resume.industry.humanize %></span>
+              <% end %>
+              <span>•</span>
+              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                <%= case @resume.status
+                    when 'draft' then 'bg-gray-100 text-gray-800'
+                    when 'processing' then 'bg-yellow-100 text-yellow-800'
+                    when 'optimized' then 'bg-green-100 text-green-800'
+                    when 'failed' then 'bg-red-100 text-red-800'
+                    else 'bg-gray-100 text-gray-800'
+                    end %>">
+                <%= @resume.status.humanize %>
+              </span>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3">
+            <%= link_to edit_resume_path(@resume), 
+                class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Edit
+            <% end %>
+            
+            <% unless @resume.optimized? %>
+              <%= link_to optimize_resume_path(@resume), data: { turbo_method: :post },
+                  class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Optimize Resume
+              <% end %>
+            <% end %>
+            
+            <%= link_to new_resume_cover_letter_path(@resume), 
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Create Cover Letter
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-4 sm:px-0">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Main Content -->
+          <div class="lg:col-span-2 space-y-6">
+            <%= turbo_stream_from "resume_#{@resume.id}" %>
+            <%= render "resumes/content", resume: @resume %>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <!-- Resume Details -->
+            <div class="bg-white shadow rounded-lg">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Resume Details</h3>
+              </div>
+              
+              <div class="px-6 py-4 space-y-4">
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Target Role</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @resume.target_role %></dd>
+                </div>
+                
+                <% if @resume.industry.present? %>
+                  <div>
+                    <dt class="text-sm font-medium text-gray-500">Industry</dt>
+                    <dd class="mt-1 text-sm text-gray-900"><%= @resume.industry.humanize %></dd>
+                  </div>
+                <% end %>
+                
+                <% if @resume.experience_level.present? %>
+                  <div>
+                    <dt class="text-sm font-medium text-gray-500">Experience Level</dt>
+                    <dd class="mt-1 text-sm text-gray-900"><%= @resume.experience_level.humanize %></dd>
+                  </div>
+                <% end %>
+                
+                <% if @resume.provider.present? %>
+                  <div>
+                    <dt class="text-sm font-medium text-gray-500">AI Provider</dt>
+                    <dd class="mt-1 text-sm text-gray-900"><%= @resume.provider.humanize %></dd>
+                  </div>
+                <% end %>
+                
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Created</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @resume.created_at.strftime("%B %d, %Y") %></dd>
+                </div>
+                
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @resume.updated_at.strftime("%B %d, %Y") %></dd>
+                </div>
+              </div>
+            </div>
+
+            <!-- ATS Analysis -->
+            <% if @ats_analysis && @resume.ats_score.present? %>
+              <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-medium text-gray-900">ATS Analysis</h3>
+                    <button type="button" 
+                            id="toggle-ats-details"
+                            class="text-sm text-blue-600 hover:text-blue-500 font-medium">
+                      View Details
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="px-6 py-4">
+                  <!-- ATS Score Overview -->
+                  <div class="text-center">
+                    <div class="text-4xl font-bold <%= case @resume.ats_score_color
+                                                        when 'green' then 'text-green-600'
+                                                        when 'yellow' then 'text-yellow-600'
+                                                        when 'red' then 'text-red-600'
+                                                        else 'text-gray-600'
+                                                        end %>">
+                      <%= @resume.ats_score %>%
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">ATS Compatibility Score</p>
+                  </div>
+                  
+                  <!-- Progress Bar -->
+                  <div class="mt-4">
+                    <div class="bg-gray-200 rounded-full h-3">
+                      <div class="<%= case @resume.ats_score_color
+                                      when 'green' then 'bg-green-500'
+                                      when 'yellow' then 'bg-yellow-500'
+                                      when 'red' then 'bg-red-500'
+                                      else 'bg-gray-500'
+                                      end %> h-3 rounded-full transition-all duration-300"
+                           style="width: <%= @resume.ats_score %>%"></div>
+                    </div>
+                    
+                    <!-- Score Labels -->
+                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>Poor (0-40)</span>
+                      <span>Good (41-70)</span>
+                      <span>Excellent (71-100)</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Score Summary -->
+                  <div class="mt-4 p-3 rounded-lg <%= case @resume.ats_score_color
+                                                     when 'green' then 'bg-green-50 border border-green-200'
+                                                     when 'yellow' then 'bg-yellow-50 border border-yellow-200'
+                                                     when 'red' then 'bg-red-50 border border-red-200'
+                                                     else 'bg-gray-50 border border-gray-200'
+                                                     end %>">
+                    <div class="text-sm">
+                      <% case @resume.ats_score_color %>
+                      <% when 'green' %>
+                        <p class="text-green-800 font-medium">✓ Excellent ATS Compatibility</p>
+                        <p class="text-green-700 mt-1">Your resume is well-optimized for applicant tracking systems and should perform well in automated screening processes.</p>
+                      <% when 'yellow' %>
+                        <p class="text-yellow-800 font-medium">⚠ Good with Room for Improvement</p>
+                        <p class="text-yellow-700 mt-1">Your resume has decent ATS compatibility but could benefit from keyword optimization and formatting improvements.</p>
+                      <% when 'red' %>
+                        <p class="text-red-800 font-medium">⚠ Needs Significant Optimization</p>
+                        <p class="text-red-700 mt-1">Your resume may struggle with applicant tracking systems. Consider adding more relevant keywords and improving formatting.</p>
+                      <% end %>
+                    </div>
+                  </div>
+                  
+                  <!-- Detailed Analysis (Hidden by default) -->
+                  <div id="ats-details" class="hidden mt-6 space-y-4">
+                    <!-- Keyword Analysis -->
+                    <% if @resume.keywords.present? %>
+                      <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-gray-900 mb-3 flex items-center">
+                          <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                          </svg>
+                          Detected Keywords
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                          <% @resume.keywords_array.each do |keyword| %>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <%= keyword %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                    
+                    <!-- ATS Strengths -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                      <h4 class="text-sm font-medium text-gray-900 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        ATS Strengths
+                      </h4>
+                      <ul class="text-sm text-gray-700 space-y-1">
+                        <% if @resume.ats_score >= 50 %>
+                          <li class="flex items-center">
+                            <span class="w-1 h-1 bg-green-400 rounded-full mr-2"></span>
+                            Good keyword density and relevance
+                          </li>
+                        <% end %>
+                        <% if @resume.optimized? %>
+                          <li class="flex items-center">
+                            <span class="w-1 h-1 bg-green-400 rounded-full mr-2"></span>
+                            AI-optimized content structure
+                          </li>
+                        <% end %>
+                        <% if @resume.target_role.present? %>
+                          <li class="flex items-center">
+                            <span class="w-1 h-1 bg-green-400 rounded-full mr-2"></span>
+                            Clear role targeting
+                          </li>
+                        <% end %>
+                        <% if @resume.experience_level.present? %>
+                          <li class="flex items-center">
+                            <span class="w-1 h-1 bg-green-400 rounded-full mr-2"></span>
+                            Experience level specified
+                          </li>
+                        <% end %>
+                      </ul>
+                    </div>
+                    
+                    <!-- Improvement Suggestions -->
+                    <% if @resume.ats_score < 80 %>
+                      <div class="border border-orange-200 rounded-lg p-4 bg-orange-50">
+                        <h4 class="text-sm font-medium text-orange-900 mb-3 flex items-center">
+                          <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          Improvement Suggestions
+                        </h4>
+                        <ul class="text-sm text-orange-800 space-y-2">
+                          <% if @resume.job_description.blank? %>
+                            <li class="flex items-start">
+                              <span class="w-1 h-1 bg-orange-400 rounded-full mr-2 mt-2"></span>
+                              <div>
+                                <span class="font-medium">Add job description:</span>
+                                <span>Include the target job posting to better match requirements</span>
+                              </div>
+                            </li>
+                          <% end %>
+                          <% unless @resume.optimized? %>
+                            <li class="flex items-start">
+                              <span class="w-1 h-1 bg-orange-400 rounded-full mr-2 mt-2"></span>
+                              <div>
+                                <span class="font-medium">Optimize with AI:</span>
+                                <span>Use our AI optimization to improve keyword matching</span>
+                              </div>
+                            </li>
+                          <% end %>
+                          <li class="flex items-start">
+                            <span class="w-1 h-1 bg-orange-400 rounded-full mr-2 mt-2"></span>
+                            <div>
+                              <span class="font-medium">Include industry keywords:</span>
+                              <span>Add more specific technical and industry-related terms</span>
+                            </div>
+                          </li>
+                          <li class="flex items-start">
+                            <span class="w-1 h-1 bg-orange-400 rounded-full mr-2 mt-2"></span>
+                            <div>
+                              <span class="font-medium">Quantify achievements:</span>
+                              <span>Include numbers, percentages, and measurable results</span>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    <% end %>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 pt-4 border-t border-gray-200">
+                      <% unless @resume.optimized? %>
+                        <%= link_to optimize_resume_path(@resume), data: { turbo_method: :post },
+                            class: "flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                          </svg>
+                          Optimize Resume
+                        <% end %>
+                      <% end %>
+                      
+                      <%= link_to ats_score_resume_path(@resume), data: { turbo_method: :post },
+                          class: "flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Re-analyze Score
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% elsif @resume.optimized? %>
+              <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                  <h3 class="text-lg font-medium text-gray-900">ATS Analysis</h3>
+                </div>
+                
+                <div class="px-6 py-4 text-center">
+                  <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                  </div>
+                  <h4 class="text-lg font-medium text-gray-900 mb-2">Get Your ATS Score</h4>
+                  <p class="text-sm text-gray-600 mb-4">Analyze how well your optimized resume performs with applicant tracking systems</p>
+                  <%= link_to ats_score_resume_path(@resume), data: { turbo_method: :post },
+                      class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Analyze ATS Score
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Quick Actions -->
+            <div class="bg-white shadow rounded-lg">
+              <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Quick Actions</h3>
+              </div>
+              
+              <div class="px-6 py-4 space-y-3">
+                <% if @resume.file.attached? %>
+                  <%= link_to rails_blob_path(@resume.file, disposition: "attachment"), 
+                      class: "flex items-center text-sm text-gray-700 hover:text-gray-900" do %>
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download Original File
+                  <% end %>
+                <% end %>
+                
+                <% if @resume.keywords.present? %>
+                  <%= link_to keywords_resume_path(@resume), 
+                      class: "flex items-center text-sm text-gray-700 hover:text-gray-900" do %>
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    View Keywords
+                  <% end %>
+                <% end %>
+                
+                <%= link_to edit_resume_path(@resume), 
+                    class: "flex items-center text-sm text-gray-700 hover:text-gray-900" do %>
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                  Edit Resume
+                <% end %>
+                
+                <%= link_to @resume, method: :delete, 
+                    data: { confirm: 'Are you sure you want to delete this resume?' },
+                    class: "flex items-center text-sm text-red-600 hover:text-red-900" do %>
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  Delete Resume
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // View Toggle Controller
+  class ToggleController extends Stimulus.Controller {
+    static targets = ["content", "icon"]
+    
+    toggle() {
+      this.contentTarget.classList.toggle('hidden')
+      this.iconTarget.classList.toggle('rotate-180')
+    }
+  }
+  
+  // Dropdown Controller
+  class DropdownController extends Stimulus.Controller {
+    static targets = ["menu", "button"]
+    
+    toggle() {
+      this.menuTarget.classList.toggle('hidden')
+    }
+    
+    hide() {
+      this.menuTarget.classList.add('hidden')
+    }
+  }
+  
+  // View Mode Toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggle-view')
+    const viewModeText = document.getElementById('view-mode-text')
+    const sideBySideView = document.getElementById('side-by-side-view')
+    const fullWidthView = document.getElementById('full-width-view')
+    
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        if (sideBySideView && fullWidthView && viewModeText) {
+          if (sideBySideView.classList.contains('hidden')) {
+            // Switch to side by side
+            sideBySideView.classList.remove('hidden')
+            fullWidthView.classList.add('hidden')
+            viewModeText.textContent = 'Side by Side'
+          } else {
+            // Switch to full width
+            sideBySideView.classList.add('hidden')
+            fullWidthView.classList.remove('hidden')
+            viewModeText.textContent = 'Full Width'
+          }
+        }
+      })
+    }
+    
+    // ATS Details Toggle
+    const atsToggleBtn = document.getElementById('toggle-ats-details')
+    const atsDetails = document.getElementById('ats-details')
+    
+    if (atsToggleBtn && atsDetails) {
+      atsToggleBtn.addEventListener('click', function() {
+        if (atsDetails.classList.contains('hidden')) {
+          atsDetails.classList.remove('hidden')
+          atsToggleBtn.textContent = 'Hide Details'
+        } else {
+          atsDetails.classList.add('hidden')
+          atsToggleBtn.textContent = 'View Details'
+        }
+      })
+    }
+  })
+  
+  // Register Stimulus controllers
+  if (window.Stimulus) {
+    window.Stimulus.register("toggle", ToggleController)
+    window.Stimulus.register("dropdown", DropdownController)
+  }
+</script>

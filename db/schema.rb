@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_10_202353) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_11_021613) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "countries", primary_key: "code", id: { type: :string, limit: 2 }, force: :cascade do |t|
     t.string "name", null: false
@@ -27,6 +55,70 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_10_202353) do
     t.index ["currency"], name: "index_countries_on_currency"
     t.index ["is_active"], name: "index_countries_on_is_active"
     t.index ["name"], name: "index_countries_on_name"
+  end
+
+  create_table "cover_letters", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "resume_id", null: false
+    t.string "company_name"
+    t.string "hiring_manager_name"
+    t.string "target_role"
+    t.string "tone"
+    t.string "length"
+    t.text "content"
+    t.text "job_description"
+    t.string "status"
+    t.string "provider"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resume_id"], name: "index_cover_letters_on_resume_id"
+    t.index ["user_id"], name: "index_cover_letters_on_user_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "stripe_payment_intent_id"
+    t.integer "amount_cents"
+    t.string "currency"
+    t.string "status"
+    t.string "description"
+    t.integer "credits_purchased"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "client_secret"
+    t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "resumes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "original_content"
+    t.text "optimized_content"
+    t.text "job_description"
+    t.string "target_role"
+    t.string "industry"
+    t.string "experience_level"
+    t.integer "ats_score"
+    t.text "keywords"
+    t.string "status"
+    t.string "provider"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_resumes_on_user_id"
+  end
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "stripe_subscription_id"
+    t.string "status"
+    t.string "plan_id"
+    t.datetime "current_period_start"
+    t.datetime "current_period_end"
+    t.boolean "cancel_at_period_end"
+    t.datetime "trial_start"
+    t.datetime "trial_end"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -63,6 +155,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_10_202353) do
     t.bigint "referred_by_id"
     t.string "provider"
     t.string "uid"
+    t.string "stripe_customer_id"
     t.index ["country_code"], name: "index_users_on_country_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["last_active_at"], name: "index_users_on_last_active_at"
@@ -72,4 +165,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_10_202353) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["subscription_status"], name: "index_users_on_subscription_status"
   end
+
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cover_letters", "resumes"
+  add_foreign_key "cover_letters", "users"
+  add_foreign_key "payments", "users"
+  add_foreign_key "resumes", "users"
+  add_foreign_key "subscriptions", "users"
 end

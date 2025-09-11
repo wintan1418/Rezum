@@ -1,0 +1,153 @@
+<div class="min-h-full">
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="px-4 py-6 sm:px-0">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+              <%= link_to resumes_path, class: "hover:text-gray-700" do %>
+                My Resumes
+              <% end %>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+              </svg>
+              <%= link_to resume_path(@resume), class: "hover:text-gray-700" do %>
+                <%= @resume.target_role %>
+              <% end %>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+              </svg>
+              <span>Cover Letter</span>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-gray-900">
+              <%= @cover_letter.company_name || "Cover Letter" %>
+              <% if @cover_letter.target_role.present? %>
+                - <%= @cover_letter.target_role %>
+              <% end %>
+            </h1>
+            
+            <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
+              <span>
+                Created <%= time_ago_in_words(@cover_letter.created_at) %> ago
+              </span>
+              <span>•</span>
+              <span><%= @word_count %> words</span>
+              <span>•</span>
+              <span><%= @read_time %> read</span>
+              <span>•</span>
+              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                <%= case @cover_letter.status
+                    when 'draft' then 'bg-gray-100 text-gray-800'
+                    when 'generating' then 'bg-yellow-100 text-yellow-800'
+                    when 'generated' then 'bg-green-100 text-green-800'
+                    when 'failed' then 'bg-red-100 text-red-800'
+                    else 'bg-gray-100 text-gray-800'
+                    end %>">
+                <%= @cover_letter.status.humanize %>
+              </span>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3">
+            <%= link_to edit_resume_cover_letter_path(@resume, @cover_letter), 
+                class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Edit
+            <% end %>
+            
+            <%= link_to preview_resume_cover_letter_path(@resume, @cover_letter), target: "_blank",
+                class: "inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              Preview
+            <% end %>
+
+            <% if @cover_letter.content.present? %>
+              <!-- Download Dropdown -->
+              <div class="relative inline-block text-left" data-controller="dropdown">
+                <button data-action="click->dropdown#toggle" 
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  Download
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+
+                <div data-dropdown-target="menu" 
+                     class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div class="py-1">
+                    <%= link_to download_resume_cover_letter_path(@resume, @cover_letter, format: :pdf), 
+                        class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                      </svg>
+                      Download PDF
+                    <% end %>
+                    <%= link_to download_resume_cover_letter_path(@resume, @cover_letter, format: :docx), 
+                        class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                      Download Word
+                    <% end %>
+                    <%= link_to download_resume_cover_letter_path(@resume, @cover_letter, format: :txt), 
+                        class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                      Download Text
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Fallback Download Links (if JavaScript fails) -->
+              <noscript>
+                <div class="inline-flex items-center space-x-2">
+                  <%= link_to download_resume_cover_letter_path(@resume, @cover_letter, format: :pdf),
+                      class: "inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 hover:text-red-800" do %>
+                    PDF
+                  <% end %>
+                  <%= link_to download_resume_cover_letter_path(@resume, @cover_letter, format: :docx),
+                      class: "inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-800" do %>
+                    Word
+                  <% end %>
+                  <%= link_to download_resume_cover_letter_path(@resume, @cover_letter, format: :txt),
+                      class: "inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 hover:text-gray-800" do %>
+                    Text
+                  <% end %>
+                </div>
+              </noscript>
+            <% end %>
+            
+            <% unless @cover_letter.generated? %>
+              <%= link_to generate_variations_resume_cover_letter_path(@resume, @cover_letter), data: { turbo_method: :post },
+                  class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Generate Variations
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-4 sm:px-0">
+        <%= render 'content', cover_letter: @cover_letter, resume: @resume %>
+      </div>
+    </main>
+  </div>
+
+  <!-- Turbo Stream for real-time updates -->
+  <%= turbo_stream_from "cover_letter_#{@cover_letter.id}" %>

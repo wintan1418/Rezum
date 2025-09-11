@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  original_content: MyText
+  optimized_content: MyText
+  job_description: MyText
+  target_role: MyString
+  industry: MyString
+  experience_level: MyString
+  ats_score: 1
+  keywords: MyText
+  status: MyString
+  provider: MyString
+
+two:
+  user: two
+  original_content: MyText
+  optimized_content: MyText
+  job_description: MyText
+  target_role: MyString
+  industry: MyString
+  experience_level: MyString
+  ats_score: 1
+  keywords: MyText
+  status: MyString
+  provider: MyString

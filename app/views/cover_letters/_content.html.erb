@@ -1,0 +1,182 @@
+<div id="cover_letter_content">
+  <% if cover_letter.generating? %>
+    <!-- Generating State with Enhanced Animation -->
+    <div class="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-8 text-center"
+         data-controller="auto-refresh generation-animation"
+         data-auto-refresh-url-value="<%= resume_cover_letter_path(resume, cover_letter) %>"
+         data-auto-refresh-interval-value="3000">
+      
+      <!-- Main Animation Container -->
+      <div class="relative mb-6">
+        <!-- Outer rotating ring -->
+        <div class="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+        
+        <!-- Inner pulsing dot -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="animate-pulse bg-gradient-to-r from-blue-500 to-purple-500 rounded-full h-6 w-6"></div>
+        </div>
+      </div>
+      
+      <!-- Animated Header -->
+      <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+        <span data-generation-animation-target="typewriter" class="typewriter">
+          Crafting Your Perfect Cover Letter...
+        </span>
+      </h3>
+      
+      <!-- Progress Steps -->
+      <div class="max-w-md mx-auto mb-6">
+        <div class="flex justify-between items-center text-sm">
+          <div class="flex flex-col items-center" data-generation-animation-target="step" data-step="1">
+            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mb-2 transition-all duration-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <span class="text-blue-600 font-medium">Analyzing</span>
+          </div>
+          
+          <div class="flex-1 h-0.5 bg-gray-200 mx-2">
+            <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
+          </div>
+          
+          <div class="flex flex-col items-center" data-generation-animation-target="step" data-step="2">
+            <div class="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mb-2 animate-pulse transition-all duration-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <span class="text-purple-600 font-medium">Generating</span>
+          </div>
+          
+          <div class="flex-1 h-0.5 bg-gray-200 mx-2">
+            <div class="h-full bg-gray-200"></div>
+          </div>
+          
+          <div class="flex flex-col items-center" data-generation-animation-target="step" data-step="3">
+            <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center mb-2 transition-all duration-500">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <span class="text-gray-500">Finalizing</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dynamic Status Messages -->
+      <div class="mb-6">
+        <p class="text-lg text-gray-700 mb-2" data-generation-animation-target="statusText">
+          Analyzing your resume and job requirements...
+        </p>
+        <p class="text-sm text-gray-500" data-generation-animation-target="subText">
+          Our AI is reading through your experience to craft the perfect narrative
+        </p>
+      </div>
+      
+      <!-- Floating Elements for Visual Interest -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-10 left-10 w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+        <div class="absolute top-20 right-16 w-1 h-1 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+        <div class="absolute bottom-16 left-20 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+        <div class="absolute bottom-10 right-10 w-1 h-1 bg-blue-300 rounded-full animate-bounce" style="animation-delay: 0.6s;"></div>
+      </div>
+      
+      <!-- Progress Indicator -->
+      <div class="mt-6">
+        <div class="flex justify-center items-center space-x-2 text-sm text-gray-600">
+          <div class="flex space-x-1">
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0s;"></div>
+            <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
+            <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" style="animation-delay: 0.6s;"></div>
+          </div>
+          <span class="font-medium">Processing in real-time</span>
+        </div>
+        
+        <!-- Estimated time with countdown -->
+        <p class="mt-3 text-xs text-gray-500">
+          <span data-generation-animation-target="timer">Estimated time: 30-45 seconds</span>
+        </p>
+      </div>
+    </div>
+  <% elsif cover_letter.failed? %>
+    <!-- Failed State -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+      </svg>
+      <h3 class="mt-4 text-lg font-medium text-red-800">Generation Failed</h3>
+      <p class="mt-2 text-sm text-red-700">
+        We encountered an error while generating your cover letter. Please try again.
+      </p>
+      <div class="mt-4">
+        <%= link_to generate_variations_resume_cover_letter_path(resume, cover_letter), data: { turbo_method: :post },
+            class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" do %>
+          Try Again
+        <% end %>
+      </div>
+    </div>
+  <% elsif cover_letter.content.present? %>
+    <!-- Cover Letter Content -->
+    <div class="bg-white shadow rounded-lg">
+      <!-- Cover Letter Details -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span class="font-medium text-gray-900">Company:</span>
+            <span class="text-gray-600"><%= cover_letter.company_name %></span>
+          </div>
+          <div>
+            <span class="font-medium text-gray-900">Role:</span>
+            <span class="text-gray-600"><%= cover_letter.target_role %></span>
+          </div>
+          <div>
+            <span class="font-medium text-gray-900">Tone:</span>
+            <span class="text-gray-600"><%= cover_letter.display_tone %></span>
+          </div>
+          <% if cover_letter.hiring_manager_name.present? %>
+            <div>
+              <span class="font-medium text-gray-900">Hiring Manager:</span>
+              <span class="text-gray-600"><%= cover_letter.hiring_manager_name %></span>
+            </div>
+          <% end %>
+          <div>
+            <span class="font-medium text-gray-900">Length:</span>
+            <span class="text-gray-600"><%= cover_letter.display_length %></span>
+          </div>
+          <div>
+            <span class="font-medium text-gray-900">AI Provider:</span>
+            <span class="text-gray-600"><%= cover_letter.provider&.humanize || 'OpenAI' %></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cover Letter Text -->
+      <div class="px-6 py-8">
+        <div class="prose max-w-none">
+          <%= simple_format(cover_letter.content, class: "whitespace-pre-wrap text-gray-900 leading-relaxed") %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- Draft State -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <h3 class="mt-4 text-lg font-medium text-gray-900">Cover Letter Draft</h3>
+      <p class="mt-2 text-sm text-gray-600">
+        This cover letter hasn't been generated yet. Click "Generate Variations" to create your AI-powered cover letter.
+      </p>
+      <div class="mt-4">
+        <%= link_to generate_variations_resume_cover_letter_path(resume, cover_letter), data: { turbo_method: :post },
+            class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Generate Cover Letter
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

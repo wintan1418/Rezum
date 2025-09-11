@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>" class="h-full bg-gray-50">
   <head>
-    <title><%= content_for(:title) || "Rezum" %></title>
+    <title><%= content_for(:title) || "Rezum - AI Resume & Cover Letter Generator" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
@@ -13,11 +13,49 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+    </style>
   </head>
 
-  <body>
+  <body class="h-full">
+    <% if user_signed_in? && controller_name != 'home' %>
+      <!-- Navigation for authenticated users -->
+      <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16">
+            <div class="flex items-center">
+              <%= link_to root_path, class: "flex items-center space-x-3" do %>
+                <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span class="text-white font-bold text-lg">R</span>
+                </div>
+                <span class="text-xl font-bold text-gray-900">ReZum</span>
+              <% end %>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+              <%= link_to resumes_path, class: "text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                My Resumes
+              <% end %>
+              <%= link_to cover_letters_path, class: "text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors" do %>
+                Cover Letters
+              <% end %>
+              <span class="text-gray-700">Welcome, <%= current_user.display_name %></span>
+              <%= link_to "Sign Out", destroy_user_session_path, method: :delete, 
+                  class: "bg-gray-100 text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors" %>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+    
     <%= yield %>
   </body>
 </html>

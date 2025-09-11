@@ -1,6 +1,7 @@
 class User < ApplicationRecord
+  
   devise :database_authenticatable, :registerable, :recoverable, 
-         :rememberable, :validatable, :confirmable, :trackable,
+         :rememberable, :validatable,
          :omniauthable, omniauth_providers: [:google_oauth2, :linkedin]
   
   # Enums
@@ -18,6 +19,10 @@ class User < ApplicationRecord
   belongs_to :country, primary_key: 'code', foreign_key: 'country_code', optional: true
   belongs_to :referred_by, class_name: 'User', optional: true
   has_many :referrals, class_name: 'User', foreign_key: 'referred_by_id'
+  has_many :resumes, dependent: :destroy
+  has_many :cover_letters, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
+  has_many :payments, dependent: :destroy
   
   # Phone number normalization and validation
   phony_normalize :phone, default_country_code: lambda { |user| user.country_code || 'US' }
@@ -62,7 +67,21 @@ class User < ApplicationRecord
   end
   
   def can_generate?
-    credits_remaining > 0 || active? || trial_active?
+    credits_remaining > 0 || has_active_subscription? || trial_active?
+  end
+  
+  # Subscription methods
+  def has_active_subscription?
+    subscriptions.active_subscriptions.any?(&:active?)
+  end
+  
+  def current_subscription
+    subscriptions.active_subscriptions.order(created_at: :desc).first
+  end
+  
+  def subscription_status
+    return 'free' unless current_subscription
+    current_subscription.status
   end
   
   def preferred_currency
@@ -119,7 +138,6 @@ class User < ApplicationRecord
       user.last_name = auth.info.last_name || auth.info.name&.split&.last || ''
       user.provider = auth.provider
       user.uid = auth.uid
-      user.skip_confirmation!
       
       # Download and attach avatar from OAuth provider
       if auth.info.image.present?
@@ -135,6 +153,54 @@ class User < ApplicationRecord
         end
       end
     end
+  end
+  
+  # Payment methods
+  def add_credits(amount)
+    increment!(:credits_remaining, amount)
+  end
+
+  def deduct_credit!
+    return false if credits_remaining <= 0 && !has_active_subscription?
+    
+    if credits_remaining > 0
+      decrement!(:credits_remaining, 1)
+    end
+    true
+  end
+
+  def total_spent
+    payments.successful.sum(:amount_cents) / 100.0
+  end
+
+  def subscription_renewal_date
+    current_subscription&.current_period_end
+  end
+
+  def subscription_days_remaining
+    return 0 unless current_subscription
+    current_subscription.days_until_renewal
+  end
+
+  # Stripe customer methods
+  def create_stripe_customer!
+    return if stripe_customer_id.present?
+    
+    customer = StripeService.create_customer(
+      email: email,
+      name: full_name,
+      metadata: {
+        user_id: id
+      }
+    )
+    
+    update!(stripe_customer_id: customer.id)
+    customer
+  end
+  
+  def stripe_customer
+    return nil unless stripe_customer_id
+    @stripe_customer ||= StripeService.retrieve_customer(stripe_customer_id)
   end
   
   private

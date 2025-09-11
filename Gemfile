@@ -47,12 +47,24 @@ gem "phony_rails" # International phone number validation
 gem "geocoder" # IP-based location detection
 gem "money-rails"
 
+# Payment Processing
+gem "stripe", require: "stripe"
+
 # SEO & URLs
 gem "friendly_id"
 
 # Background Jobs
 gem "sidekiq"
 gem "redis", ">= 4.0.1"
+
+# AI Integration
+gem "ruby-openai"
+gem "ruby_llm"
+
+# File Processing
+gem "pdf-reader"
+gem "docx"
+gem "prawn" # For PDF generation instead of RMagick
 
 # Performance & Caching
 gem "bootsnap", require: false
@@ -78,3 +90,4 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+gem "dotenv-rails"

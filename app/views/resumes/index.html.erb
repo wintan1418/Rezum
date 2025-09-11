@@ -1,0 +1,203 @@
+<div class="min-h-full">
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="px-4 py-6 sm:px-0">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">My Resumes</h1>
+            <p class="mt-2 text-gray-600">Manage and optimize your resumes with AI</p>
+          </div>
+          
+          <%= link_to new_resume_path, 
+              class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all" do %>
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Upload New Resume
+          <% end %>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Total Resumes</dt>
+                    <dd class="text-lg font-medium text-gray-900"><%= @resumes.count %></dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <svg class="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Optimized</dt>
+                    <dd class="text-lg font-medium text-gray-900"><%= @optimized_count %></dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Avg ATS Score</dt>
+                    <dd class="text-lg font-medium text-gray-900">
+                      <% if @total_ats_score %>
+                        <%= @total_ats_score %>%
+                      <% else %>
+                        —
+                      <% end %>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumes List -->
+      <div class="px-4 sm:px-0">
+        <% if @resumes.any? %>
+          <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul class="divide-y divide-gray-200">
+              <% @resumes.each do |resume| %>
+                <li>
+                  <div class="px-4 py-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                      <div class="flex-shrink-0">
+                        <% if resume.file.attached? %>
+                          <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                          </div>
+                        <% else %>
+                          <div class="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                          </div>
+                        <% end %>
+                      </div>
+                      
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">
+                          <%= resume.target_role || "Resume" %>
+                        </p>
+                        <p class="text-sm text-gray-500">
+                          Created <%= time_ago_in_words(resume.created_at) %> ago
+                          <% if resume.industry.present? %>
+                            • <%= resume.industry %>
+                          <% end %>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                      <!-- Status Badge -->
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        <%= case resume.status
+                            when 'draft' then 'bg-gray-100 text-gray-800'
+                            when 'processing' then 'bg-yellow-100 text-yellow-800'
+                            when 'optimized' then 'bg-green-100 text-green-800'
+                            when 'failed' then 'bg-red-100 text-red-800'
+                            else 'bg-gray-100 text-gray-800'
+                            end %>">
+                        <%= resume.status.humanize %>
+                      </span>
+                      
+                      <!-- ATS Score -->
+                      <% if resume.ats_score.present? %>
+                        <div class="flex items-center space-x-1">
+                          <span class="text-xs text-gray-500">ATS:</span>
+                          <span class="text-sm font-medium
+                            <%= case resume.ats_score_color
+                                when 'green' then 'text-green-600'
+                                when 'yellow' then 'text-yellow-600'
+                                when 'red' then 'text-red-600'
+                                else 'text-gray-600'
+                                end %>">
+                            <%= resume.ats_score %>%
+                          </span>
+                        </div>
+                      <% end %>
+                      
+                      <!-- Cover Letters Count -->
+                      <% if resume.cover_letters.any? %>
+                        <div class="flex items-center space-x-1">
+                          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                          </svg>
+                          <span class="text-xs text-gray-500"><%= resume.cover_letters.count %></span>
+                        </div>
+                      <% end %>
+                      
+                      <!-- Actions -->
+                      <div class="flex items-center space-x-2">
+                        <%= link_to resume_path(resume), 
+                            class: "text-blue-600 hover:text-blue-900 text-sm font-medium" do %>
+                          View
+                        <% end %>
+                        
+                        <% unless resume.optimized? %>
+                          <%= link_to optimize_resume_path(resume), data: { turbo_method: :post },
+                              class: "text-green-600 hover:text-green-900 text-sm font-medium" do %>
+                            Optimize
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% else %>
+          <!-- Empty State -->
+          <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No resumes</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by uploading your first resume.</p>
+            <div class="mt-6">
+              <%= link_to new_resume_path, 
+                  class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Upload Resume
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </main>
+</div>
