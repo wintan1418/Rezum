@@ -97,7 +97,7 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # Allow Railway hosts - use the exact syntax Rails recommends
-  config.hosts << "web-production-4f019.up.railway.app"
+  config.hosts << "web-production-3bf5.up.railway.app"    
   config.hosts << /.*\.railway\.app$/
   config.hosts << /.*\.up\.railway\.app$/
   # Skip DNS rebinding protection for the default health check endpoint.
