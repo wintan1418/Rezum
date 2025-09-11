@@ -145,15 +145,15 @@ class JobPostingParserService
   end
   
   def extract_employment_type
-    if content.match?/full[_\s-]?time/i
+    if content.match?(/full[_\s-]?time/i)
       'Full-time'
-    elsif content.match?/part[_\s-]?time/i
+    elsif content.match?(/part[_\s-]?time/i)
       'Part-time'
-    elsif content.match?/contract/i
+    elsif content.match?(/contract/i)
       'Contract'
-    elsif content.match?/freelance/i
+    elsif content.match?(/freelance/i)
       'Freelance'
-    elsif content.match?/intern/i
+    elsif content.match?(/intern/i)
       'Internship'
     else
       nil
@@ -161,13 +161,13 @@ class JobPostingParserService
   end
   
   def extract_experience_level
-    if content.match?/entry[_\s-]?level|junior|0-2\s*years?/i
+    if content.match?(/entry[_\s-]?level|junior|0-2\s*years?/i)
       'entry'
-    elsif content.match?/senior|5\+?\s*years?|experienced/i
+    elsif content.match?(/senior|5\+?\s*years?|experienced/i)
       'senior'
-    elsif content.match?/lead|principal|architect|director/i
+    elsif content.match?(/lead|principal|architect|director/i)
       'executive'
-    elsif content.match?/mid[_\s-]?level|3-5\s*years?/i
+    elsif content.match?(/mid[_\s-]?level|3-5\s*years?/i)
       'mid'
     else
       nil
