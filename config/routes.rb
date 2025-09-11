@@ -1,6 +1,13 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   get "webhooks/stripe"
   devise_for :users
+  
+  # Mount Sidekiq web interface (protected by authentication)
+  authenticate :user do
+    mount Sidekiq::Web => '/sidekiq'
+  end
   
   # Main AI features - protected by authentication
   authenticate :user do

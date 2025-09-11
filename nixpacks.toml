@@ -1,0 +1,9 @@
+[phases.build]
+cmds = [
+    'bundle install',
+    'yarn install --frozen-lockfile',
+    'bundle exec rake assets:precompile'
+]
+
+[start]
+cmd = 'bundle exec puma -C config/puma.rb'

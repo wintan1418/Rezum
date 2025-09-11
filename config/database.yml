@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: rezum_production
-  username: rezum
-  password: <%= ENV["REZUM_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
