@@ -1,1 +1,3 @@
-web: RAILS_ENV=production bundle exec rails db:create db:migrate && RAILS_ENV=production bundle exec rails server -b 0.0.0.0 -p $PORT
+release: bundle exec rails db:create db:migrate
+web: bundle exec puma -C config/puma.rb
+worker: bundle exec sidekiq
