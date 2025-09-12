@@ -1,0 +1,6 @@
+:concurrency: 5
+:queues:
+  - rezum_production_default
+  - rezum_production_mailers
+  - default
+  - mailers
