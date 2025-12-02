@@ -1,8 +1,8 @@
 class User < ApplicationRecord
   
   devise :database_authenticatable, :registerable, :recoverable, 
-         :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [:google_oauth2, :linkedin]
+         :rememberable, :validatable, :confirmable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
   
   # Enums
   enum experience_level: { entry: 0, mid: 1, senior: 2, executive: 3 }

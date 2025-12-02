@@ -87,6 +87,9 @@ GEM
     brakeman (7.1.0)
       racc
     builder (3.3.0)
+    bullet (8.0.8)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.11)
     capybara (3.40.0)
       addressable
       matrix
@@ -245,8 +248,6 @@ GEM
       oauth2 (~> 2.0)
       omniauth (~> 2.0)
       omniauth-oauth2 (~> 1.8)
-    omniauth-linkedin-oauth2 (1.0.1)
-      omniauth-oauth2
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
@@ -436,6 +437,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
+    uniform_notifier (1.18.0)
     uri (1.0.3)
     useragent (0.16.11)
     version_gem (1.1.9)
@@ -470,6 +472,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   brakeman
+  bullet
   capybara
   countries
   cssbundling-rails
@@ -485,7 +488,6 @@ DEPENDENCIES
   money-rails
   omniauth
   omniauth-google-oauth2
-  omniauth-linkedin-oauth2
   omniauth-rails_csrf_protection
   pdf-reader
   pg (~> 1.1)

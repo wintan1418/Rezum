@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "Setting up database for Render production..."
+
+# Run migrations
+bundle exec rails db:migrate
+
+echo "Database migrations completed!"
+
