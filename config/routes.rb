@@ -3,6 +3,7 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   get "webhooks/stripe"
   devise_for :users, controllers: {
+    registrations: 'users/registrations',
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
   

@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   
   devise :database_authenticatable, :registerable, :recoverable, 
-         :rememberable, :validatable, :confirmable,
+         :rememberable, :validatable,
          :omniauthable, omniauth_providers: [:google_oauth2]
   
   # Enums
@@ -131,28 +131,39 @@ class User < ApplicationRecord
   
   # OAuth methods
   def self.from_omniauth(auth)
-    where(email: auth.info.email).first_or_create do |user|
-      user.email = auth.info.email
-      user.password = Devise.friendly_token[0, 20]
-      user.first_name = auth.info.first_name || auth.info.name&.split&.first || 'User'
-      user.last_name = auth.info.last_name || auth.info.name&.split&.last || ''
-      user.provider = auth.provider
-      user.uid = auth.uid
+    user = where(email: auth.info.email).first_or_initialize do |u|
+      u.email = auth.info.email
+      u.password = Devise.friendly_token[0, 20]
+      u.first_name = auth.info.first_name || auth.info.name&.split&.first || 'User'
+      u.last_name = auth.info.last_name || auth.info.name&.split&.last || ''
+      u.provider = auth.provider
+      u.uid = auth.uid
+      
+      # Auto-confirm OAuth users
+      u.confirmed_at = Time.current if u.respond_to?(:confirmed_at)
       
       # Download and attach avatar from OAuth provider
       if auth.info.image.present?
         begin
           avatar_url = auth.info.image.gsub('http://', 'https://')
-          user.avatar.attach(
+          u.avatar.attach(
             io: URI.open(avatar_url),
-            filename: "avatar_#{user.uid}.jpg",
+            filename: "avatar_#{u.uid}.jpg",
             content_type: 'image/jpeg'
           )
         rescue => e
-          Rails.logger.warn "Failed to attach avatar for user #{user.email}: #{e.message}"
+          Rails.logger.warn "Failed to attach avatar for user #{u.email}: #{e.message}"
         end
       end
     end
+    
+    # Auto-confirm if user already exists but isn't confirmed
+    if user.persisted? && user.respond_to?(:confirmed_at) && user.confirmed_at.nil?
+      user.update_column(:confirmed_at, Time.current)
+    end
+    
+    user.save if user.new_record?
+    user
   end
   
   # Payment methods
@@ -213,3 +224,4 @@ class User < ApplicationRecord
     # UserMailer.welcome_email(self).deliver_later
   end
 end
+
