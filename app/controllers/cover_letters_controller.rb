@@ -1,7 +1,7 @@
 class CoverLettersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_resume, except: [:index]
-  before_action :set_cover_letter, only: [:show, :edit, :update, :destroy, :generate_variations, :preview]
+  before_action :set_cover_letter, only: [:show, :edit, :update, :destroy, :generate_variations, :preview, :download]
   
   def index
     @cover_letters = current_user.cover_letters.recent.includes(:resume)
