@@ -1,7 +1,7 @@
 class GenerateCoverLetterVariationsJob < ApplicationJob
   queue_as :default
   
-  retry_on StandardError, wait: :exponentially_longer, attempts: 2
+
   discard_on ActiveRecord::RecordNotFound
   
   def perform(cover_letter_id, user_id, count = 3)
