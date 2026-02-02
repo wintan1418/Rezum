@@ -1042,14 +1042,36 @@
           </div>
 
           <!-- Newsletter Signup -->
-          <div class="glass-card rounded-xl p-6">
+          <div class="glass-card rounded-xl p-6" data-controller="newsletter">
             <h4 class="text-lg font-semibold text-white mb-3">🚀 Get Career Tips</h4>
             <p class="text-gray-300 text-sm mb-4">Weekly job search strategies and AI insights delivered to your inbox.</p>
-            <div class="flex gap-2">
-              <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
-                Join
-              </button>
+            
+            <!-- Success State -->
+            <div data-newsletter-target="success" class="hidden">
+              <div class="flex items-center text-green-400">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-medium">Thanks! You're subscribed.</span>
+              </div>
+              <p class="text-gray-400 text-xs mt-2">Check your inbox for a welcome email.</p>
+            </div>
+            
+            <!-- Form State -->
+            <div data-newsletter-target="form">
+              <div class="flex gap-2">
+                <input type="email" 
+                       data-newsletter-target="email"
+                       placeholder="Enter your email" 
+                       class="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="button"
+                        data-action="click->newsletter#subscribe"
+                        data-newsletter-target="button"
+                        class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+                  Join
+                </button>
+              </div>
+              <p class="text-gray-500 text-xs mt-2">No spam. Unsubscribe anytime.</p>
             </div>
           </div>
         </div>

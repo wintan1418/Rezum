@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AlertController from "./alert_controller"
+application.register("alert", AlertController)
+
 import AutoRefreshController from "./auto_refresh_controller"
 application.register("auto-refresh", AutoRefreshController)
 
@@ -15,3 +18,6 @@ application.register("generation-animation", GenerationAnimationController)
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import NewsletterController from "./newsletter_controller"
+application.register("newsletter", NewsletterController)
