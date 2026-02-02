@@ -82,25 +82,9 @@ class CoverLettersController < ApplicationController
   end
   
   def download
-    filename = "#{@cover_letter.company_name.parameterize}-cover-letter"
-    
-    # Generate content before respond_to to avoid block context issues
-    txt_content = build_cover_letter_text
-    
-    respond_to do |format|
-      format.pdf do
-        pdf = build_pdf_document(txt_content)
-        send_data pdf, filename: "#{filename}.pdf", type: 'application/pdf', disposition: 'attachment'
-      end
-      
-      format.docx do
-        send_data txt_content, filename: "#{filename}.docx", type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', disposition: 'attachment'
-      end
-      
-      format.txt do
-        send_data txt_content, filename: "#{filename}.txt", type: 'text/plain', disposition: 'attachment'
-      end
-    end
+    filename = "#{@cover_letter.company_name.parameterize}-cover-letter.pdf"
+    pdf = build_pdf_document
+    send_data pdf, filename: filename, type: 'application/pdf', disposition: 'attachment'
   end
   
   private
@@ -157,7 +141,7 @@ class CoverLettersController < ApplicationController
     lines.join("\n")
   end
   
-  def build_pdf_document(text_content)
+  def build_pdf_document
     require 'prawn'
     
     user_name = current_user.full_name.presence || current_user.email
@@ -166,34 +150,37 @@ class CoverLettersController < ApplicationController
     company = @cover_letter.company_name
     manager = @cover_letter.hiring_manager_name
     role = @cover_letter.target_role
-    content = @cover_letter.content.to_s
+    letter_content = @cover_letter.content.to_s
     
-    Prawn::Document.new(page_size: 'LETTER') do |pdf|
-      # Header with user info
-      pdf.text user_name, size: 16, style: :bold
-      pdf.text user_email, size: 12
-      pdf.text user_phone, size: 12 if user_phone.present?
-      pdf.move_down 20
-      
-      # Date
-      pdf.text Date.current.strftime("%B %d, %Y"), size: 12
-      pdf.move_down 20
-      
-      # Recipient info
-      pdf.text manager, size: 12 if manager.present?
-      pdf.text company, size: 12, style: :bold
-      pdf.text "Re: #{role} Position", size: 12 if role.present?
-      pdf.move_down 20
-      
-      # Content
-      pdf.text content, size: 12, leading: 3, align: :justify if content.present?
-      
-      pdf.move_down 30
-      
-      # Closing
-      pdf.text "Sincerely,", size: 12
-      pdf.move_down 30
-      pdf.text user_name, size: 12, style: :bold
-    end.render
+    # Create PDF without block form to avoid potential recursion issues
+    pdf = Prawn::Document.new(page_size: 'LETTER')
+    
+    # Header with user info
+    pdf.text user_name, size: 16, style: :bold
+    pdf.text user_email, size: 12
+    pdf.text user_phone, size: 12 if user_phone.present?
+    pdf.move_down 20
+    
+    # Date
+    pdf.text Date.current.strftime("%B %d, %Y"), size: 12
+    pdf.move_down 20
+    
+    # Recipient info
+    pdf.text manager, size: 12 if manager.present?
+    pdf.text company, size: 12, style: :bold
+    pdf.text "Re: #{role} Position", size: 12 if role.present?
+    pdf.move_down 20
+    
+    # Content
+    pdf.text letter_content, size: 12, leading: 3, align: :justify if letter_content.present?
+    
+    pdf.move_down 30
+    
+    # Closing
+    pdf.text "Sincerely,", size: 12
+    pdf.move_down 30
+    pdf.text user_name, size: 12, style: :bold
+    
+    pdf.render
   end
 end
