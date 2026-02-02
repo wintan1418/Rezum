@@ -84,19 +84,20 @@ class CoverLettersController < ApplicationController
   def download
     filename = "#{@cover_letter.company_name.parameterize}-cover-letter"
     
+    # Generate content before respond_to to avoid block context issues
+    txt_content = build_cover_letter_text
+    
     respond_to do |format|
       format.pdf do
-        pdf_content = generate_pdf_content
-        send_data pdf_content, filename: "#{filename}.pdf", type: 'application/pdf', disposition: 'attachment'
+        pdf = build_pdf_document(txt_content)
+        send_data pdf, filename: "#{filename}.pdf", type: 'application/pdf', disposition: 'attachment'
       end
       
       format.docx do
-        docx_content = generate_docx_content
-        send_data docx_content, filename: "#{filename}.docx", type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', disposition: 'attachment'
+        send_data txt_content, filename: "#{filename}.docx", type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', disposition: 'attachment'
       end
       
       format.txt do
-        txt_content = generate_txt_content
         send_data txt_content, filename: "#{filename}.txt", type: 'text/plain', disposition: 'attachment'
       end
     end
@@ -131,16 +132,47 @@ class CoverLettersController < ApplicationController
     nil
   end
   
-  def generate_pdf_content
+  def build_cover_letter_text
+    user_name = current_user.full_name.presence || current_user.email
+    user_email = current_user.email
+    user_phone = current_user.formatted_phone
+    
+    lines = []
+    lines << user_name
+    lines << user_email
+    lines << user_phone if user_phone.present?
+    lines << ""
+    lines << Date.current.strftime("%B %d, %Y")
+    lines << ""
+    lines << @cover_letter.hiring_manager_name if @cover_letter.hiring_manager_name.present?
+    lines << @cover_letter.company_name
+    lines << "Re: #{@cover_letter.target_role} Position" if @cover_letter.target_role.present?
+    lines << ""
+    lines << @cover_letter.content.to_s
+    lines << ""
+    lines << "Sincerely,"
+    lines << ""
+    lines << user_name
+    
+    lines.join("\n")
+  end
+  
+  def build_pdf_document(text_content)
     require 'prawn'
+    
+    user_name = current_user.full_name.presence || current_user.email
+    user_email = current_user.email
+    user_phone = current_user.formatted_phone
+    company = @cover_letter.company_name
+    manager = @cover_letter.hiring_manager_name
+    role = @cover_letter.target_role
+    content = @cover_letter.content.to_s
     
     Prawn::Document.new(page_size: 'LETTER') do |pdf|
       # Header with user info
-      pdf.text current_user.full_name.present? ? current_user.full_name : current_user.email, size: 16, style: :bold
-      pdf.text current_user.email, size: 12
-      if current_user.formatted_phone.present?
-        pdf.text current_user.formatted_phone, size: 12
-      end
+      pdf.text user_name, size: 16, style: :bold
+      pdf.text user_email, size: 12
+      pdf.text user_phone, size: 12 if user_phone.present?
       pdf.move_down 20
       
       # Date
@@ -148,66 +180,20 @@ class CoverLettersController < ApplicationController
       pdf.move_down 20
       
       # Recipient info
-      if @cover_letter.hiring_manager_name.present?
-        pdf.text @cover_letter.hiring_manager_name, size: 12
-      end
-      pdf.text @cover_letter.company_name, size: 12, style: :bold
-      if @cover_letter.target_role.present?
-        pdf.text "Re: #{@cover_letter.target_role} Position", size: 12
-      end
+      pdf.text manager, size: 12 if manager.present?
+      pdf.text company, size: 12, style: :bold
+      pdf.text "Re: #{role} Position", size: 12 if role.present?
       pdf.move_down 20
       
       # Content
-      if @cover_letter.content.present?
-        pdf.text @cover_letter.content, size: 12, leading: 3, align: :justify
-      end
+      pdf.text content, size: 12, leading: 3, align: :justify if content.present?
       
       pdf.move_down 30
       
       # Closing
       pdf.text "Sincerely,", size: 12
       pdf.move_down 30
-      pdf.text current_user.full_name.present? ? current_user.full_name : current_user.email, size: 12, style: :bold
+      pdf.text user_name, size: 12, style: :bold
     end.render
-  end
-  
-  def generate_docx_content
-    # The docx gem's DSL is causing issues - return a simple text file instead
-    # or implement properly using the gem's actual API
-    # For now, we'll generate the same content as txt but with docx extension
-    generate_txt_content
-  end
-  
-  def generate_txt_content
-    content = []
-    
-    # Header
-    content << (current_user.full_name.present? ? current_user.full_name : current_user.email)
-    content << current_user.email
-    content << current_user.formatted_phone if current_user.formatted_phone.present?
-    content << ""
-    
-    # Date
-    content << Date.current.strftime("%B %d, %Y")
-    content << ""
-    
-    # Recipient
-    content << @cover_letter.hiring_manager_name if @cover_letter.hiring_manager_name.present?
-    content << @cover_letter.company_name
-    content << "Re: #{@cover_letter.target_role} Position" if @cover_letter.target_role.present?
-    content << ""
-    
-    # Content
-    if @cover_letter.content.present?
-      content << @cover_letter.content
-    end
-    
-    content << ""
-    content << "Sincerely,"
-    content << ""
-    content << ""
-    content << (current_user.full_name.present? ? current_user.full_name : current_user.email)
-    
-    content.join("\n")
   end
 end
