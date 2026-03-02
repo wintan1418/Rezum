@@ -80,7 +80,7 @@ def create_test_user(attrs)
     first_name: attrs[:first_name],
     last_name: attrs[:last_name],
     confirmed_at: Time.current,
-    credits_remaining: attrs[:credits] || 3,
+    credits_remaining: attrs[:credits] || 2,
     onboarding_completed: true,
     onboarding_step: 3,
     language: 'en',
@@ -228,14 +228,14 @@ def create_interview_preps(user, resume)
 end
 
 # ============================================================
-# 1. FREE USER — 3 credits, no subscription
+# 1. FREE USER — 2 credits, no subscription
 # ============================================================
 puts "\n--- Free User ---"
 free_user = create_test_user(
   email: 'free@test.com',
   first_name: 'Alex',
   last_name: 'Free',
-  credits: 3,
+  credits: 2,
   role: 'Free User',
   job_title: 'Junior Developer',
   industry: 'technology',
@@ -393,7 +393,7 @@ puts "Test Accounts Created!"
 puts "=============================="
 puts "All passwords: #{PASSWORD}"
 puts ""
-puts "  free@test.com        — Free (3 credits, no sub)"
+puts "  free@test.com        — Free (2 credits, no sub)"
 puts "  trial@test.com       — Trial (7 days left)"
 puts "  pro@test.com         — Pro Monthly ($29/mo)"
 puts "  proannual@test.com   — Pro Annual ($290/yr)"

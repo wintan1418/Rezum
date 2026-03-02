@@ -12,6 +12,12 @@ if defined?(Sidekiq::Cron) && Rails.application.config.respond_to?(:after_initia
         cron: "0 * * * *",
         class: "ScheduledJobScraperJob"
       )
+
+      Sidekiq::Cron::Job.create(
+        name: "Cleanup Expired Resumes - daily at midnight",
+        cron: "0 0 * * *",
+        class: "CleanupExpiredResumesJob"
+      )
     rescue => e
       Rails.logger.warn "Sidekiq Cron setup skipped: #{e.message}"
     end

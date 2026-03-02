@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_02_125215) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_02_220840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -280,6 +280,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_125215) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "template", default: "professional"
+    t.datetime "expires_at"
     t.index ["user_id"], name: "index_resumes_on_user_id"
   end
 
@@ -346,7 +347,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_125215) do
     t.integer "experience_level", default: 0
     t.string "linkedin_url"
     t.string "portfolio_url"
-    t.integer "credits_remaining", default: 3
+    t.integer "credits_remaining", default: 2
     t.integer "total_generations", default: 0
     t.integer "subscription_status", default: 0
     t.datetime "trial_ends_at"

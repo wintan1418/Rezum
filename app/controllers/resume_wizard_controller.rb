@@ -1,5 +1,5 @@
 class ResumeWizardController < ApplicationController
-  CREDIT_COST = 5
+  CREDIT_COST = 10
 
   before_action :authenticate_user!
 
@@ -36,9 +36,10 @@ class ResumeWizardController < ApplicationController
 
     resume = service.create_resume!(current_user)
 
-    # Deduct credits for non-premium users
+    # Deduct credits and set 3-day expiry for non-premium users
     unless current_user.has_premium_subscription?
       current_user.decrement!(:credits_remaining, CREDIT_COST)
+      resume.update!(expires_at: 3.days.from_now)
     end
 
     render json: { redirect_url: preview_resume_wizard_path(resume) }
