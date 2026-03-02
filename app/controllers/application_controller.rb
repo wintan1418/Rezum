@@ -23,18 +23,8 @@ class ApplicationController < ActionController::Base
 
   def store_return_to
     if params[:return_to].present? && !user_signed_in?
-      session[:return_to_after_auth] = params[:return_to]
+      store_location_for(:user, params[:return_to])
     end
-  end
-
-  def after_sign_in_path_for(resource)
-    stored = session.delete(:return_to_after_auth)
-    stored || super
-  end
-
-  def after_sign_up_path_for(resource)
-    stored = session.delete(:return_to_after_auth)
-    stored || super
   end
 
   def layout_by_resource
