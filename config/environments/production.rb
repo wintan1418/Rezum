@@ -95,7 +95,7 @@ Rails.application.configure do
 
   # Configure Action Mailer default URL options
   config.action_mailer.default_url_options = {
-    host: ENV.fetch("RAILWAY_PUBLIC_DOMAIN", ENV.fetch("RAILWAY_STATIC_URL", "rezum.onrender.com")),
+    host: ENV.fetch("APP_HOST", "6l824.hatchboxapp.com"),
     protocol: "https"
   }
 
