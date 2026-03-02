@@ -33,7 +33,8 @@ export default class extends Controller {
   }
 
   openFileDialog(event) {
-    event.preventDefault()
+    // Only open dialog if the click wasn't on the file input itself
+    if (event.target === this.fileInputTarget) return
     this.fileInputTarget.click()
   }
 

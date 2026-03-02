@@ -68,8 +68,9 @@ class ResumeOptimizerService < AiService
       5. Ensure readability for both ATS systems and human reviewers
       6. Prioritize relevance to the specific job description provided
       7. Consider regional preferences for #{user_country || 'US'} job market
-
-      Format your response as a complete, polished resume ready for submission.
+      8. NEVER add any commentary, notes, explanations, or summary about the optimization at the end
+      9. NEVER include text like "This resume has been optimized..." or "Key changes made..." or any meta-text
+      10. Output ONLY the resume content itself — nothing before or after it
     PROMPT
   end
 
@@ -93,7 +94,7 @@ class ResumeOptimizerService < AiService
       5. Maintaining the candidate's authentic voice and experience
       6. Ensuring the resume passes ATS screening for this specific job
 
-      Provide the optimized resume in a clean, professional format.
+      Provide ONLY the optimized resume text. Do NOT add any commentary, summary, or notes about what was changed.
     PROMPT
   end
 

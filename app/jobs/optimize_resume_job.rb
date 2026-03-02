@@ -69,6 +69,12 @@ class OptimizeResumeJob < ApplicationJob
     content = content.sub(/\A\s*```(?:plaintext|text|markdown|plain)?\s*\n?/, "")
     # Remove closing ```
     content = content.sub(/\n?\s*```\s*\z/, "")
+
+    # Strip trailing AI commentary/summary that starts with common patterns
+    content = content.sub(/\n{2,}[-—=]{3,}.*\z/m, "")
+    content = content.sub(/\n{2,}(?:This resume has been|Key changes|Note:|I've |The resume|Changes made|Summary of|Optimization notes).*\z/mi, "")
+    content = content.sub(/\n{2,}\*{2,}(?:Key |Note|Changes).*\z/mi, "")
+
     content.strip
   end
 

@@ -22,11 +22,11 @@ class Api::JobPostingController < ApplicationController
           location: job_data[:location]
         }
       else
-        render json: { success: false, error: "Could not extract job posting content from URL" }, status: 422
+        render json: { success: false, error: "Could not extract content from this URL. Some sites (LinkedIn, Indeed) block automated access. Please copy and paste the job description instead." }, status: 422
       end
     rescue => e
       Rails.logger.error "Job posting fetch error: #{e.message}"
-      render json: { success: false, error: "Failed to fetch job posting. Please try copying and pasting the content manually." }, status: 500
+      render json: { success: false, error: "Could not access this job posting. Please copy the job description text and paste it in the text area below." }, status: 500
     end
   end
 
@@ -47,18 +47,7 @@ class Api::JobPostingController < ApplicationController
     require "nokogiri"
 
     uri = URI(url)
-
-    # Set up HTTP client with proper headers
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true if uri.scheme == "https"
-    http.read_timeout = 10
-    http.open_timeout = 10
-
-    request = Net::HTTP::Get.new(uri)
-    request["User-Agent"] = "Mozilla/5.0 (compatible; ReZum Job Parser)"
-    request["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-
-    response = http.request(request)
+    response = follow_redirects(uri)
 
     return nil unless response.is_a?(Net::HTTPSuccess)
 
@@ -85,6 +74,31 @@ class Api::JobPostingController < ApplicationController
   rescue => e
     Rails.logger.error "Error fetching job posting: #{e.message}"
     nil
+  end
+
+  def follow_redirects(uri, limit = 5)
+    raise "Too many redirects" if limit == 0
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = (uri.scheme == "https")
+    http.read_timeout = 15
+    http.open_timeout = 10
+
+    request = Net::HTTP::Get.new(uri)
+    request["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    request["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+    request["Accept-Language"] = "en-US,en;q=0.9"
+
+    response = http.request(request)
+
+    case response
+    when Net::HTTPRedirection
+      redirect_uri = URI(response["location"])
+      redirect_uri = URI.join("#{uri.scheme}://#{uri.host}", response["location"]) unless redirect_uri.host
+      follow_redirects(redirect_uri, limit - 1)
+    else
+      response
+    end
   end
 
   def extract_job_content(doc, url)
@@ -176,7 +190,7 @@ class Api::JobPostingController < ApplicationController
       elements.each do |element|
         text = element.text.strip
         # Look for substantial content (more than 200 characters)
-        return text if text.length > 200 && text.downcase.include?("job") || text.downcase.include?("position")
+        return text if text.length > 200 && (text.downcase.include?("job") || text.downcase.include?("position") || text.downcase.include?("responsibilit") || text.downcase.include?("qualificat"))
       end
     end
 

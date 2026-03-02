@@ -200,23 +200,79 @@ class ResumesController < ApplicationController
   end
 
   def generate_docx(content)
-    require "docx"
+    require "zip"
 
-    # Create a new document
-    doc = Docx::Document.new
+    buffer = Zip::OutputStream.write_buffer do |zip|
+      zip.put_next_entry("[Content_Types].xml")
+      zip.write docx_content_types
 
-    # Add content as paragraphs
-    content.split("\n").each do |line|
-      doc.p line.strip unless line.strip.empty?
+      zip.put_next_entry("_rels/.rels")
+      zip.write docx_rels
+
+      zip.put_next_entry("word/_rels/document.xml.rels")
+      zip.write docx_document_rels
+
+      zip.put_next_entry("word/document.xml")
+      zip.write docx_document_xml(content)
+
+      zip.put_next_entry("word/styles.xml")
+      zip.write docx_styles
     end
 
-    # Return the document as binary data
-    StringIO.new.tap do |stream|
-      doc.save(stream)
-      stream.rewind
-    end.read
+    buffer.string
   rescue => e
     Rails.logger.error "DOCX generation failed: #{e.message}"
     raise "DOCX generation failed: #{e.message}"
+  end
+
+  def docx_content_types
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' \
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' \
+    '<Default Extension="xml" ContentType="application/xml"/>' \
+    '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' \
+    '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' \
+    '</Types>'
+  end
+
+  def docx_rels
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' \
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' \
+    '</Relationships>'
+  end
+
+  def docx_document_rels
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' \
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' \
+    '</Relationships>'
+  end
+
+  def docx_document_xml(content)
+    paragraphs = content.split("\n").map do |line|
+      text = line.strip
+      next if text.empty?
+
+      escaped = text.encode(xml: :text)
+      # Make lines that look like section headers bold
+      if text == text.upcase && text.length > 2 && text.length < 60
+        "<w:p><w:pPr><w:spacing w:after=\"120\"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"24\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+      else
+        "<w:p><w:pPr><w:spacing w:after=\"40\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+      end
+    end.compact.join
+
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' \
+    '<w:body>' + paragraphs + '</w:body></w:document>'
+  end
+
+  def docx_styles
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' \
+    '<w:style w:type="paragraph" w:default="1" w:styleId="Normal">' \
+    '<w:name w:val="Normal"/><w:rPr><w:sz w:val="22"/><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/></w:rPr>' \
+    '</w:style></w:styles>'
   end
 end
