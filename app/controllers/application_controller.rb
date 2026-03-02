@@ -11,19 +11,12 @@ class ApplicationController < ActionController::Base
   # Configure Devise permitted parameters
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :store_referral_code
-  before_action :store_return_to
 
   private
 
   def store_referral_code
     if params[:ref].present? && !user_signed_in?
       session[:referral_code] = params[:ref]
-    end
-  end
-
-  def store_return_to
-    if params[:return_to].present? && !user_signed_in?
-      store_location_for(:user, params[:return_to])
     end
   end
 

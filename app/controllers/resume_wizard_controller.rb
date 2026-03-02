@@ -1,7 +1,7 @@
 class ResumeWizardController < ApplicationController
   CREDIT_COST = 5
 
-  before_action :authenticate_user!, only: [ :create, :preview ]
+  before_action :authenticate_user!
 
   def new
     # Public — anyone can try the wizard

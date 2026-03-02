@@ -1,8 +1,8 @@
-<div class="max-w-2xl mx-auto px-4 py-6 sm:py-8" data-controller="resume-wizard" data-resume-wizard-submit-url-value="<%= resume_wizard_index_path %>" data-resume-wizard-logged-in-value="<%= user_signed_in? %>">
+<div class="max-w-2xl mx-auto px-4 py-6 sm:py-8" data-controller="resume-wizard" data-resume-wizard-submit-url-value="<%= resume_wizard_index_path %>">
   <!-- Header Card -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 p-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <%= link_to (user_signed_in? ? resumes_path : root_path), class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
+      <%= link_to resumes_path, class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>

@@ -2,17 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["messages", "inputArea", "textInput", "progress", "progressText"]
-  static values = { submitUrl: String, loggedIn: Boolean }
+  static values = { submitUrl: String }
 
   connect() {
-    // Check if we have saved data from before sign-up
-    const saved = sessionStorage.getItem("resume_wizard_data")
-    if (saved && this.loggedInValue) {
-      sessionStorage.removeItem("resume_wizard_data")
-      this.autoSubmitSavedData(JSON.parse(saved))
-      return
-    }
-
     this.answers = {}
     this.currentStep = 0
     this.experiences = []
@@ -368,12 +360,8 @@ export default class extends Controller {
   }
 
   updateProgress() {
-    // Calculate total steps: main questions + experience entries + education entries
     const mainSteps = this.questions.length
-    const expSteps = this.experiences.length * 5 + (this.collectingExperience ? this.experienceSubStep : 0)
-    const eduSteps = this.educations.length * 4 + (this.collectingEducation ? this.educationSubStep : 0)
-
-    const totalEstimate = mainSteps + 8 // rough estimate
+    const totalEstimate = mainSteps + 8
     const completed = this.currentStep + (this.collectingExperience ? 1 : 0) + (this.collectingEducation ? 1 : 0)
     const pct = Math.min(Math.round((completed / totalEstimate) * 100), 95)
 
@@ -462,13 +450,6 @@ export default class extends Controller {
       payload.industry = payload.industry.toLowerCase().replace(/\s+/g, "_")
     }
 
-    // Save to sessionStorage in case user needs to sign up
-    sessionStorage.setItem("resume_wizard_data", JSON.stringify(payload))
-
-    this.postWizardData(payload)
-  }
-
-  postWizardData(payload) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
 
     fetch(this.submitUrlValue, {
@@ -480,17 +461,8 @@ export default class extends Controller {
       },
       body: JSON.stringify({ wizard: payload })
     })
-    .then(response => {
-      // Not logged in — save data and redirect to sign up
-      if (response.status === 401 || response.redirected) {
-        window.location.href = "/users/sign_up?return_to=%2Fresume_wizard%2Fnew"
-        return null
-      }
-      return response.json()
-    })
+    .then(response => response.json())
     .then(data => {
-      if (!data) return
-      sessionStorage.removeItem("resume_wizard_data")
       if (data.redirect_url) {
         window.location.href = data.redirect_url
       } else if (data.error) {
@@ -501,13 +473,6 @@ export default class extends Controller {
       console.error("Wizard submit error:", error)
       this.showError("Something went wrong. Please try again.")
     })
-  }
-
-  autoSubmitSavedData(payload) {
-    // User just signed up/logged in — auto-submit their saved wizard data
-    this.addBotMessage("Welcome back! We saved your answers. Generating your resume now...")
-    this.showGeneratingState()
-    setTimeout(() => this.postWizardData(payload), 1000)
   }
 
   showError(message) {
