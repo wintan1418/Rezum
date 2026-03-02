@@ -1,7 +1,7 @@
 <p style="font-size: 16px; color: #374151;">Hi <%= @user.first_name %>,</p>
 
 <p style="font-size: 14px; color: #6b7280; line-height: 1.6;">
-  Your ReZum subscription has been cancelled. We're sorry to see you go!
+  Your RezumFit subscription has been cancelled. We're sorry to see you go!
 </p>
 
 <div style="margin: 24px 0; padding: 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px;">
@@ -10,7 +10,7 @@
     <% if @subscription.current_period_end && @subscription.current_period_end > Time.current %>
       You'll continue to have Pro access until <strong><%= @subscription.current_period_end.strftime("%B %d, %Y") %></strong>. After that, your account will revert to the free plan with pay-per-use credits.
     <% else %>
-      Your account has been reverted to the free plan. You can still use ReZum with pay-per-use credits.
+      Your account has been reverted to the free plan. You can still use RezumFit with pay-per-use credits.
     <% end %>
   </p>
 </div>

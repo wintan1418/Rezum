@@ -1,18 +1,18 @@
 class UserMailer < ApplicationMailer
   def welcome_email(user)
     @user = user
-    mail(to: @user.email, subject: "Welcome to ReZum — Let's optimize your resume!")
+    mail(to: @user.email, subject: "Welcome to RezumFit — Let's optimize your resume!")
   end
 
   def trial_ending_reminder(user, days_remaining:)
     @user = user
     @days_remaining = days_remaining
-    mail(to: @user.email, subject: "Your ReZum trial ends in #{days_remaining} day#{'s' if days_remaining != 1}")
+    mail(to: @user.email, subject: "Your RezumFit trial ends in #{days_remaining} day#{'s' if days_remaining != 1}")
   end
 
   def credits_low(user)
     @user = user
-    mail(to: @user.email, subject: "You have #{user.credits_remaining} credit left on ReZum")
+    mail(to: @user.email, subject: "You have #{user.credits_remaining} credit left on RezumFit")
   end
 
   def credits_exhausted(user)
@@ -41,13 +41,18 @@ class UserMailer < ApplicationMailer
   def subscription_activated(user, subscription)
     @user = user
     @subscription = subscription
-    mail(to: @user.email, subject: "Your ReZum subscription is now active!")
+    mail(to: @user.email, subject: "Your RezumFit subscription is now active!")
   end
 
   def subscription_cancelled(user, subscription)
     @user = user
     @subscription = subscription
-    mail(to: @user.email, subject: "Your ReZum subscription has been cancelled")
+    mail(to: @user.email, subject: "Your RezumFit subscription has been cancelled")
+  end
+
+  def rebrand_notification(user)
+    @user = user
+    mail(to: @user.email, subject: "We've got a new name! ReZum is now RezumFit")
   end
 
   def follow_up_reminder(user, job_application)
@@ -73,7 +78,7 @@ class UserMailer < ApplicationMailer
     case days
     when 7..13 then "We miss you! Your resume toolkit is waiting"
     when 14..29 then "Your job search assistant is ready when you are"
-    else "Come back and land your dream job with ReZum"
+    else "Come back and land your dream job with RezumFit"
     end
   end
 end

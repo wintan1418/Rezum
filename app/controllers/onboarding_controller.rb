@@ -12,7 +12,7 @@ class OnboardingController < ApplicationController
 
     if step >= 3
       current_user.update!(onboarding_completed: true)
-      redirect_to dashboard_path, notice: "Welcome to ReZum! You're all set."
+      redirect_to dashboard_path, notice: "Welcome to RezumFit! You're all set."
     else
       redirect_to onboarding_path
     end

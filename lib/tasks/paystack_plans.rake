@@ -6,25 +6,25 @@ namespace :paystack do
         name: "Monthly Pro",
         amount: 29_000_00, # ₦29,000 in kobo
         interval: "monthly",
-        description: "ReZum Pro - Unlimited resume optimizations, cover letters, and more."
+        description: "RezumFit Pro - Unlimited resume optimizations, cover letters, and more."
       },
       {
         name: "Annual Pro",
         amount: 290_000_00, # ₦290,000 in kobo (save 2 months)
         interval: "annually",
-        description: "ReZum Pro Annual - Unlimited usage, save 2 months vs monthly."
+        description: "RezumFit Pro Annual - Unlimited usage, save 2 months vs monthly."
       },
       {
         name: "Monthly Premium",
         amount: 59_000_00, # ₦59,000 in kobo
         interval: "monthly",
-        description: "ReZum Premium - Everything in Pro plus priority support and advanced features."
+        description: "RezumFit Premium - Everything in Pro plus priority support and advanced features."
       },
       {
         name: "Annual Premium",
         amount: 590_000_00, # ₦590,000 in kobo (save 2 months)
         interval: "annually",
-        description: "ReZum Premium Annual - Full access, save 2 months vs monthly."
+        description: "RezumFit Premium Annual - Full access, save 2 months vs monthly."
       }
     ]
 

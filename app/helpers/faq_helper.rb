@@ -6,7 +6,7 @@ module FaqHelper
     },
     {
       question: "Will the AI fabricate experience on my resume?",
-      answer: "Never. ReZum strictly optimizes how your existing experience is presented. It will rephrase, restructure, and highlight your real qualifications to better match the job requirements, but it will never add skills, certifications, or experience you don't have."
+      answer: "Never. RezumFit strictly optimizes how your existing experience is presented. It will rephrase, restructure, and highlight your real qualifications to better match the job requirements, but it will never add skills, certifications, or experience you don't have."
     },
     {
       question: "What file formats do you support?",
@@ -17,7 +17,7 @@ module FaqHelper
       answer: "Each resume optimization uses 1 credit. Each cover letter generation uses 1 credit. Cover letter variations use 0.5 credits each. ATS score analysis is free for optimized resumes. You start with 3 free credits."
     },
     {
-      question: "Which AI models power ReZum?",
+      question: "Which AI models power RezumFit?",
       answer: "We use a combination of GPT-4, Claude, and Gemini, automatically selecting the best model for each task. Resume optimization uses GPT-4 for precision, while cover letters may use Claude for more natural, creative writing."
     },
     {

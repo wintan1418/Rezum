@@ -2,7 +2,7 @@ articles = [
   {
     title: "10 ATS-Friendly Resume Tips That Actually Work in 2026",
     category: "ats_guide",
-    author: "ReZum Team",
+    author: "RezumFit Team",
     reading_time: 7,
     excerpt: "Most resumes get rejected by ATS before a human ever sees them. Here's how to beat the bots and get your resume in front of real hiring managers.",
     tags: [ "ATS", "Resume", "Job Search" ],
@@ -38,7 +38,7 @@ articles = [
       <p>Use standard bullet points (round dots), consistent date formats, and clear spacing. Avoid icons, images, or graphics.</p>
 
       <h2>10. Test Your Resume</h2>
-      <p>Use tools like ReZum's ATS Score analyzer to check how well your resume performs against ATS criteria before submitting.</p>
+      <p>Use tools like RezumFit's ATS Score analyzer to check how well your resume performs against ATS criteria before submitting.</p>
 
       <h2>The Bottom Line</h2>
       <p>An ATS-optimized resume doesn't mean a boring one. It means a well-structured, keyword-rich document that both machines and humans can easily read. Focus on substance over style, and you'll see more interview invitations.</p>
@@ -47,7 +47,7 @@ articles = [
   {
     title: "How to Write a Cover Letter That Gets Interviews",
     category: "cover_letter_guide",
-    author: "ReZum Team",
+    author: "RezumFit Team",
     reading_time: 6,
     excerpt: "A great cover letter can be the difference between getting an interview and getting ghosted. Learn the formula that hiring managers actually respond to.",
     tags: [ "Cover Letter", "Job Application", "Writing Tips" ],
@@ -76,13 +76,13 @@ articles = [
         <li>Forgetting to proofread</li>
       </ul>
 
-      <p>AI tools like ReZum can help you generate personalized cover letters in seconds, but always add your personal touch before sending.</p>
+      <p>AI tools like RezumFit can help you generate personalized cover letters in seconds, but always add your personal touch before sending.</p>
     HTML
   },
   {
     title: "The STAR Method: Ace Any Behavioral Interview Question",
     category: "interview_prep",
-    author: "ReZum Team",
+    author: "RezumFit Team",
     reading_time: 5,
     excerpt: "Behavioral interview questions trip up even experienced professionals. Master the STAR method to give structured, compelling answers every time.",
     tags: [ "Interview", "STAR Method", "Behavioral Questions" ],
@@ -118,7 +118,7 @@ articles = [
   {
     title: "Resume Keywords: The Complete Guide to Getting Past ATS",
     category: "resume_tips",
-    author: "ReZum Team",
+    author: "RezumFit Team",
     reading_time: 8,
     excerpt: "Keywords are the bridge between your resume and the interview room. Learn exactly which keywords to use and where to place them.",
     tags: [ "Keywords", "ATS", "Resume Optimization" ],
@@ -151,13 +151,13 @@ articles = [
       <h2>How to Find the Right Keywords</h2>
       <p>Read the job description carefully, highlight repeated terms, and check similar job postings from different companies for the same role. The words that appear consistently across multiple postings are your priority keywords.</p>
 
-      <p>ReZum's AI keyword extraction tool can analyze any job description and identify the most important keywords to include in your resume.</p>
+      <p>RezumFit's AI keyword extraction tool can analyze any job description and identify the most important keywords to include in your resume.</p>
     HTML
   },
   {
     title: "5 Career Pivots That Actually Work (And How to Make Yours)",
     category: "career_advice",
-    author: "ReZum Team",
+    author: "RezumFit Team",
     reading_time: 6,
     excerpt: "Thinking about changing careers? These proven strategies help professionals successfully transition into new fields without starting from scratch.",
     tags: [ "Career Change", "Career Advice", "Professional Development" ],
@@ -181,7 +181,7 @@ articles = [
       <p>Invest in education (bootcamps, certifications, degrees) to qualify for a completely new field. This takes the longest but opens the widest range of opportunities.</p>
 
       <h2>Making Your Pivot Resume Work</h2>
-      <p>The key is reframing your experience. Don't just list what you did — explain how it's relevant to your target role. Use ReZum's AI optimizer to help translate your experience into the language of your new industry.</p>
+      <p>The key is reframing your experience. Don't just list what you did — explain how it's relevant to your target role. Use RezumFit's AI optimizer to help translate your experience into the language of your new industry.</p>
     HTML
   }
 ]
