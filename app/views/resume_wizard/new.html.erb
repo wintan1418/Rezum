@@ -1,36 +1,39 @@
-<div class="min-h-screen bg-gray-50 flex flex-col" data-controller="resume-wizard" data-resume-wizard-submit-url-value="<%= resume_wizard_index_path %>">
-  <!-- Header -->
-  <div class="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+<div class="max-w-2xl mx-auto px-4 py-6 sm:py-8" data-controller="resume-wizard" data-resume-wizard-submit-url-value="<%= resume_wizard_index_path %>">
+  <!-- Header Card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 p-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <%= link_to dashboard_path, class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
+      <%= link_to (user_signed_in? ? resumes_path : root_path), class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       <% end %>
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-        <span class="text-white text-xs font-bold">R</span>
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+        <span class="text-white text-sm font-bold">R</span>
       </div>
       <div>
         <h1 class="text-sm font-semibold text-gray-900">Resume Builder</h1>
-        <p class="text-xs text-gray-400">AI-powered</p>
+        <p class="text-xs text-gray-400">AI-powered chat wizard</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <span class="text-xs text-gray-400" data-resume-wizard-target="progressText">0% complete</span>
-      <div class="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <span class="text-xs text-gray-400" data-resume-wizard-target="progressText">0%</span>
+      <div class="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
         <div class="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full transition-all duration-500" style="width: 0%" data-resume-wizard-target="progress"></div>
       </div>
     </div>
   </div>
 
-  <!-- Chat Messages -->
-  <div class="flex-1 overflow-y-auto px-4 py-6 space-y-4" data-resume-wizard-target="messages" style="max-height: calc(100vh - 140px);">
-    <!-- Messages will be added dynamically -->
-  </div>
+  <!-- Chat Container -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" style="min-height: 500px;">
+    <!-- Chat Messages -->
+    <div class="px-4 sm:px-6 py-5 space-y-4 overflow-y-auto" data-resume-wizard-target="messages" style="max-height: 60vh; min-height: 350px;">
+      <!-- Messages added dynamically by Stimulus -->
+    </div>
 
-  <!-- Input Area -->
-  <div class="bg-white border-t border-gray-100 px-4 py-4 safe-bottom" data-resume-wizard-target="inputArea">
-    <!-- Input will be shown dynamically -->
+    <!-- Input Area -->
+    <div class="border-t border-gray-100 bg-gray-50 px-4 sm:px-6 py-4" data-resume-wizard-target="inputArea">
+      <!-- Input shown dynamically by Stimulus -->
+    </div>
   </div>
 </div>
 
@@ -49,8 +52,5 @@
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-6px); }
     75% { transform: translateX(6px); }
-  }
-  .safe-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 </style>
