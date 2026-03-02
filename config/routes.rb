@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     resources :resume_wizard, only: [:new, :create] do
       member do
         get :preview
+        post :unlock
       end
     end
 

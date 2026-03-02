@@ -4,18 +4,9 @@ class ResumeWizardController < ApplicationController
   before_action :authenticate_user!
 
   def new
-    # Public — anyone can try the wizard
   end
 
   def create
-    # Check if user can afford it (Premium = free, others need 5 credits)
-    unless current_user.has_premium_subscription?
-      unless current_user.credits_remaining >= CREDIT_COST
-        render json: { error: "You need #{CREDIT_COST} credits to generate a resume. You have #{current_user.credits_remaining}." }, status: :unprocessable_entity
-        return
-      end
-    end
-
     wizard_params = JSON.parse(request.body.read)["wizard"]
 
     service = ResumeGeneratorService.new(
@@ -36,9 +27,10 @@ class ResumeWizardController < ApplicationController
 
     resume = service.create_resume!(current_user)
 
-    # Deduct credits and set 3-day expiry for non-premium users
-    unless current_user.has_premium_subscription?
-      current_user.decrement!(:credits_remaining, CREDIT_COST)
+    # Premium users get it free and permanent; others get a locked 3-day preview
+    if current_user.has_premium_subscription?
+      # No expiry, no credit cost — full access
+    else
       resume.update!(expires_at: 3.days.from_now)
     end
 
@@ -54,6 +46,33 @@ class ResumeWizardController < ApplicationController
     @resume = current_user.resumes.find(params[:id])
     service = ResumeTemplateService.new(resume: @resume)
     @preview_html = service.render_html_preview
-    @premium = current_user.has_premium_subscription?
+    @unlocked = current_user.has_premium_subscription? || @resume.expires_at.nil?
+  end
+
+  # Pay 10 credits to unlock the resume (remove blur, enable download, make permanent)
+  def unlock
+    @resume = current_user.resumes.find(params[:id])
+
+    # Already unlocked
+    if @resume.expires_at.nil?
+      redirect_to preview_resume_wizard_path(@resume), notice: "This resume is already unlocked." and return
+    end
+
+    # Premium users don't need credits
+    if current_user.has_premium_subscription?
+      @resume.update!(expires_at: nil)
+      redirect_to preview_resume_wizard_path(@resume), notice: "Resume unlocked!" and return
+    end
+
+    # Check credits
+    if current_user.credits_remaining < CREDIT_COST
+      redirect_to preview_resume_wizard_path(@resume), alert: "You need #{CREDIT_COST} credits to unlock this resume. You have #{current_user.credits_remaining}." and return
+    end
+
+    # Deduct credits and unlock
+    current_user.decrement!(:credits_remaining, CREDIT_COST)
+    @resume.update!(expires_at: nil)
+
+    redirect_to preview_resume_wizard_path(@resume), notice: "Resume unlocked! #{CREDIT_COST} credits used. You can now download and edit it."
   end
 end
