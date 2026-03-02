@@ -25,7 +25,7 @@
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
       <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</p>
-      <p class="text-2xl font-bold text-gray-900 mt-1"><%= number_to_currency(@total_revenue) %></p>
+      <p class="text-2xl font-bold text-gray-900 mt-1"><%= number_to_currency(@total_revenue, unit: "₦") %></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
       <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">New This Week</p>
