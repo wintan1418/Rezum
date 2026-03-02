@@ -64,6 +64,8 @@ class Payment < ApplicationRecord
   def verify_with_paystack!
     return unless paystack_reference
 
+    already_successful = successful?
+
     data = PaystackService.verify_transaction(paystack_reference)
 
     new_status = case data["status"]
@@ -79,8 +81,11 @@ class Payment < ApplicationRecord
       currency: data["currency"]
     )
 
-    if successful? && credits_purchased.present?
+    # Only add credits if this is the first time we see success
+    # (webhook may have already processed it)
+    if successful? && !already_successful && credits_purchased.present?
       user.add_credits(credits_purchased)
+      UserMailer.payment_confirmation(user, self).deliver_later
     end
   end
 
@@ -95,6 +100,7 @@ class Payment < ApplicationRecord
       amount: amount_cents,
       reference: reference,
       callback_url: callback_url,
+      currency: currency,
       metadata: {
         user_id: user.id,
         credits_purchased: credits,

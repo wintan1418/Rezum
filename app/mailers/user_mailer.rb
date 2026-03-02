@@ -32,6 +32,24 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: re_engagement_subject(inactive_days))
   end
 
+  def payment_confirmation(user, payment)
+    @user = user
+    @payment = payment
+    mail(to: @user.email, subject: "Payment confirmed — #{payment.credits_purchased} credits added to your account")
+  end
+
+  def subscription_activated(user, subscription)
+    @user = user
+    @subscription = subscription
+    mail(to: @user.email, subject: "Your ReZum subscription is now active!")
+  end
+
+  def subscription_cancelled(user, subscription)
+    @user = user
+    @subscription = subscription
+    mail(to: @user.email, subject: "Your ReZum subscription has been cancelled")
+  end
+
   def follow_up_reminder(user, job_application)
     @user = user
     @job_application = job_application

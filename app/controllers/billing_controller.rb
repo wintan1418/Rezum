@@ -1,11 +1,28 @@
 class BillingController < ApplicationController
   before_action :authenticate_user!
 
+  # Pricing tiers: { credits => base price in NGN kobo }
+  PRICING_NGN = {
+    10  => 5_000_00,   # ₦5,000
+    50  => 20_000_00,  # ₦20,000
+    100 => 35_000_00   # ₦35,000
+  }.freeze
+
+  # Countries that pay in NGN
+  NGN_COUNTRIES = %w[NG].freeze
+
+  # Exchange rate: 1 USD ~ 1,600 NGN (approximate)
+  NGN_TO_USD_RATE = 1_600
+
+  # International markup (20%)
+  INTERNATIONAL_MARKUP = 1.2
+
   def index
     @subscription = current_user.current_subscription
     @payments = current_user.payments.recent.limit(10)
     @total_spent = current_user.total_spent
     @credits_remaining = current_user.credits_remaining
+    @pricing = pricing_for_user(current_user)
   end
 
   def history
@@ -20,19 +37,16 @@ class BillingController < ApplicationController
       return redirect_to billing_index_path, alert: "Invalid credit amount"
     end
 
-    # Pricing in kobo (NGN smallest unit). Adjust amounts as needed.
-    amount = case credits
-    when 10 then 500_00   # ₦500
-    when 35 then 1500_00  # ₦1,500
-    when 75 then 3000_00  # ₦3,000
-    else credits * 50_00  # ₦50 per credit fallback
-    end
+    pricing = pricing_for_user(current_user)
+    tier = pricing[:tiers].find { |t| t[:credits] == credits }
+    amount = tier ? tier[:amount_kobo] : (credits * pricing[:per_credit_kobo])
+    currency = pricing[:currency]
 
     begin
       result = Payment.create_paystack_transaction(
         user: current_user,
         amount_cents: amount,
-        currency: "NGN",
+        currency: currency,
         description: "#{credits} Credits Purchase",
         credits: credits,
         callback_url: verify_payment_billing_index_url
@@ -79,5 +93,35 @@ class BillingController < ApplicationController
 
   def show
     @payment = current_user.payments.find(params[:id])
+  end
+
+  private
+
+  def pricing_for_user(user)
+    if NGN_COUNTRIES.include?(user.country_code&.upcase)
+      # Nigerian pricing in NGN
+      {
+        currency: "NGN",
+        symbol: "\u20A6",
+        tiers: [
+          { credits: 10,  amount_kobo: 5_000_00,  display: "5,000",  per_credit: "500" },
+          { credits: 50,  amount_kobo: 20_000_00, display: "20,000", per_credit: "400" },
+          { credits: 100, amount_kobo: 35_000_00, display: "35,000", per_credit: "350" }
+        ],
+        per_credit_kobo: 500_00
+      }
+    else
+      # International pricing in USD (20% higher than NGN equivalent)
+      {
+        currency: "USD",
+        symbol: "$",
+        tiers: [
+          { credits: 10,  amount_kobo: 5_00,   display: "5",   per_credit: "0.50" },
+          { credits: 50,  amount_kobo: 18_00,  display: "18",  per_credit: "0.36" },
+          { credits: 100, amount_kobo: 30_00,  display: "30",  per_credit: "0.30" }
+        ],
+        per_credit_kobo: 50
+      }
+    end
   end
 end

@@ -219,7 +219,7 @@
         </div>
 
         <!-- Job Description Section -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.3s;">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.3s;" data-controller="job-url-fetcher">
           <h3 class="text-lg font-semibold text-gray-900 mb-6">Target Job Description</h3>
           <p class="text-sm text-gray-600 mb-6">
             Add a job description to optimize your resume for specific roles. Our AI will analyze requirements and tailor your resume accordingly.
@@ -230,11 +230,10 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Option 1: Job Posting URL</label>
             <div class="flex space-x-3">
               <div class="flex-1">
-                <input type="url" 
+                <input type="url"
                        id="job-url-input"
                        class="w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300"
                        placeholder="https://jobs.company.com/software-engineer"
-                       data-controller="job-url-fetcher"
                        data-job-url-fetcher-target="urlInput">
                 <p class="mt-1 text-xs text-gray-500">Paste a job posting URL from LinkedIn, Indeed, company websites, etc.</p>
               </div>
@@ -349,192 +348,3 @@
     </main>
 </div>
 
-<!-- File Upload JavaScript -->
-<script>
-    class FileUploadController extends Stimulus.Controller {
-      static targets = ["dropzone", "fileInput", "filePreview", "fileName", "fileSize"];
-      
-      connect() {
-        console.log("FileUpload controller connected");
-      }
-      
-      handleDragOver(event) {
-        event.preventDefault();
-        console.log("Drag over");
-      }
-      
-      handleDragEnter(event) {
-        event.preventDefault();
-        this.dropzoneTarget.classList.add('dragover');
-        console.log("Drag enter");
-      }
-      
-      handleDragLeave(event) {
-        event.preventDefault();
-        if (!this.dropzoneTarget.contains(event.relatedTarget)) {
-          this.dropzoneTarget.classList.remove('dragover');
-        }
-        console.log("Drag leave");
-      }
-      
-      handleDrop(event) {
-        event.preventDefault();
-        this.dropzoneTarget.classList.remove('dragover');
-        console.log("File dropped");
-        
-        const files = event.dataTransfer.files;
-        console.log("Files:", files);
-        if (files.length > 0) {
-          // Create a new FileList object and assign it
-          const dt = new DataTransfer();
-          dt.items.add(files[0]);
-          this.fileInputTarget.files = dt.files;
-          this.showFilePreview(files[0]);
-        }
-      }
-      
-      openFileDialog(event) {
-        event.preventDefault();
-        console.log("Opening file dialog");
-        this.fileInputTarget.click();
-      }
-      
-      handleFileSelect(event) {
-        console.log("File selected via input");
-        const file = event.target.files[0];
-        if (file) {
-          console.log("File:", file);
-          this.showFilePreview(file);
-        }
-      }
-      
-      showFilePreview(file) {
-        console.log("Showing preview for:", file.name);
-        this.fileNameTarget.textContent = file.name;
-        this.fileSizeTarget.textContent = this.formatFileSize(file.size);
-        this.filePreviewTarget.classList.remove('hidden');
-      }
-      
-      removeFile() {
-        this.fileInputTarget.value = '';
-        this.filePreviewTarget.classList.add('hidden');
-      }
-      
-      formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-      }
-    }
-    
-    // Job URL Fetcher Controller
-    class JobUrlFetcherController extends Stimulus.Controller {
-      static targets = ["urlInput", "fetchButton", "buttonText", "spinner", "jobDescription", 
-                       "successMessage", "errorMessage", "fetchedInfo", "errorText"];
-      
-      async fetchJob() {
-        const url = this.urlInputTarget.value.trim();
-        
-        if (!url) {
-          this.showError("Please enter a valid job posting URL");
-          return;
-        }
-        
-        if (!this.isValidUrl(url)) {
-          this.showError("Please enter a valid URL (must start with http:// or https://)");
-          return;
-        }
-        
-        this.setLoading(true);
-        this.hideMessages();
-        
-        try {
-          const response = await fetch('/api/fetch-job-posting', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ url: url })
-          });
-          
-          const data = await response.json();
-          
-          if (response.ok && data.success) {
-            this.handleSuccess(data);
-          } else {
-            this.showError(data.error || 'Failed to fetch job posting');
-          }
-        } catch (error) {
-          console.error('Error fetching job:', error);
-          this.showError('Network error. Please check your connection and try again.');
-        } finally {
-          this.setLoading(false);
-        }
-      }
-      
-      handleSuccess(data) {
-        // Fill in the job description
-        this.jobDescriptionTarget.value = data.job_description;
-        
-        // Show success message with parsed info
-        let infoText = '';
-        if (data.company_name) infoText += `Company: ${data.company_name} `;
-        if (data.job_title) infoText += `• Role: ${data.job_title} `;
-        if (data.location) infoText += `• Location: ${data.location}`;
-        
-        this.fetchedInfoTarget.textContent = infoText || 'Job posting content extracted successfully';
-        this.successMessageTarget.classList.remove('hidden');
-        
-        // Auto-fill other fields if available
-        if (data.job_title) {
-          const targetRoleInput = document.querySelector('#resume_target_role');
-          if (targetRoleInput && !targetRoleInput.value) {
-            targetRoleInput.value = data.job_title;
-          }
-        }
-        
-        // Scroll to job description to show it was filled
-        this.jobDescriptionTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      
-      showError(message) {
-        this.errorTextTarget.textContent = message;
-        this.errorMessageTarget.classList.remove('hidden');
-      }
-      
-      hideMessages() {
-        this.successMessageTarget.classList.add('hidden');
-        this.errorMessageTarget.classList.add('hidden');
-      }
-      
-      setLoading(loading) {
-        if (loading) {
-          this.buttonTextTarget.textContent = 'Fetching...';
-          this.spinnerTarget.classList.remove('hidden');
-          this.fetchButtonTarget.disabled = true;
-        } else {
-          this.buttonTextTarget.textContent = 'Fetch';
-          this.spinnerTarget.classList.add('hidden');
-          this.fetchButtonTarget.disabled = false;
-        }
-      }
-      
-      isValidUrl(string) {
-        try {
-          new URL(string);
-          return string.startsWith('http://') || string.startsWith('https://');
-        } catch (_) {
-          return false;  
-        }
-      }
-    }
-    
-    // Register the controllers
-    if (window.Stimulus) {
-      window.Stimulus.register("file-upload", FileUploadController);
-      window.Stimulus.register("job-url-fetcher", JobUrlFetcherController);
-    }
-</script>

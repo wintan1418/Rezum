@@ -9,13 +9,14 @@ class PaystackService
   class << self
     # ==================== TRANSACTIONS ====================
 
-    def initialize_transaction(email:, amount:, reference: nil, callback_url: nil, metadata: {}, plan: nil)
-      Rails.logger.info "Paystack: Initializing transaction for #{email}, amount: #{amount}"
+    def initialize_transaction(email:, amount:, reference: nil, callback_url: nil, metadata: {}, plan: nil, currency: nil)
+      Rails.logger.info "Paystack: Initializing transaction for #{email}, amount: #{amount}, currency: #{currency || 'default'}"
 
       body = { email: email, amount: amount, metadata: metadata }
       body[:reference] = reference if reference
       body[:callback_url] = callback_url if callback_url
       body[:plan] = plan if plan
+      body[:currency] = currency if currency
 
       response = post("/transaction/initialize", body)
       response["data"]

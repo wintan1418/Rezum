@@ -28,9 +28,10 @@ class GenerateInterviewPrepJob < ApplicationJob
       status: "generated"
     )
 
-    # Deduct credits for pay-per-use users
+    # Deduct 2 credits for interview prep (more AI-intensive)
     if user.free? && user.credits_remaining > 0
-      user.decrement!(:credits_remaining)
+      credits_to_deduct = [2, user.credits_remaining].min
+      user.decrement!(:credits_remaining, credits_to_deduct)
     end
   rescue => e
     Rails.logger.error "Interview prep generation failed: #{e.message}"

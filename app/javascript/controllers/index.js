@@ -69,3 +69,9 @@ application.register("chat-widget", ChatWidgetController)
 
 import ToastController from "./toast_controller"
 application.register("toast", ToastController)
+
+import FileUploadController from "./file_upload_controller"
+application.register("file-upload", FileUploadController)
+
+import JobUrlFetcherController from "./job_url_fetcher_controller"
+application.register("job-url-fetcher", JobUrlFetcherController)

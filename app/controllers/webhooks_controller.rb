@@ -50,12 +50,15 @@ class WebhooksController < ApplicationController
 
     payment = Payment.find_by(paystack_reference: reference)
     return unless payment
+    return if payment.successful? # Already processed — prevent double credits
 
     payment.update!(status: "success")
 
     if payment.credits_purchased.present?
       payment.user.add_credits(payment.credits_purchased)
     end
+
+    UserMailer.payment_confirmation(payment.user, payment).deliver_later
   end
 
   def handle_subscription_create(data)
@@ -77,6 +80,8 @@ class WebhooksController < ApplicationController
       current_period_end: data["next_payment_date"] ? Time.parse(data["next_payment_date"]) : 1.month.from_now
     )
     subscription.save!
+
+    UserMailer.subscription_activated(user, subscription).deliver_later
   end
 
   def handle_subscription_not_renew(data)
@@ -97,6 +102,9 @@ class WebhooksController < ApplicationController
     return unless subscription
 
     subscription.update!(status: "canceled")
+
+    user = subscription.user
+    UserMailer.subscription_cancelled(user, subscription).deliver_later if user
   end
 
   def handle_invoice(data)
