@@ -1,0 +1,71 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900">Support Chat</h1>
+      <p class="text-sm text-gray-500">Get help from our team</p>
+    </div>
+    <button onclick="document.getElementById('new-conversation-form').classList.toggle('hidden')" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all">
+      <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      New Conversation
+    </button>
+  </div>
+
+  <!-- New Conversation Form -->
+  <div id="new-conversation-form" class="hidden mb-6">
+    <%= form_tag chat_index_path, method: :post, class: "bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-4" do %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+        <input type="text" name="subject" placeholder="e.g., Help with resume optimization" class="w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+        <textarea name="body" rows="3" placeholder="How can we help you?" class="w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300"></textarea>
+      </div>
+      <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all">
+        Start Conversation
+      </button>
+    <% end %>
+  </div>
+
+  <!-- Conversations List -->
+  <% if @conversations.any? %>
+    <div class="space-y-3">
+      <% @conversations.each do |conversation| %>
+        <%= link_to chat_path(conversation), class: "block bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-gray-200 transition-all" do %>
+          <div class="flex items-center justify-between">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-gray-900 truncate"><%= conversation.subject %></h3>
+                <% unread = conversation.unread_count_for(current_user) %>
+                <% if unread > 0 %>
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold"><%= unread %></span>
+                <% end %>
+              </div>
+              <% if conversation.last_message %>
+                <p class="text-sm text-gray-500 truncate mt-1"><%= truncate(conversation.last_message.body, length: 80) %></p>
+              <% end %>
+            </div>
+            <div class="ml-4 text-right flex-shrink-0">
+              <span class="text-xs font-medium px-2 py-0.5 rounded-full <%= conversation.open? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' %>">
+                <%= conversation.status.capitalize %>
+              </span>
+              <% if conversation.last_message_at %>
+                <p class="text-xs text-gray-400 mt-1"><%= time_ago_in_words(conversation.last_message_at) %> ago</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+      <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+      </svg>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">No conversations yet</h3>
+      <p class="text-sm text-gray-500">Start a conversation to get help from our team.</p>
+    </div>
+  <% end %>
+</div>

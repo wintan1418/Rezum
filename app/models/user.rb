@@ -28,6 +28,8 @@ class User < ApplicationRecord
   has_many :interview_preps, dependent: :destroy
   has_many :linkedin_optimizations, dependent: :destroy
   has_many :scraped_jobs, dependent: :destroy
+  has_many :conversations, dependent: :destroy
+  has_many :messages, dependent: :destroy
   has_one :job_scraper_setting, dependent: :destroy
   
   # Phone number normalization and validation
@@ -42,8 +44,12 @@ class User < ApplicationRecord
   validates :credits_remaining, numericality: { greater_than_or_equal_to: 0 }
   validates :phone, phony_plausible: true, allow_blank: true
   
+  # Admin emails — these users get admin on signup
+  ADMIN_EMAILS = %w[wintan1418@gmail.com].freeze
+
   # Callbacks
   before_create :generate_referral_code
+  before_create :set_admin_if_owner
   after_create :send_welcome_email
   
   # Scopes
@@ -52,6 +58,10 @@ class User < ApplicationRecord
   scope :by_country, ->(code) { where(country_code: code) }
   scope :inactive_for, ->(days) { where('last_active_at < ?', days.days.ago) }
   scope :low_credits, -> { where(credits_remaining: 0..1) }
+  scope :admins, -> { where(admin: true) }
+  scope :subscribers, -> { joins(:subscriptions).where(subscriptions: { status: :active }).distinct }
+  scope :recent, -> { order(created_at: :desc) }
+  scope :search, ->(query) { where("first_name ILIKE :q OR last_name ILIKE :q OR email ILIKE :q", q: "%#{query}%") }
   
   def full_name
     "#{first_name} #{last_name}".strip
@@ -70,6 +80,18 @@ class User < ApplicationRecord
     )
   end
   
+  def disabled?
+    disabled_at.present?
+  end
+
+  def active_for_authentication?
+    super && !disabled?
+  end
+
+  def inactive_message
+    disabled? ? :account_disabled : super
+  end
+
   def trial_active?
     trial? && trial_ends_at&.future?
   end
@@ -231,6 +253,10 @@ class User < ApplicationRecord
   
   def generate_referral_code
     self.referral_code = SecureRandom.alphanumeric(8).upcase
+  end
+
+  def set_admin_if_owner
+    self.admin = true if ADMIN_EMAILS.include?(email&.downcase)
   end
   
   def send_welcome_email

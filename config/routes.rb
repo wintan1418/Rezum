@@ -11,6 +11,24 @@ Rails.application.routes.draw do
     mount Sidekiq::Web => '/sidekiq'
   end
   
+  # Admin panel
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :users, only: [:index, :show] do
+      member do
+        patch :toggle_admin
+        patch :toggle_disable
+      end
+    end
+    resources :conversations, only: [:index, :show] do
+      member do
+        post :reply
+        patch :close
+        patch :reopen
+      end
+    end
+  end
+
   # Main AI features - protected by authentication
   authenticate :user do
     get 'dashboard', to: 'dashboard#index', as: :dashboard
@@ -60,6 +78,12 @@ Rails.application.routes.draw do
 
     resources :interview_preps, only: [:index, :new, :create, :show, :destroy]
     resources :linkedin_optimizations, only: [:index, :new, :create, :show, :destroy]
+
+    resources :chat, only: [:index, :show, :create] do
+      member do
+        post :send_message
+      end
+    end
 
     resources :scraped_jobs, only: [:index, :show, :update, :destroy] do
       collection do

@@ -57,3 +57,15 @@ application.register("template-select", TemplateSelectController)
 
 import DeveloperCardController from "./developer_card_controller"
 application.register("developer-card", DeveloperCardController)
+
+import ChatScrollController from "./chat_scroll_controller"
+application.register("chat-scroll", ChatScrollController)
+
+import ChatFormController from "./chat_form_controller"
+application.register("chat-form", ChatFormController)
+
+import ChatWidgetController from "./chat_widget_controller"
+application.register("chat-widget", ChatWidgetController)
+
+import ToastController from "./toast_controller"
+application.register("toast", ToastController)

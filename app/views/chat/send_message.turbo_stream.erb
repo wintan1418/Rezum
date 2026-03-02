@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "message_form" do %>
+  <%= form_tag send_message_chat_path(@conversation), method: :post, class: "flex gap-3", id: "message_form", data: { controller: "chat-form" } do %>
+    <input type="text" name="body" placeholder="Type your message..." autocomplete="off" data-chat-form-target="input"
+           class="flex-1 rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300">
+    <button type="submit" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all">
+      Send
+    </button>
+  <% end %>
+<% end %>

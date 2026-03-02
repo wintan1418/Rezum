@@ -1,0 +1,63 @@
+<div class="p-6 lg:p-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <%= link_to admin_conversations_path, class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-lg font-bold text-gray-900"><%= @conversation.subject %></h1>
+        <p class="text-xs text-gray-500">
+          <span class="font-medium"><%= @conversation.user.full_name %></span>
+          &middot; <%= @conversation.user.email %>
+          &middot; Started <%= time_ago_in_words(@conversation.created_at) %> ago
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <% if @conversation.open? %>
+        <%= link_to "Close", close_admin_conversation_path(@conversation), data: { turbo_method: :patch }, class: "px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors" %>
+      <% else %>
+        <%= link_to "Reopen", reopen_admin_conversation_path(@conversation), data: { turbo_method: :patch }, class: "px-3 py-1.5 text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 transition-colors" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <%= turbo_stream_from "conversation_#{@conversation.id}" %>
+
+    <div class="p-5 min-h-[400px] max-h-[500px] overflow-y-auto" data-controller="chat-scroll">
+      <div id="messages_<%= @conversation.id %>">
+        <% @messages.each do |message| %>
+          <%= render "chat/message", message: message %>
+        <% end %>
+      </div>
+
+      <% if @messages.empty? %>
+        <div class="text-center py-12 text-sm text-gray-400">
+          No messages in this conversation yet.
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Reply Input -->
+    <% if @conversation.open? %>
+      <div class="border-t border-gray-100 p-4">
+        <%= form_tag reply_admin_conversation_path(@conversation), method: :post, class: "flex gap-3", id: "admin_message_form", data: { controller: "chat-form" } do %>
+          <input type="text" name="body" placeholder="Type your reply..." autocomplete="off" data-chat-form-target="input"
+                 class="flex-1 rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300">
+          <button type="submit" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all">
+            Reply
+          </button>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="border-t border-gray-100 p-4 text-center">
+        <p class="text-sm text-gray-500">This conversation is closed. <%= link_to "Reopen", reopen_admin_conversation_path(@conversation), data: { turbo_method: :patch }, class: "text-blue-600 hover:text-blue-700 font-medium" %> to reply.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

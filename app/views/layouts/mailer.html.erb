@@ -2,12 +2,38 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-      /* Email styles need to be inline */
+      body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+      .email-wrapper { width: 100%; background-color: #f3f4f6; padding: 32px 0; }
+      .email-container { max-width: 600px; margin: 0 auto; }
+      .email-header { background: linear-gradient(135deg, #2563eb, #7c3aed); padding: 28px 32px; text-align: center; border-radius: 12px 12px 0 0; }
+      .email-header h1 { color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+      .email-header p { color: rgba(255,255,255,0.8); margin: 4px 0 0; font-size: 13px; }
+      .email-body { background: #ffffff; padding: 32px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; }
+      .email-footer { background: #f9fafb; padding: 20px 32px; text-align: center; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px; }
+      .email-footer p { margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.6; }
+      .email-footer a { color: #6b7280; text-decoration: underline; }
+      .btn-primary { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff !important; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-block; }
     </style>
   </head>
-
   <body>
-    <%= yield %>
+    <div class="email-wrapper">
+      <div class="email-container">
+        <div class="email-header">
+          <h1>ReZum</h1>
+          <p>AI-Powered Resume Optimization</p>
+        </div>
+        <div class="email-body">
+          <%= yield %>
+        </div>
+        <div class="email-footer">
+          <p>&copy; <%= Date.current.year %> ReZum. All rights reserved.</p>
+          <p style="margin-top: 8px;">
+            <a href="<%= root_url rescue 'https://rezum.ai' %>">Visit ReZum</a>
+          </p>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

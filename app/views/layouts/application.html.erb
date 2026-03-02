@@ -38,6 +38,7 @@
 
     <% if user_signed_in? && controller_name != 'home' %>
       <%= render 'shared/footer' %>
+      <%= render 'shared/chat_widget' %>
     <% end %>
   </body>
 </html>

@@ -45,8 +45,9 @@ class ScrapedJobsController < ApplicationController
       return
     end
 
+    current_user.update_column(:scraping_in_progress, true)
     ScrapeJobsJob.perform_later(current_user.id)
-    redirect_to scraped_jobs_path, notice: 'Job scraping started! New jobs will appear shortly.'
+    redirect_to scraped_jobs_path, notice: 'Job scraping started! Results will appear automatically.'
   end
 
   def settings

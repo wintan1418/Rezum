@@ -59,6 +59,10 @@ gem "redis", ">= 4.0.1"
 # Analytics
 gem "ahoy_matey"
 
+# Charts
+gem "chartkick"
+gem "groupdate"
+
 # AI Integration
 gem "ruby-openai"
 gem "ruby_llm"

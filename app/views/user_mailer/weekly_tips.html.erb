@@ -7,27 +7,17 @@
 ] %>
 <% tip = tips[@tip_number % tips.length] %>
 
-<div style="max-width: 600px; margin: 0 auto; font-family: 'Helvetica Neue', Arial, sans-serif;">
-  <div style="background: linear-gradient(135deg, #2563eb, #7c3aed); padding: 32px; text-align: center; border-radius: 12px 12px 0 0;">
-    <p style="color: rgba(255,255,255,0.8); margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Weekly Career Tip</p>
-    <h1 style="color: white; margin: 0; font-size: 22px;"><%= tip[:title] %></h1>
-  </div>
+<p style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Weekly Career Tip</p>
+<h2 style="font-size: 20px; color: #374151; margin: 0 0 16px;"><%= tip[:title] %></h2>
 
-  <div style="background: white; padding: 32px; border: 1px solid #e5e7eb; border-top: none;">
-    <p style="font-size: 16px; color: #374151;">Hi <%= @user.first_name %>,</p>
+<p style="font-size: 16px; color: #374151;">Hi <%= @user.first_name %>,</p>
 
-    <p style="font-size: 14px; color: #6b7280; line-height: 1.8;">
-      <%= tip[:body] %>
-    </p>
+<p style="font-size: 14px; color: #6b7280; line-height: 1.8;">
+  <%= tip[:body] %>
+</p>
 
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="<%= dashboard_url %>" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-block;">
-        Optimize Your Resume Now
-      </a>
-    </div>
-  </div>
-
-  <div style="text-align: center; padding: 16px; font-size: 12px; color: #9ca3af;">
-    <p><a href="<%= unsubscribe_url(email: @user.email, token: @user.referral_code) %>" style="color: #9ca3af;">Unsubscribe</a></p>
-  </div>
+<div style="text-align: center; margin: 32px 0 16px;">
+  <a href="<%= dashboard_url %>" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-block;">
+    Optimize Your Resume Now
+  </a>
 </div>

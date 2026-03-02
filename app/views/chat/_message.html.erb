@@ -1,0 +1,13 @@
+<div class="flex <%= message.user == current_user ? 'justify-end' : 'justify-start' %> mb-3" id="<%= dom_id(message) %>">
+  <div class="max-w-[75%]">
+    <div class="<%= message.user == current_user ? 'bg-blue-600 text-white rounded-2xl rounded-br-md' : 'bg-gray-100 text-gray-900 rounded-2xl rounded-bl-md' %> px-4 py-2.5">
+      <p class="text-sm whitespace-pre-wrap"><%= message.body %></p>
+    </div>
+    <p class="text-xs text-gray-400 mt-1 <%= message.user == current_user ? 'text-right' : '' %>">
+      <% if message.user.admin? && message.user != current_user %>
+        <span class="font-medium text-purple-500">Support</span> &middot;
+      <% end %>
+      <%= message.created_at.strftime("%l:%M %p") %>
+    </p>
+  </div>
+</div>

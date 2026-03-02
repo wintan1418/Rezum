@@ -1,0 +1,55 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <%= link_to chat_index_path, class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      <% end %>
+      <div>
+        <h1 class="text-lg font-bold text-gray-900"><%= @conversation.subject %></h1>
+        <p class="text-xs text-gray-500">Started <%= time_ago_in_words(@conversation.created_at) %> ago</p>
+      </div>
+    </div>
+    <span class="text-xs font-medium px-2 py-0.5 rounded-full <%= @conversation.open? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' %>">
+      <%= @conversation.status.capitalize %>
+    </span>
+  </div>
+
+  <!-- Messages -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <%= turbo_stream_from "conversation_#{@conversation.id}" %>
+
+    <div class="p-5 min-h-[400px] max-h-[500px] overflow-y-auto" id="messages_container" data-controller="chat-scroll">
+      <div id="messages_<%= @conversation.id %>">
+        <% @messages.each do |message| %>
+          <%= render "chat/message", message: message %>
+        <% end %>
+      </div>
+
+      <% if @messages.empty? %>
+        <div class="text-center py-12 text-sm text-gray-400">
+          No messages yet. Send a message to start the conversation.
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Message Input -->
+    <% if @conversation.open? %>
+      <div class="border-t border-gray-100 p-4">
+        <%= form_tag send_message_chat_path(@conversation), method: :post, class: "flex gap-3", data: { controller: "chat-form" } do %>
+          <input type="text" name="body" placeholder="Type your message..." autocomplete="off" data-chat-form-target="input"
+                 class="flex-1 rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300">
+          <button type="submit" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all">
+            Send
+          </button>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="border-t border-gray-100 p-4 text-center">
+        <p class="text-sm text-gray-500">This conversation has been closed.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

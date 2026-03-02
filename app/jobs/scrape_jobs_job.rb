@@ -11,6 +11,8 @@ class ScrapeJobsJob < ApplicationJob
     return unless settings&.enabled?
     return unless user.has_premium_subscription?
 
+    user.update_column(:scraping_in_progress, true)
+
     service = JobScraperService.new(user: user, settings: settings)
     result = service.scrape
 
@@ -19,5 +21,7 @@ class ScrapeJobsJob < ApplicationJob
     else
       Rails.logger.error "Job scraping failed for user #{user_id}: #{result[:error]}"
     end
+  ensure
+    user&.update_column(:scraping_in_progress, false)
   end
 end

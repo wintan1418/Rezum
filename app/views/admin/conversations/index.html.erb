@@ -1,0 +1,51 @@
+<div class="p-6 lg:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Conversations</h1>
+      <p class="text-sm text-gray-500">Customer support messages</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "Open", admin_conversations_path, class: "px-3 py-2 text-sm font-medium rounded-lg transition-colors #{params[:filter] != 'closed' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+      <%= link_to "Closed", admin_conversations_path(filter: "closed"), class: "px-3 py-2 text-sm font-medium rounded-lg transition-colors #{params[:filter] == 'closed' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+    </div>
+  </div>
+
+  <% if @conversations.any? %>
+    <div class="space-y-3">
+      <% @conversations.each do |conversation| %>
+        <%= link_to admin_conversation_path(conversation), class: "block bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-gray-200 transition-all" do %>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+              <img src="<%= conversation.user.avatar_url(variant: :thumb) %>" alt="" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-semibold text-gray-900"><%= conversation.user.full_name %></h3>
+                  <% unread = conversation.unread_count_for(current_user) %>
+                  <% if unread > 0 %>
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold"><%= unread %></span>
+                  <% end %>
+                </div>
+                <p class="text-sm text-gray-600 font-medium truncate"><%= conversation.subject %></p>
+                <% if conversation.last_message %>
+                  <p class="text-xs text-gray-400 truncate mt-0.5"><%= truncate(conversation.last_message.body, length: 60) %></p>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-right ml-4 flex-shrink-0">
+              <% if conversation.last_message_at %>
+                <p class="text-xs text-gray-400"><%= time_ago_in_words(conversation.last_message_at) %> ago</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+      <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+      </svg>
+      <h3 class="text-sm font-semibold text-gray-900">No <%= params[:filter] == 'closed' ? 'closed' : 'open' %> conversations</h3>
+    </div>
+  <% end %>
+</div>

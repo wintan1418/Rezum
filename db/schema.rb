@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_02_101937) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_02_122944) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -104,6 +104,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_101937) do
     t.index ["category"], name: "index_articles_on_category"
     t.index ["published"], name: "index_articles_on_published"
     t.index ["slug"], name: "index_articles_on_slug", unique: true
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "subject"
+    t.string "status", default: "open"
+    t.datetime "last_message_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_conversations_on_user_id"
   end
 
   create_table "countries", primary_key: "code", id: { type: :string, limit: 2 }, force: :cascade do |t|
@@ -216,6 +226,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_101937) do
     t.datetime "updated_at", null: false
     t.index ["resume_id"], name: "index_linkedin_optimizations_on_resume_id"
     t.index ["user_id"], name: "index_linkedin_optimizations_on_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.bigint "user_id", null: false
+    t.text "body", null: false
+    t.boolean "read", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -349,6 +370,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_101937) do
     t.datetime "last_email_sent_at"
     t.integer "email_sequence_stage", default: 0
     t.datetime "unsubscribed_at"
+    t.boolean "admin", default: false
+    t.datetime "disabled_at"
+    t.boolean "scraping_in_progress", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token"
     t.index ["country_code"], name: "index_users_on_country_code"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -362,6 +386,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_101937) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "conversations", "users"
   add_foreign_key "cover_letters", "resumes"
   add_foreign_key "cover_letters", "users"
   add_foreign_key "interview_preps", "job_applications"
@@ -373,6 +398,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_02_101937) do
   add_foreign_key "job_scraper_settings", "users"
   add_foreign_key "linkedin_optimizations", "resumes"
   add_foreign_key "linkedin_optimizations", "users"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
   add_foreign_key "payments", "users"
   add_foreign_key "resume_sections", "resumes"
   add_foreign_key "resumes", "users"

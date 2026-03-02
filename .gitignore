@@ -38,3 +38,7 @@
 !/app/assets/builds/.keep
 
 /node_modules
+
+# SQLite databases
+*.sqlite3
+*.sqlite3-journal
