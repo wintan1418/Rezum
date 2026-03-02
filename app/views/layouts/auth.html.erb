@@ -26,6 +26,7 @@
     .auth-input {
       transition: all 0.2s ease;
       background-color: #fff;
+      font-size: 16px; /* Prevents iOS zoom on focus */
     }
     .auth-input:hover {
       border-color: #93c5fd;
@@ -34,13 +35,21 @@
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
+    /* Custom dropdown arrow */
+    select.auth-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25em 1.25em;
+      padding-right: 2.5rem;
+    }
   </style>
 </head>
 
 <body class="h-full bg-gray-50">
-  <div class="min-h-screen flex">
+  <div class="min-h-screen flex flex-col lg:flex-row">
     <!-- Left: Branding Panel with background pattern -->
-    <div class="hidden lg:flex lg:w-1/2 min-h-screen auth-panel relative overflow-hidden">
+    <div class="hidden lg:flex lg:w-1/2 lg:fixed lg:inset-y-0 auth-panel relative overflow-hidden">
       <!-- Decorative circles -->
       <div class="absolute inset-0">
         <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-white/[0.07] rounded-full"></div>
@@ -105,7 +114,7 @@
     </div>
 
     <!-- Right: Form Panel -->
-    <div class="flex-1 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-12 xl:px-16">
+    <div class="flex-1 flex flex-col justify-center py-8 sm:py-10 px-5 sm:px-8 lg:ml-[50%] lg:px-12 xl:px-16 min-h-screen">
       <div class="mx-auto w-full max-w-md">
         <!-- Mobile Logo -->
         <div class="lg:hidden text-center mb-8">
