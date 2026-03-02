@@ -2,11 +2,11 @@ class ResumeTemplateService
   TEMPLATES = %w[professional modern minimal creative executive].freeze
 
   TEMPLATE_META = {
-    'professional' => { label: 'Professional', color: '#1f2937', accent: '#2563eb', description: 'Classic, clean layout trusted by recruiters' },
-    'modern' => { label: 'Modern', color: '#0f172a', accent: '#6366f1', description: 'Contemporary design with color accents' },
-    'minimal' => { label: 'Minimal', color: '#111827', accent: '#059669', description: 'Clean and simple — content first' },
-    'creative' => { label: 'Creative', color: '#1e1b4b', accent: '#7c3aed', description: 'Bold style with personality' },
-    'executive' => { label: 'Executive', color: '#0c0a09', accent: '#b45309', description: 'Sophisticated, senior-level presence' }
+    "professional" => { label: "Professional", color: "#1f2937", accent: "#2563eb", description: "Classic, clean layout trusted by recruiters" },
+    "modern" => { label: "Modern", color: "#0f172a", accent: "#6366f1", description: "Contemporary design with color accents" },
+    "minimal" => { label: "Minimal", color: "#111827", accent: "#059669", description: "Clean and simple — content first" },
+    "creative" => { label: "Creative", color: "#1e1b4b", accent: "#7c3aed", description: "Bold style with personality" },
+    "executive" => { label: "Executive", color: "#0c0a09", accent: "#b45309", description: "Sophisticated, senior-level presence" }
   }.freeze
 
   attr_reader :resume, :sections, :template
@@ -14,13 +14,13 @@ class ResumeTemplateService
   def initialize(resume:)
     @resume = resume
     @sections = resume.resume_sections.visible.ordered
-    @template = resume.template || 'professional'
+    @template = resume.template || "professional"
   end
 
   def render_pdf
-    require 'prawn'
+    require "prawn"
 
-    Prawn::Document.new(page_size: 'LETTER', margin: [50, 50, 50, 50]) do |pdf|
+    Prawn::Document.new(page_size: "LETTER", margin: [ 50, 50, 50, 50 ]) do |pdf|
       send("render_#{template}_pdf", pdf)
     end.render
   rescue => e
@@ -29,7 +29,7 @@ class ResumeTemplateService
   end
 
   def render_html_preview
-    meta = TEMPLATE_META[template] || TEMPLATE_META['professional']
+    meta = TEMPLATE_META[template] || TEMPLATE_META["professional"]
     send("render_#{template}_html", meta)
   end
 
@@ -49,7 +49,7 @@ class ResumeTemplateService
   end
 
   def contact_parts
-    [user.email, user.formatted_phone].compact
+    [ user.email, user.formatted_phone ].compact
   end
 
   # ==================== HTML TEMPLATES ====================
@@ -183,11 +183,11 @@ class ResumeTemplateService
 
   def render_section_content_html(section, data)
     case section.section_type
-    when 'summary'
+    when "summary"
       "<p style='font-size: 13px; color: #374151; margin: 4px 0 0 0;'>#{h data['text']}</p>"
-    when 'experience'
-      entries = Array(data['entries']).map do |e|
-        bullets = Array(e['bullets']).map { |b| "<li style='font-size: 13px; color: #4b5563; margin-bottom: 3px;'>#{h b}</li>" }.join
+    when "experience"
+      entries = Array(data["entries"]).map do |e|
+        bullets = Array(e["bullets"]).map { |b| "<li style='font-size: 13px; color: #4b5563; margin-bottom: 3px;'>#{h b}</li>" }.join
         <<~HTML
           <div style="margin-bottom: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
@@ -200,8 +200,8 @@ class ResumeTemplateService
         HTML
       end.join
       entries
-    when 'education'
-      entries = Array(data['entries']).map do |e|
+    when "education"
+      entries = Array(data["entries"]).map do |e|
         <<~HTML
           <div style="margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
@@ -214,16 +214,16 @@ class ResumeTemplateService
         HTML
       end.join
       entries
-    when 'skills'
-      items = Array(data['items'])
+    when "skills"
+      items = Array(data["items"])
       if items.any?
         tags = items.map { |i| "<span style='display: inline-block; padding: 3px 10px; margin: 2px 4px 2px 0; background: #f3f4f6; border-radius: 4px; font-size: 12px; color: #374151;'>#{h i}</span>" }.join
         "<div style='margin-top: 4px;'>#{tags}</div>"
       else
-        ''
+        ""
       end
-    when 'projects'
-      entries = Array(data['entries']).map do |e|
+    when "projects"
+      entries = Array(data["entries"]).map do |e|
         <<~HTML
           <div style="margin-bottom: 8px;">
             <p style="font-size: 14px; font-weight: 600; color: #111827; margin: 0;">#{h e['name']}</p>
@@ -232,9 +232,9 @@ class ResumeTemplateService
         HTML
       end.join
       entries
-    when 'certifications', 'awards', 'languages'
-      items = Array(data['items']).map { |i| "<li style='font-size: 13px; color: #4b5563; margin-bottom: 2px;'>#{h i}</li>" }.join
-      items.present? ? "<ul style='padding-left: 18px; margin: 4px 0 0 0;'>#{items}</ul>" : ''
+    when "certifications", "awards", "languages"
+      items = Array(data["items"]).map { |i| "<li style='font-size: 13px; color: #4b5563; margin-bottom: 2px;'>#{h i}</li>" }.join
+      items.present? ? "<ul style='padding-left: 18px; margin: 4px 0 0 0;'>#{items}</ul>" : ""
     else
       "<p style='font-size: 13px; color: #4b5563;'>#{h data['text']}</p>"
     end
@@ -244,113 +244,113 @@ class ResumeTemplateService
 
   def render_professional_pdf(pdf)
     pdf.text resume_name, size: 24, style: :bold, align: :center
-    pdf.text resume.target_role, size: 14, align: :center, color: '555555'
-    contact = contact_parts.join(' | ')
-    pdf.text contact, size: 10, align: :center, color: '888888'
+    pdf.text resume.target_role, size: 14, align: :center, color: "555555"
+    contact = contact_parts.join(" | ")
+    pdf.text contact, size: 10, align: :center, color: "888888"
     pdf.move_down 10
-    pdf.stroke_color '2563EB'
+    pdf.stroke_color "2563EB"
     pdf.stroke_horizontal_rule
-    pdf.stroke_color '000000'
+    pdf.stroke_color "000000"
     pdf.move_down 15
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: '2563EB') }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "2563EB") }
   end
 
   def render_modern_pdf(pdf)
-    pdf.text resume_name, size: 28, style: :bold, color: '6366F1'
-    pdf.text resume.target_role, size: 14, color: '6B7280'
+    pdf.text resume_name, size: 28, style: :bold, color: "6366F1"
+    pdf.text resume.target_role, size: 14, color: "6B7280"
     pdf.move_down 5
-    contact = contact_parts.join(' | ')
-    pdf.text contact, size: 9, color: '9CA3AF'
+    contact = contact_parts.join(" | ")
+    pdf.text contact, size: 9, color: "9CA3AF"
     pdf.move_down 20
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: '6366F1') }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "6366F1") }
   end
 
   def render_minimal_pdf(pdf)
     pdf.text resume_name, size: 20, style: :bold
-    pdf.text resume.target_role, size: 11, color: '666666'
-    contact = contact_parts.join(' | ')
-    pdf.text contact, size: 9, color: '999999'
+    pdf.text resume.target_role, size: 11, color: "666666"
+    contact = contact_parts.join(" | ")
+    pdf.text contact, size: 9, color: "999999"
     pdf.move_down 15
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: '059669') }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "059669") }
   end
 
   def render_creative_pdf(pdf)
-    pdf.text resume_name, size: 26, style: :bold, color: '7C3AED'
-    pdf.text resume.target_role, size: 14, color: '8B5CF6'
+    pdf.text resume_name, size: 26, style: :bold, color: "7C3AED"
+    pdf.text resume.target_role, size: 14, color: "8B5CF6"
     pdf.move_down 5
-    contact = contact_parts.join(' | ')
-    pdf.text contact, size: 9, color: '6B7280'
+    contact = contact_parts.join(" | ")
+    pdf.text contact, size: 9, color: "6B7280"
     pdf.move_down 20
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: '7C3AED') }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "7C3AED") }
   end
 
   def render_executive_pdf(pdf)
     pdf.text resume_name.upcase, size: 22, style: :bold, character_spacing: 2, align: :center
     pdf.move_down 5
-    pdf.text resume.target_role, size: 12, align: :center, color: '444444'
-    contact = contact_parts.join(' | ')
-    pdf.text contact, size: 9, align: :center, color: '888888'
+    pdf.text resume.target_role, size: 12, align: :center, color: "444444"
+    contact = contact_parts.join(" | ")
+    pdf.text contact, size: 9, align: :center, color: "888888"
     pdf.move_down 10
-    pdf.stroke_color 'B45309'
+    pdf.stroke_color "B45309"
     pdf.stroke_horizontal_rule
-    pdf.stroke_color '000000'
+    pdf.stroke_color "000000"
     pdf.move_down 15
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: 'B45309') }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "B45309") }
   end
 
   # ==================== SHARED PDF SECTION RENDERING ====================
 
-  def render_section_pdf(pdf, section, heading_color: '000000')
+  def render_section_pdf(pdf, section, heading_color: "000000")
     data = section.content_data
 
     pdf.text section.section_label.upcase, size: 12, style: :bold, color: heading_color
     pdf.move_down 5
 
     case section.section_type
-    when 'summary'
-      pdf.text data['text'].to_s, size: 10, leading: 2, color: '333333'
-    when 'experience'
-      Array(data['entries']).each do |entry|
-        title = entry['title'].to_s
-        company = entry['company'].to_s
-        dates = entry['dates'].to_s
+    when "summary"
+      pdf.text data["text"].to_s, size: 10, leading: 2, color: "333333"
+    when "experience"
+      Array(data["entries"]).each do |entry|
+        title = entry["title"].to_s
+        company = entry["company"].to_s
+        dates = entry["dates"].to_s
 
         # Line 1: Title | Dates (bold)
-        line1 = [title, dates].reject(&:blank?).join('  |  ')
+        line1 = [ title, dates ].reject(&:blank?).join("  |  ")
         pdf.text line1, size: 11, style: :bold
         # Line 2: Company (distinct, italic)
-        pdf.text company, size: 10, style: :bold_italic, color: '444444' if company.present?
+        pdf.text company, size: 10, style: :bold_italic, color: "444444" if company.present?
         pdf.move_down 2
-        Array(entry['bullets']).each do |bullet|
-          pdf.text "  \u2022 #{bullet}", size: 10, leading: 2, color: '333333'
+        Array(entry["bullets"]).each do |bullet|
+          pdf.text "  \u2022 #{bullet}", size: 10, leading: 2, color: "333333"
         end
         pdf.move_down 8
       end
-    when 'education'
-      Array(data['entries']).each do |entry|
-        degree = entry['degree'].to_s
-        school = entry['school'].to_s
-        dates = entry['dates'].to_s
+    when "education"
+      Array(data["entries"]).each do |entry|
+        degree = entry["degree"].to_s
+        school = entry["school"].to_s
+        dates = entry["dates"].to_s
 
         # Line 1: Degree | Dates (bold)
-        line1 = [degree, dates].reject(&:blank?).join('  |  ')
+        line1 = [ degree, dates ].reject(&:blank?).join("  |  ")
         pdf.text line1, size: 11, style: :bold
         # Line 2: School (distinct)
-        pdf.text school, size: 10, style: :italic, color: '444444' if school.present?
-        pdf.text entry['details'].to_s, size: 10, color: '333333' if entry['details'].present?
+        pdf.text school, size: 10, style: :italic, color: "444444" if school.present?
+        pdf.text entry["details"].to_s, size: 10, color: "333333" if entry["details"].present?
         pdf.move_down 8
       end
-    when 'skills'
-      skills = Array(data['items']).join(', ')
-      pdf.text skills, size: 10, color: '333333' if skills.present?
-    when 'certifications', 'awards', 'languages'
-      Array(data['items']).each do |item|
-        pdf.text "  \u2022 #{item}", size: 10, color: '333333'
+    when "skills"
+      skills = Array(data["items"]).join(", ")
+      pdf.text skills, size: 10, color: "333333" if skills.present?
+    when "certifications", "awards", "languages"
+      Array(data["items"]).each do |item|
+        pdf.text "  \u2022 #{item}", size: 10, color: "333333"
       end
-    when 'projects'
-      Array(data['entries']).each do |entry|
-        pdf.text entry['name'].to_s, size: 11, style: :bold
-        pdf.text entry['description'].to_s, size: 10, color: '333333'
+    when "projects"
+      Array(data["entries"]).each do |entry|
+        pdf.text entry["name"].to_s, size: 11, style: :bold
+        pdf.text entry["description"].to_s, size: 10, color: "333333"
         pdf.move_down 5
       end
     end

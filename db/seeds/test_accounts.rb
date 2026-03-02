@@ -168,11 +168,11 @@ end
 
 def create_scraped_jobs(user)
   jobs = [
-    { company_name: 'Google', role: 'Senior Software Engineer', location: 'Mountain View, CA', salary_range: '$180K - $250K', match_score: 92, url: 'https://careers.google.com/1', source: 'google_jobs', job_type: 'full_time', remote: false, description: 'Join Google Cloud team building next-gen infrastructure.', tags: ['Ruby', 'Go', 'Cloud'], status: 'new' },
-    { company_name: 'Stripe', role: 'Full-Stack Engineer', location: 'Remote', salary_range: '$170K - $220K', match_score: 88, url: 'https://stripe.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: true, description: 'Build payment infrastructure powering millions of businesses.', tags: ['Ruby on Rails', 'React', 'PostgreSQL'], status: 'saved' },
-    { company_name: 'Shopify', role: 'Senior Rails Developer', location: 'Remote', salary_range: '$160K - $210K', match_score: 95, url: 'https://shopify.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: true, description: 'Scale the world\'s largest Rails monolith.', tags: ['Ruby on Rails', 'MySQL', 'GraphQL'], status: 'new' },
-    { company_name: 'GitHub', role: 'Staff Engineer', location: 'Remote', salary_range: '$190K - $260K', match_score: 85, url: 'https://github.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: true, description: 'Build developer tools used by 100M+ developers.', tags: ['Ruby', 'Go', 'React'], status: 'new' },
-    { company_name: 'Airbnb', role: 'Backend Engineer', location: 'San Francisco, CA', salary_range: '$175K - $230K', match_score: 78, url: 'https://airbnb.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: false, description: 'Build systems powering travel experiences for millions.', tags: ['Ruby', 'Java', 'AWS'], status: 'applied' }
+    { company_name: 'Google', role: 'Senior Software Engineer', location: 'Mountain View, CA', salary_range: '$180K - $250K', match_score: 92, url: 'https://careers.google.com/1', source: 'google_jobs', job_type: 'full_time', remote: false, description: 'Join Google Cloud team building next-gen infrastructure.', tags: [ 'Ruby', 'Go', 'Cloud' ], status: 'new' },
+    { company_name: 'Stripe', role: 'Full-Stack Engineer', location: 'Remote', salary_range: '$170K - $220K', match_score: 88, url: 'https://stripe.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: true, description: 'Build payment infrastructure powering millions of businesses.', tags: [ 'Ruby on Rails', 'React', 'PostgreSQL' ], status: 'saved' },
+    { company_name: 'Shopify', role: 'Senior Rails Developer', location: 'Remote', salary_range: '$160K - $210K', match_score: 95, url: 'https://shopify.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: true, description: 'Scale the world\'s largest Rails monolith.', tags: [ 'Ruby on Rails', 'MySQL', 'GraphQL' ], status: 'new' },
+    { company_name: 'GitHub', role: 'Staff Engineer', location: 'Remote', salary_range: '$190K - $260K', match_score: 85, url: 'https://github.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: true, description: 'Build developer tools used by 100M+ developers.', tags: [ 'Ruby', 'Go', 'React' ], status: 'new' },
+    { company_name: 'Airbnb', role: 'Backend Engineer', location: 'San Francisco, CA', salary_range: '$175K - $230K', match_score: 78, url: 'https://airbnb.com/jobs/1', source: 'google_jobs', job_type: 'full_time', remote: false, description: 'Build systems powering travel experiences for millions.', tags: [ 'Ruby', 'Java', 'AWS' ], status: 'applied' }
   ]
 
   jobs.each do |job_data|
@@ -186,9 +186,9 @@ end
 def create_job_scraper_settings(user)
   settings = user.job_scraper_setting || user.build_job_scraper_setting
   settings.assign_attributes(
-    target_roles: ['Senior Software Engineer', 'Staff Engineer', 'Full-Stack Engineer'],
-    target_locations: ['Remote', 'San Francisco, CA', 'New York, NY'],
-    keywords: ['Ruby on Rails', 'React', 'PostgreSQL', 'AWS'],
+    target_roles: [ 'Senior Software Engineer', 'Staff Engineer', 'Full-Stack Engineer' ],
+    target_locations: [ 'Remote', 'San Francisco, CA', 'New York, NY' ],
+    keywords: [ 'Ruby on Rails', 'React', 'PostgreSQL', 'AWS' ],
     min_salary: 150000,
     remote_only: false,
     auto_apply: false,

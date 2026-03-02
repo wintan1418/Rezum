@@ -1,16 +1,16 @@
 class GenerateCoverLetterJob < ApplicationJob
   queue_as :default
-  
+
 
   discard_on ActiveRecord::RecordNotFound
-  
+
   def perform(cover_letter_id, user_id)
     cover_letter = CoverLetter.find(cover_letter_id)
     user = User.find(user_id)
     resume = cover_letter.resume
-    
+
     return unless cover_letter.generating?
-    
+
     begin
       service = CoverLetterGeneratorService.new(
         resume_content: resume.optimized_content.presence || resume.original_content,
@@ -24,29 +24,29 @@ class GenerateCoverLetterJob < ApplicationJob
         user_country: user.country_code,
         provider: cover_letter.provider
       )
-      
+
       # Generate cover letter content
       generated_content = service.generate
-      
+
       # Update cover letter with results
       cover_letter.update!(
         content: generated_content,
-        status: 'generated'
+        status: "generated"
       )
-      
+
       # Deduct credits for pay-per-use users
       if user.free? && user.credits_remaining > 0
         user.decrement!(:credits_remaining)
       end
-      
+
       # Broadcast update to any connected browsers
-      broadcast_cover_letter_update(cover_letter, 'generated')
-      
+      broadcast_cover_letter_update(cover_letter, "generated")
+
       Rails.logger.info "Cover letter #{cover_letter.id} generated successfully for user #{user.id}"
-      
+
     rescue StandardError => e
-      cover_letter.update!(status: 'failed')
-      broadcast_cover_letter_update(cover_letter, 'failed')
+      cover_letter.update!(status: "failed")
+      broadcast_cover_letter_update(cover_letter, "failed")
       Rails.logger.error "Cover letter generation failed for #{cover_letter.id}: #{e.message}"
       raise e
     end

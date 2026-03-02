@@ -5,7 +5,7 @@ class GenerateInterviewPrepJob < ApplicationJob
     prep = InterviewPrep.find(interview_prep_id)
     user = User.find(user_id)
 
-    prep.update!(status: 'generating')
+    prep.update!(status: "generating")
 
     resume_content = prep.resume&.original_content
 
@@ -16,7 +16,7 @@ class GenerateInterviewPrepJob < ApplicationJob
       resume_content: resume_content,
       user_id: user_id,
       user_country: user.country_code,
-      provider: prep.provider || 'openai'
+      provider: prep.provider || "openai"
     )
 
     questions = service.generate_questions
@@ -25,7 +25,7 @@ class GenerateInterviewPrepJob < ApplicationJob
     prep.update!(
       questions: questions,
       company_questions: company_questions,
-      status: 'generated'
+      status: "generated"
     )
 
     # Deduct credits for pay-per-use users
@@ -34,6 +34,6 @@ class GenerateInterviewPrepJob < ApplicationJob
     end
   rescue => e
     Rails.logger.error "Interview prep generation failed: #{e.message}"
-    prep&.update(status: 'failed')
+    prep&.update(status: "failed")
   end
 end

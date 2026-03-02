@@ -58,7 +58,7 @@ class ResumeTest < ActiveSupport::TestCase
   end
 
   test "keywords_array splits keywords string" do
-    assert_equal ["product management", "agile", "roadmap", "stakeholder"], @optimized.keywords_array
+    assert_equal [ "product management", "agile", "roadmap", "stakeholder" ], @optimized.keywords_array
   end
 
   test "keywords_array returns empty array when nil" do

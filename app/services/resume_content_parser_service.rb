@@ -1,14 +1,14 @@
 class ResumeContentParserService
   SECTION_PATTERNS = {
-    'summary' => /\A\s*(summary|profile|objective|about\s*me|professional\s*summary|career\s*summary|personal\s*statement)\s*\z/i,
-    'experience' => /\A\s*(experience|work\s*history|employment|professional\s*experience|work\s*experience|career\s*history)\s*\z/i,
-    'education' => /\A\s*(education|academic|qualifications|degrees?|schooling)\s*\z/i,
-    'skills' => /\A\s*(skills|technical\s*skills|core\s*competencies|competencies|proficiencies|expertise|technologies)\s*\z/i,
-    'certifications' => /\A\s*(certifications?|licenses?|accreditations?|credentials?)\s*\z/i,
-    'projects' => /\A\s*(projects?|portfolio|key\s*projects|selected\s*projects)\s*\z/i,
-    'languages' => /\A\s*(languages?|language\s*skills)\s*\z/i,
-    'awards' => /\A\s*(awards?|honors?|achievements?|recognition)\s*\z/i,
-    'location' => /\A\s*(location|address|contact\s*info)\s*\z/i
+    "summary" => /\A\s*(summary|profile|objective|about\s*me|professional\s*summary|career\s*summary|personal\s*statement)\s*\z/i,
+    "experience" => /\A\s*(experience|work\s*history|employment|professional\s*experience|work\s*experience|career\s*history)\s*\z/i,
+    "education" => /\A\s*(education|academic|qualifications|degrees?|schooling)\s*\z/i,
+    "skills" => /\A\s*(skills|technical\s*skills|core\s*competencies|competencies|proficiencies|expertise|technologies)\s*\z/i,
+    "certifications" => /\A\s*(certifications?|licenses?|accreditations?|credentials?)\s*\z/i,
+    "projects" => /\A\s*(projects?|portfolio|key\s*projects|selected\s*projects)\s*\z/i,
+    "languages" => /\A\s*(languages?|language\s*skills)\s*\z/i,
+    "awards" => /\A\s*(awards?|honors?|achievements?|recognition)\s*\z/i,
+    "location" => /\A\s*(location|address|contact\s*info)\s*\z/i
   }.freeze
 
   BULLET_RE = /\A[\u2022\u2023\u25E6\u2043\u2219*•\-]\s+/
@@ -21,7 +21,7 @@ class ResumeContentParserService
   def initialize(content)
     @content = content.to_s.strip
     # Strip any remaining code fences
-    @content = @content.sub(/\A\s*```\w*\s*\n?/, '').sub(/\n?\s*```\s*\z/, '').strip
+    @content = @content.sub(/\A\s*```\w*\s*\n?/, "").sub(/\n?\s*```\s*\z/, "").strip
   end
 
   def parse
@@ -32,8 +32,8 @@ class ResumeContentParserService
 
     if structured.empty?
       structured << {
-        section_type: 'summary',
-        content: { 'text' => @content.lines.first(5).join.strip },
+        section_type: "summary",
+        content: { "text" => @content.lines.first(5).join.strip },
         position: 0
       }
     end
@@ -55,7 +55,7 @@ class ResumeContentParserService
       detected = detect_section_type(line)
       if detected
         if current_type.nil? && current_lines.any?
-          sections << { type: 'header', lines: current_lines.dup }
+          sections << { type: "header", lines: current_lines.dup }
         elsif current_type
           sections << { type: current_type, lines: current_lines.dup }
         end
@@ -69,7 +69,7 @@ class ResumeContentParserService
     if current_type && current_lines.any?
       sections << { type: current_type, lines: current_lines.dup }
     elsif current_type.nil? && current_lines.any?
-      sections << { type: 'header', lines: current_lines.dup }
+      sections << { type: "header", lines: current_lines.dup }
     end
 
     sections
@@ -94,7 +94,7 @@ class ResumeContentParserService
     position = 0
 
     raw_sections.each do |section|
-      next if section[:type] == 'header'
+      next if section[:type] == "header"
 
       content = build_content(section[:type], section[:lines])
       next if content_empty?(section[:type], content)
@@ -108,20 +108,20 @@ class ResumeContentParserService
 
   def build_content(type, lines)
     case type
-    when 'summary'
-      { 'text' => lines.map(&:strip).reject(&:blank?).join(' ') }
-    when 'experience'
-      { 'entries' => parse_experience_entries(lines) }
-    when 'education'
-      { 'entries' => parse_education_entries(lines) }
-    when 'skills'
-      { 'items' => parse_skill_items(lines) }
-    when 'projects'
-      { 'entries' => parse_project_entries(lines) }
-    when 'certifications', 'awards', 'languages'
-      { 'items' => parse_list_items(lines) }
+    when "summary"
+      { "text" => lines.map(&:strip).reject(&:blank?).join(" ") }
+    when "experience"
+      { "entries" => parse_experience_entries(lines) }
+    when "education"
+      { "entries" => parse_education_entries(lines) }
+    when "skills"
+      { "items" => parse_skill_items(lines) }
+    when "projects"
+      { "entries" => parse_project_entries(lines) }
+    when "certifications", "awards", "languages"
+      { "items" => parse_list_items(lines) }
     else
-      { 'text' => lines.map(&:strip).reject(&:blank?).join("\n") }
+      { "text" => lines.map(&:strip).reject(&:blank?).join("\n") }
     end
   end
 
@@ -139,14 +139,14 @@ class ResumeContentParserService
 
     entries = blocks.filter_map do |block|
       entry = classify_experience_block(block[:header], block[:bullets])
-      entry if entry['title'].present? || entry['company'].present?
+      entry if entry["title"].present? || entry["company"].present?
     end
 
     return entries if entries.any?
 
     # Fallback: treat all non-blank lines as a single summary
     text = lines.map(&:strip).reject(&:blank?)
-    [{ 'title' => text.first.to_s, 'company' => '', 'dates' => '', 'bullets' => text.drop(1) }]
+    [ { "title" => text.first.to_s, "company" => "", "dates" => "", "bullets" => text.drop(1) } ]
   end
 
   def split_into_blocks(lines)
@@ -166,7 +166,7 @@ class ResumeContentParserService
         # Non-bullet line after bullet lines → new block
         if in_bullets
           blocks << { header: current_header, bullets: current_bullets }
-          current_header = [stripped]
+          current_header = [ stripped ]
           current_bullets = []
           in_bullets = false
         else
@@ -180,7 +180,7 @@ class ResumeContentParserService
   end
 
   def classify_experience_block(header_lines, bullets)
-    entry = { 'title' => '', 'company' => '', 'dates' => '', 'bullets' => bullets }
+    entry = { "title" => "", "company" => "", "dates" => "", "bullets" => bullets }
 
     date_line = nil
     title_line = nil
@@ -205,36 +205,36 @@ class ResumeContentParserService
       if parts.length >= 2
         date_parts = parts.select { |p| p.match?(DATE_RE) }
         non_date_parts = parts.reject { |p| p.match?(DATE_RE) }
-        entry['dates'] = date_parts.join(' – ').strip
+        entry["dates"] = date_parts.join(" – ").strip
         if company_line.nil? && non_date_parts.any?
           company_line = non_date_parts.first.strip
         end
       else
-        entry['dates'] = date_line.strip
+        entry["dates"] = date_line.strip
       end
     end
 
     # Assign title and company from what we found
-    entry['title'] = title_line.to_s.strip
-    entry['company'] = company_line.to_s.strip
+    entry["title"] = title_line.to_s.strip
+    entry["company"] = company_line.to_s.strip
 
     # If only one header line was found and nothing classified, use heuristics
-    if entry['title'].blank? && entry['company'].blank? && remaining.any?
-      entry['title'] = remaining.shift.to_s.strip
+    if entry["title"].blank? && entry["company"].blank? && remaining.any?
+      entry["title"] = remaining.shift.to_s.strip
     end
-    if entry['company'].blank? && remaining.any?
-      entry['company'] = remaining.shift.to_s.strip
+    if entry["company"].blank? && remaining.any?
+      entry["company"] = remaining.shift.to_s.strip
     end
-    if entry['dates'].blank? && remaining.any?
+    if entry["dates"].blank? && remaining.any?
       date_candidate = remaining.find { |l| l.match?(DATE_RE) }
       if date_candidate
-        entry['dates'] = date_candidate.strip
+        entry["dates"] = date_candidate.strip
         remaining.delete(date_candidate)
       end
     end
 
     # Any remaining non-classified header lines → add to bullets
-    remaining.each { |l| entry['bullets'].unshift(l.strip) } if remaining.any?
+    remaining.each { |l| entry["bullets"].unshift(l.strip) } if remaining.any?
 
     entry
   end
@@ -282,7 +282,7 @@ class ResumeContentParserService
     return entries if entries.any?
 
     text = lines.map(&:strip).reject(&:blank?)
-    [{ 'degree' => text.first.to_s, 'school' => '', 'dates' => '', 'details' => text.drop(1).join(', ') }]
+    [ { "degree" => text.first.to_s, "school" => "", "dates" => "", "details" => text.drop(1).join(", ") } ]
   end
 
   def split_at_blank_lines(lines)
@@ -303,52 +303,52 @@ class ResumeContentParserService
   end
 
   def classify_education_block(header_lines, bullets)
-    entry = { 'degree' => '', 'school' => '', 'dates' => '', 'details' => '' }
+    entry = { "degree" => "", "school" => "", "dates" => "", "details" => "" }
 
     header_lines.each do |line|
       stripped = line.strip
-      if entry['dates'].blank? && pure_date_line?(stripped)
+      if entry["dates"].blank? && pure_date_line?(stripped)
         # Could be "School | Dates" combined
         parts = stripped.split(/\s*[\|–—]\s*/)
         if parts.length >= 2
           date_parts = parts.select { |p| p.match?(DATE_RE) }
           non_date_parts = parts.reject { |p| p.match?(DATE_RE) }
-          entry['dates'] = date_parts.join(' – ').strip
-          if entry['school'].blank? && non_date_parts.any?
-            entry['school'] = non_date_parts.first.strip
+          entry["dates"] = date_parts.join(" – ").strip
+          if entry["school"].blank? && non_date_parts.any?
+            entry["school"] = non_date_parts.first.strip
           end
         else
-          entry['dates'] = stripped
+          entry["dates"] = stripped
         end
-      elsif entry['degree'].blank? && stripped.match?(DEGREE_RE)
-        entry['degree'] = stripped
-      elsif entry['school'].blank? && (stripped.match?(SCHOOL_RE) || entry['degree'].present?)
-        entry['school'] = stripped
-      elsif entry['degree'].blank?
-        entry['degree'] = stripped
+      elsif entry["degree"].blank? && stripped.match?(DEGREE_RE)
+        entry["degree"] = stripped
+      elsif entry["school"].blank? && (stripped.match?(SCHOOL_RE) || entry["degree"].present?)
+        entry["school"] = stripped
+      elsif entry["degree"].blank?
+        entry["degree"] = stripped
       else
-        entry['details'] = [entry['details'], stripped].reject(&:blank?).join('; ')
+        entry["details"] = [ entry["details"], stripped ].reject(&:blank?).join("; ")
       end
     end
 
     # Add bullet items as details
     if bullets.any?
-      entry['details'] = [entry['details'], bullets.join('; ')].reject(&:blank?).join('; ')
+      entry["details"] = [ entry["details"], bullets.join("; ") ].reject(&:blank?).join("; ")
     end
 
-    return nil if entry['degree'].blank? && entry['school'].blank?
+    return nil if entry["degree"].blank? && entry["school"].blank?
     entry
   end
 
   # ==================== SKILLS PARSING ====================
 
   def parse_skill_items(lines)
-    text = lines.map(&:strip).reject(&:blank?).join(', ')
+    text = lines.map(&:strip).reject(&:blank?).join(", ")
     # Strip bullet prefixes, then split
-    text.gsub!(BULLET_RE, '')
-    text.gsub!(/^-\s+/, '')
+    text.gsub!(BULLET_RE, "")
+    text.gsub!(/^-\s+/, "")
     items = text.split(/\s*[,;|•\u2022]\s*/)
-                .map { |i| i.strip.sub(/\A-\s*/, '') }
+                .map { |i| i.strip.sub(/\A-\s*/, "") }
                 .reject(&:blank?)
                 .uniq
     items
@@ -366,17 +366,17 @@ class ResumeContentParserService
       cleaned = strip_bullet(stripped)
 
       # "ProjectName - Description" on one line
-      if cleaned.include?(' - ')
-        name, desc = cleaned.split(' - ', 2)
-        entries << { 'name' => name.strip, 'description' => desc.to_s.strip }
+      if cleaned.include?(" - ")
+        name, desc = cleaned.split(" - ", 2)
+        entries << { "name" => name.strip, "description" => desc.to_s.strip }
       elsif !bullet?(stripped) && cleaned.length < 80
-        entries << { 'name' => cleaned, 'description' => '' }
+        entries << { "name" => cleaned, "description" => "" }
       elsif entries.any?
-        entries.last['description'] = [entries.last['description'], cleaned].reject(&:blank?).join(' ')
+        entries.last["description"] = [ entries.last["description"], cleaned ].reject(&:blank?).join(" ")
       end
     end
 
-    entries.presence || [{ 'name' => lines.map(&:strip).reject(&:blank?).first.to_s, 'description' => '' }]
+    entries.presence || [ { "name" => lines.map(&:strip).reject(&:blank?).first.to_s, "description" => "" } ]
   end
 
   # ==================== LIST PARSING ====================
@@ -396,18 +396,18 @@ class ResumeContentParserService
   end
 
   def strip_bullet(text)
-    text.sub(BULLET_RE, '').sub(/\A-\s+/, '')
+    text.sub(BULLET_RE, "").sub(/\A-\s+/, "")
   end
 
   def content_empty?(type, content)
     case type
-    when 'summary'
-      content['text'].blank?
-    when 'experience', 'education', 'projects'
-      entries = content['entries']
+    when "summary"
+      content["text"].blank?
+    when "experience", "education", "projects"
+      entries = content["entries"]
       entries.blank? || entries.all? { |e| e.values.all? { |v| v.is_a?(Array) ? v.empty? : v.blank? } }
-    when 'skills', 'certifications', 'awards', 'languages'
-      content['items'].blank?
+    when "skills", "certifications", "awards", "languages"
+      content["items"].blank?
     else
       true
     end

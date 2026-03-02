@@ -56,7 +56,7 @@ class LinkedinOptimizerService < AiService
   end
 
   def user_prompt
-    parts = ["Target Role: #{target_role}"]
+    parts = [ "Target Role: #{target_role}" ]
     parts << "\nCurrent Headline:\n#{current_headline}" if current_headline.present?
     parts << "\nCurrent About:\n#{current_about}" if current_about.present?
     parts << "\nCurrent Experience:\n#{current_experience}" if current_experience.present?

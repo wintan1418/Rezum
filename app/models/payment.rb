@@ -10,19 +10,19 @@ class Payment < ApplicationRecord
   monetize :amount_cents
 
   enum :status, {
-    pending: 'pending',
-    success: 'success',
-    failed: 'failed',
-    abandoned: 'abandoned',
-    canceled: 'canceled'
+    pending: "pending",
+    success: "success",
+    failed: "failed",
+    abandoned: "abandoned",
+    canceled: "canceled"
   }
 
-  scope :successful, -> { where(status: 'success') }
+  scope :successful, -> { where(status: "success") }
   scope :recent, -> { order(created_at: :desc) }
   scope :credit_purchases, -> { where.not(credits_purchased: nil) }
 
   def successful?
-    status == 'success'
+    status == "success"
   end
 
   def failed?
@@ -30,7 +30,7 @@ class Payment < ApplicationRecord
   end
 
   def pending?
-    status == 'pending'
+    status == "pending"
   end
 
   def amount_display
@@ -39,13 +39,13 @@ class Payment < ApplicationRecord
 
   def currency_symbol
     case currency.to_s.upcase
-    when 'NGN' then "\u20A6"
-    when 'USD' then '$'
-    when 'GHS' then 'GH\u20B5'
-    when 'ZAR' then 'R'
-    when 'KES' then 'KSh'
-    when 'EUR' then "\u20AC"
-    when 'GBP' then "\u00A3"
+    when "NGN" then "\u20A6"
+    when "USD" then "$"
+    when "GHS" then 'GH\u20B5'
+    when "ZAR" then "R"
+    when "KES" then "KSh"
+    when "EUR" then "\u20AC"
+    when "GBP" then "\u00A3"
     else "#{currency.upcase} "
     end
   end
@@ -66,17 +66,17 @@ class Payment < ApplicationRecord
 
     data = PaystackService.verify_transaction(paystack_reference)
 
-    new_status = case data['status']
-                 when 'success' then 'success'
-                 when 'failed' then 'failed'
-                 when 'abandoned' then 'abandoned'
-                 else 'pending'
-                 end
+    new_status = case data["status"]
+    when "success" then "success"
+    when "failed" then "failed"
+    when "abandoned" then "abandoned"
+    else "pending"
+    end
 
     update!(
       status: new_status,
-      amount_cents: data['amount'],
-      currency: data['currency']
+      amount_cents: data["amount"],
+      currency: data["currency"]
     )
 
     if successful? && credits_purchased.present?
@@ -85,7 +85,7 @@ class Payment < ApplicationRecord
   end
 
   # Initialize a Paystack transaction for credit purchase
-  def self.create_paystack_transaction(user:, amount_cents:, currency: 'NGN', description: nil, credits: nil, callback_url: nil)
+  def self.create_paystack_transaction(user:, amount_cents:, currency: "NGN", description: nil, credits: nil, callback_url: nil)
     user.create_paystack_customer! unless user.paystack_customer_code.present?
 
     reference = "pay_#{SecureRandom.hex(12)}"
@@ -105,14 +105,14 @@ class Payment < ApplicationRecord
     payment = Payment.create!(
       user: user,
       paystack_reference: reference,
-      client_secret: data['access_code'],
+      client_secret: data["access_code"],
       amount_cents: amount_cents,
       currency: currency,
-      status: 'pending',
+      status: "pending",
       description: description,
       credits_purchased: credits
     )
 
-    { payment: payment, authorization_url: data['authorization_url'] }
+    { payment: payment, authorization_url: data["authorization_url"] }
   end
 end

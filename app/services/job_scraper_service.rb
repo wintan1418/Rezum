@@ -1,15 +1,15 @@
 class JobScraperService
-  SERPAPI_BASE_URL = 'https://serpapi.com/search.json'
+  SERPAPI_BASE_URL = "https://serpapi.com/search.json"
 
   def initialize(user:, settings: nil)
     @user = user
     @settings = settings || user.job_scraper_setting
-    @api_key = ENV['SERPAPI_API_KEY']
+    @api_key = ENV["SERPAPI_API_KEY"]
   end
 
   def scrape
-    return { success: false, error: 'No SerpAPI key configured' } if @api_key.blank?
-    return { success: false, error: 'No scraper settings found' } unless @settings
+    return { success: false, error: "No SerpAPI key configured" } if @api_key.blank?
+    return { success: false, error: "No scraper settings found" } unless @settings
 
     all_jobs = []
 
@@ -52,7 +52,7 @@ class JobScraperService
     end
 
     # Default fallback
-    roles = ['Software Engineer'] if roles.empty?
+    roles = [ "Software Engineer" ] if roles.empty?
 
     if locations.any?
       roles.each do |role|
@@ -75,7 +75,7 @@ class JobScraperService
 
   def search_google_jobs(query)
     params = {
-      engine: 'google_jobs',
+      engine: "google_jobs",
       q: query[:q],
       api_key: @api_key,
       num: @settings.max_results_per_scrape || 20
@@ -89,21 +89,21 @@ class JobScraperService
     return [] unless response.is_a?(Net::HTTPSuccess)
 
     data = JSON.parse(response.body)
-    jobs_results = data['jobs_results'] || []
+    jobs_results = data["jobs_results"] || []
 
     jobs_results.map do |job|
       {
-        company_name: job['company_name'] || 'Unknown',
-        role: job['title'] || query[:q],
-        location: job['location'] || query[:location],
-        description: job['description'],
+        company_name: job["company_name"] || "Unknown",
+        role: job["title"] || query[:q],
+        location: job["location"] || query[:location],
+        description: job["description"],
         url: extract_apply_link(job),
-        source: 'google_jobs',
+        source: "google_jobs",
         job_type: detect_job_type(job),
         remote: detect_remote(job),
         salary_range: extract_salary(job),
         tags: extract_tags(job),
-        external_id: job['job_id'],
+        external_id: job["job_id"],
         expires_at: parse_expiry(job)
       }
     end
@@ -113,61 +113,61 @@ class JobScraperService
   end
 
   def extract_apply_link(job)
-    apply_options = job['apply_options'] || job['related_links'] || []
+    apply_options = job["apply_options"] || job["related_links"] || []
     if apply_options.is_a?(Array) && apply_options.any?
-      apply_options.first['link']
+      apply_options.first["link"]
     else
-      job['share_link'] || job['related_links']&.first
+      job["share_link"] || job["related_links"]&.first
     end
   end
 
   def detect_job_type(job)
-    extensions = (job['detected_extensions'] || {})
-    schedule = extensions['schedule_type'] || ''
+    extensions = (job["detected_extensions"] || {})
+    schedule = extensions["schedule_type"] || ""
     case schedule.downcase
-    when /full.?time/ then 'full_time'
-    when /part.?time/ then 'part_time'
-    when /contract/ then 'contract'
-    when /intern/ then 'internship'
-    else 'full_time'
+    when /full.?time/ then "full_time"
+    when /part.?time/ then "part_time"
+    when /contract/ then "contract"
+    when /intern/ then "internship"
+    else "full_time"
     end
   end
 
   def detect_remote(job)
-    location = (job['location'] || '').downcase
-    title = (job['title'] || '').downcase
-    description = (job['description'] || '').downcase.first(500)
-    location.include?('remote') || title.include?('remote') || description.include?('fully remote')
+    location = (job["location"] || "").downcase
+    title = (job["title"] || "").downcase
+    description = (job["description"] || "").downcase.first(500)
+    location.include?("remote") || title.include?("remote") || description.include?("fully remote")
   end
 
   def extract_salary(job)
-    extensions = job['detected_extensions'] || {}
-    extensions['salary'] || nil
+    extensions = job["detected_extensions"] || {}
+    extensions["salary"] || nil
   end
 
   def extract_tags(job)
-    extensions = job['detected_extensions'] || {}
+    extensions = job["detected_extensions"] || {}
     tags = []
-    tags << extensions['schedule_type'] if extensions['schedule_type']
-    tags << extensions['work_from_home'] if extensions['work_from_home']
-    tags << 'Remote' if detect_remote(job)
-    highlights = job['job_highlights'] || []
+    tags << extensions["schedule_type"] if extensions["schedule_type"]
+    tags << extensions["work_from_home"] if extensions["work_from_home"]
+    tags << "Remote" if detect_remote(job)
+    highlights = job["job_highlights"] || []
     highlights.each do |h|
-      tags << h['title'] if h['title']
+      tags << h["title"] if h["title"]
     end
     tags.compact.uniq.first(5)
   end
 
   def parse_expiry(job)
-    extensions = job['detected_extensions'] || {}
-    posted_at = extensions['posted_at']
+    extensions = job["detected_extensions"] || {}
+    posted_at = extensions["posted_at"]
     return nil unless posted_at
     # Most jobs expire ~30 days after posting
     30.days.from_now
   end
 
   def score_jobs(jobs)
-    resume_content = @user.resumes.order(updated_at: :desc).first&.original_content || ''
+    resume_content = @user.resumes.order(updated_at: :desc).first&.original_content || ""
     resume_keywords = extract_resume_keywords(resume_content)
 
     jobs.map do |job|
@@ -195,7 +195,7 @@ class JobScraperService
     return 50 if job_words.empty?
 
     matching = (resume_keywords & job_words).size
-    total = [resume_keywords.size, job_words.size].min
+    total = [ resume_keywords.size, job_words.size ].min
     raw_score = (matching.to_f / total * 100).round
 
     # Bonus for role match
@@ -205,7 +205,7 @@ class JobScraperService
     # Bonus for remote preference match
     remote_bonus = (@settings&.remote_only? && job[:remote]) ? 10 : 0
 
-    [raw_score + role_bonus + remote_bonus, 100].min
+    [ raw_score + role_bonus + remote_bonus, 100 ].min
   end
 
   def save_jobs(jobs)
@@ -228,7 +228,7 @@ class JobScraperService
         job_type: job_data[:job_type],
         remote: job_data[:remote] || false,
         match_score: job_data[:match_score] || 50,
-        status: 'new',
+        status: "new",
         tags: job_data[:tags] || [],
         external_id: job_data[:external_id],
         expires_at: job_data[:expires_at]

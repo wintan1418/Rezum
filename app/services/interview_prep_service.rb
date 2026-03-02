@@ -63,7 +63,7 @@ class InterviewPrepService < AiService
   end
 
   def user_prompt
-    parts = ["Target Role: #{target_role}"]
+    parts = [ "Target Role: #{target_role}" ]
     parts << "Company: #{company_name}" if company_name.present?
     parts << "\nJob Description:\n#{job_description}" if job_description.present?
     parts << "\nCandidate's Resume Summary:\n#{resume_content[0..2000]}" if resume_content.present?
@@ -89,7 +89,7 @@ class InterviewPrepService < AiService
   end
 
   def company_questions_user_prompt
-    parts = ["Target Role: #{target_role}"]
+    parts = [ "Target Role: #{target_role}" ]
     parts << "Company: #{company_name}" if company_name.present?
     parts << "\nJob Description:\n#{job_description}" if job_description.present?
     parts.join("\n")

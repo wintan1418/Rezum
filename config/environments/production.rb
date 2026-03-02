@@ -95,8 +95,8 @@ Rails.application.configure do
 
   # Configure Action Mailer default URL options
   config.action_mailer.default_url_options = {
-    host: ENV.fetch('RAILWAY_PUBLIC_DOMAIN', ENV.fetch('RAILWAY_STATIC_URL', 'rezum.onrender.com')),
-    protocol: 'https'
+    host: ENV.fetch("RAILWAY_PUBLIC_DOMAIN", ENV.fetch("RAILWAY_STATIC_URL", "rezum.onrender.com")),
+    protocol: "https"
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
@@ -114,7 +114,7 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # Allow Railway hosts - use the exact syntax Rails recommends
-  
+
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

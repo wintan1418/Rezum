@@ -9,22 +9,22 @@ class Article < ApplicationRecord
   validates :slug, presence: true, uniqueness: true
   validates :category, inclusion: { in: CATEGORIES }, allow_nil: true
 
-  scope :published, -> { where(published: true).where('published_at <= ?', Time.current) }
+  scope :published, -> { where(published: true).where("published_at <= ?", Time.current) }
   scope :recent, -> { order(published_at: :desc) }
   scope :by_category, ->(cat) { where(category: cat) }
 
   def category_label
-    category&.humanize&.titleize || 'General'
+    category&.humanize&.titleize || "General"
   end
 
   def category_color
     case category
-    when 'resume_tips' then 'blue'
-    when 'cover_letter_guide' then 'purple'
-    when 'interview_prep' then 'green'
-    when 'ats_guide' then 'yellow'
-    when 'career_advice' then 'red'
-    else 'gray'
+    when "resume_tips" then "blue"
+    when "cover_letter_guide" then "purple"
+    when "interview_prep" then "green"
+    when "ats_guide" then "yellow"
+    when "career_advice" then "red"
+    else "gray"
     end
   end
 

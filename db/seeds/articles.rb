@@ -5,7 +5,7 @@ articles = [
     author: "ReZum Team",
     reading_time: 7,
     excerpt: "Most resumes get rejected by ATS before a human ever sees them. Here's how to beat the bots and get your resume in front of real hiring managers.",
-    tags: ["ATS", "Resume", "Job Search"],
+    tags: [ "ATS", "Resume", "Job Search" ],
     content: <<~HTML
       <h2>Why Your Resume Keeps Getting Rejected</h2>
       <p>Over 75% of resumes are rejected by Applicant Tracking Systems (ATS) before they ever reach a human recruiter. If you've been applying to dozens of jobs without hearing back, your resume formatting — not your qualifications — might be the problem.</p>
@@ -50,7 +50,7 @@ articles = [
     author: "ReZum Team",
     reading_time: 6,
     excerpt: "A great cover letter can be the difference between getting an interview and getting ghosted. Learn the formula that hiring managers actually respond to.",
-    tags: ["Cover Letter", "Job Application", "Writing Tips"],
+    tags: [ "Cover Letter", "Job Application", "Writing Tips" ],
     content: <<~HTML
       <h2>The Cover Letter Formula</h2>
       <p>After reviewing thousands of successful cover letters, we've identified a clear pattern. The best ones follow a simple structure: Hook, Bridge, Proof, Close.</p>
@@ -85,7 +85,7 @@ articles = [
     author: "ReZum Team",
     reading_time: 5,
     excerpt: "Behavioral interview questions trip up even experienced professionals. Master the STAR method to give structured, compelling answers every time.",
-    tags: ["Interview", "STAR Method", "Behavioral Questions"],
+    tags: [ "Interview", "STAR Method", "Behavioral Questions" ],
     content: <<~HTML
       <h2>What Is the STAR Method?</h2>
       <p>STAR stands for Situation, Task, Action, Result. It's a structured way to answer behavioral interview questions ("Tell me about a time when...") that keeps your answers focused and impactful.</p>
@@ -121,7 +121,7 @@ articles = [
     author: "ReZum Team",
     reading_time: 8,
     excerpt: "Keywords are the bridge between your resume and the interview room. Learn exactly which keywords to use and where to place them.",
-    tags: ["Keywords", "ATS", "Resume Optimization"],
+    tags: [ "Keywords", "ATS", "Resume Optimization" ],
     content: <<~HTML
       <h2>Why Keywords Matter</h2>
       <p>ATS systems rank resumes by keyword relevance. The closer your resume matches the job description's language, the higher you score. It's not about gaming the system — it's about speaking the same language as the employer.</p>
@@ -160,7 +160,7 @@ articles = [
     author: "ReZum Team",
     reading_time: 6,
     excerpt: "Thinking about changing careers? These proven strategies help professionals successfully transition into new fields without starting from scratch.",
-    tags: ["Career Change", "Career Advice", "Professional Development"],
+    tags: [ "Career Change", "Career Advice", "Professional Development" ],
     content: <<~HTML
       <h2>Career Pivots Are More Common Than You Think</h2>
       <p>The average professional changes careers 3-7 times in their lifetime. If you're considering a pivot, you're not starting over — you're building on a foundation of transferable skills.</p>

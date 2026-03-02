@@ -37,7 +37,7 @@ class EmailDripCampaignJob < ApplicationJob
   end
 
   def send_re_engagement_emails
-    [7, 14, 30].each do |days|
+    [ 7, 14, 30 ].each do |days|
       User.where(last_active_at: (days + 1).days.ago..(days).days.ago)
           .where("last_email_sent_at IS NULL OR last_email_sent_at < ?", 7.days.ago)
           .find_each do |user|

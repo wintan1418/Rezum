@@ -8,6 +8,6 @@ class CreateResumeSections < ActiveRecord::Migration[7.2]
       t.boolean :visible, default: true
       t.timestamps
     end
-    add_index :resume_sections, [:resume_id, :position]
+    add_index :resume_sections, [ :resume_id, :position ]
   end
 end

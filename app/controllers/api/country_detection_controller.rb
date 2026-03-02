@@ -1,9 +1,9 @@
 class Api::CountryDetectionController < ApplicationController
   before_action :set_cors_headers
-  
+
   def detect
     context = CountryDetectionService.new(request, current_user).user_context
-    
+
     render json: {
       country_code: context[:country]&.code,
       country_name: context[:country]&.name,
@@ -21,15 +21,15 @@ class Api::CountryDetectionController < ApplicationController
   private
 
   def set_cors_headers
-    response.headers['Access-Control-Allow-Origin'] = request.headers['Origin'] || '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With'
+    response.headers["Access-Control-Allow-Origin"] = request.headers["Origin"] || "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Requested-With"
   end
 
   def detection_source(context)
-    return 'user_profile' if current_user&.country_code.present?
-    return 'ip_geolocation' if context[:ip_address] != '127.0.0.1'
-    return 'browser_language' if context[:browser_languages].any?
-    'default'
+    return "user_profile" if current_user&.country_code.present?
+    return "ip_geolocation" if context[:ip_address] != "127.0.0.1"
+    return "browser_language" if context[:browser_languages].any?
+    "default"
   end
 end

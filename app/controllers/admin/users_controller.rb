@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [:show, :toggle_admin, :toggle_disable]
+    before_action :set_user, only: [ :show, :toggle_admin, :toggle_disable ]
 
     def index
       @users = User.recent

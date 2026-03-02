@@ -1,6 +1,6 @@
 module Admin
   class ConversationsController < BaseController
-    before_action :set_conversation, only: [:show, :reply, :close, :reopen]
+    before_action :set_conversation, only: [ :show, :reply, :close, :reopen ]
 
     def index
       @conversations = Conversation.recent.includes(:user, :messages)

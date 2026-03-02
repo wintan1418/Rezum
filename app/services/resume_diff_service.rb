@@ -29,19 +29,19 @@ class ResumeDiffService
       if lcs_idx < lcs.length
         # Skip removed lines (in old but not in LCS)
         while old_idx < old_set.length && old_set[old_idx] != lcs[lcs_idx]
-          result << [:removed, old_lines[old_idx]]
+          result << [ :removed, old_lines[old_idx] ]
           old_idx += 1
         end
 
         # Skip added lines (in new but not in LCS)
         while new_idx < new_set.length && new_set[new_idx] != lcs[lcs_idx]
-          result << [:added, new_lines[new_idx]]
+          result << [ :added, new_lines[new_idx] ]
           new_idx += 1
         end
 
         # Common line
         if old_idx < old_set.length && new_idx < new_set.length
-          result << [:unchanged, new_lines[new_idx]]
+          result << [ :unchanged, new_lines[new_idx] ]
           old_idx += 1
           new_idx += 1
           lcs_idx += 1
@@ -49,12 +49,12 @@ class ResumeDiffService
       else
         # Remaining old lines are removed
         while old_idx < old_set.length
-          result << [:removed, old_lines[old_idx]]
+          result << [ :removed, old_lines[old_idx] ]
           old_idx += 1
         end
         # Remaining new lines are added
         while new_idx < new_set.length
-          result << [:added, new_lines[new_idx]]
+          result << [ :added, new_lines[new_idx] ]
           new_idx += 1
         end
       end
@@ -72,9 +72,9 @@ class ResumeDiffService
       (1..n).each do |j|
         dp[i][j] = if a[i - 1] == b[j - 1]
                      dp[i - 1][j - 1] + 1
-                   else
-                     [dp[i - 1][j], dp[i][j - 1]].max
-                   end
+        else
+                     [ dp[i - 1][j], dp[i][j - 1] ].max
+        end
       end
     end
 

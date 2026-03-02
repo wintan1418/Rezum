@@ -4,10 +4,10 @@ class InterviewPrep < ApplicationRecord
   belongs_to :job_application, optional: true
 
   enum status: {
-    pending: 'pending',
-    generating: 'generating',
-    generated: 'generated',
-    failed: 'failed'
+    pending: "pending",
+    generating: "generating",
+    generated: "generated",
+    failed: "failed"
   }
 
   validates :target_role, presence: true

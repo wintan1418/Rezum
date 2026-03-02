@@ -18,6 +18,6 @@ class CreateJobApplications < ActiveRecord::Migration[7.2]
       t.string :contact_email
       t.timestamps
     end
-    add_index :job_applications, [:user_id, :status]
+    add_index :job_applications, [ :user_id, :status ]
   end
 end

@@ -1,7 +1,7 @@
 class ScrapedJobsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_premium!
-  before_action :set_scraped_job, only: [:show, :update, :destroy]
+  before_action :set_scraped_job, only: [ :show, :update, :destroy ]
 
   def index
     @settings = current_user.job_scraper_setting || current_user.build_job_scraper_setting
@@ -9,14 +9,14 @@ class ScrapedJobsController < ApplicationController
 
     # Filters
     @scraped_jobs = @scraped_jobs.by_status(params[:status]) if params[:status].present?
-    @scraped_jobs = @scraped_jobs.where('match_score >= ?', params[:min_score].to_i) if params[:min_score].present?
-    @scraped_jobs = @scraped_jobs.where(remote: true) if params[:remote] == '1'
+    @scraped_jobs = @scraped_jobs.where("match_score >= ?", params[:min_score].to_i) if params[:min_score].present?
+    @scraped_jobs = @scraped_jobs.where(remote: true) if params[:remote] == "1"
 
     @stats = {
       total: current_user.scraped_jobs.count,
-      new_count: current_user.scraped_jobs.by_status('new').count,
-      saved_count: current_user.scraped_jobs.by_status('saved').count,
-      applied_count: current_user.scraped_jobs.by_status('applied').count,
+      new_count: current_user.scraped_jobs.by_status("new").count,
+      saved_count: current_user.scraped_jobs.by_status("saved").count,
+      applied_count: current_user.scraped_jobs.by_status("applied").count,
       high_match: current_user.scraped_jobs.high_match.count
     }
 
@@ -28,26 +28,26 @@ class ScrapedJobsController < ApplicationController
 
   def update
     if @scraped_job.update(scraped_job_params)
-      redirect_back fallback_location: scraped_jobs_path, notice: 'Job updated.'
+      redirect_back fallback_location: scraped_jobs_path, notice: "Job updated."
     else
-      redirect_back fallback_location: scraped_jobs_path, alert: 'Failed to update job.'
+      redirect_back fallback_location: scraped_jobs_path, alert: "Failed to update job."
     end
   end
 
   def destroy
-    @scraped_job.update!(status: 'hidden')
-    redirect_back fallback_location: scraped_jobs_path, notice: 'Job removed from list.'
+    @scraped_job.update!(status: "hidden")
+    redirect_back fallback_location: scraped_jobs_path, notice: "Job removed from list."
   end
 
   def scrape_now
     if current_user.job_scraper_setting.blank?
-      redirect_to scraped_jobs_path, alert: 'Please configure your job scraper settings first.'
+      redirect_to scraped_jobs_path, alert: "Please configure your job scraper settings first."
       return
     end
 
     current_user.update_column(:scraping_in_progress, true)
     ScrapeJobsJob.perform_later(current_user.id)
-    redirect_to scraped_jobs_path, notice: 'Job scraping started! Results will appear automatically.'
+    redirect_to scraped_jobs_path, notice: "Job scraping started! Results will appear automatically."
   end
 
   def settings
@@ -67,7 +67,7 @@ class ScrapedJobsController < ApplicationController
     settings_data.delete(:keywords_text)
 
     if @settings.update(settings_data)
-      redirect_to scraped_jobs_path, notice: 'Scraper settings saved successfully.'
+      redirect_to scraped_jobs_path, notice: "Scraper settings saved successfully."
     else
       render :settings
     end
@@ -77,7 +77,7 @@ class ScrapedJobsController < ApplicationController
 
   def require_premium!
     unless current_user.has_premium_subscription?
-      redirect_to new_subscription_path, alert: 'Job scraping is available for Premium subscribers only. Please upgrade your plan.'
+      redirect_to new_subscription_path, alert: "Job scraping is available for Premium subscribers only. Please upgrade your plan."
     end
   end
 
@@ -99,6 +99,6 @@ class ScrapedJobsController < ApplicationController
 
   def parse_list(text)
     return [] if text.blank?
-    text.split(',').map(&:strip).reject(&:blank?)
+    text.split(",").map(&:strip).reject(&:blank?)
   end
 end

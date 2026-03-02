@@ -1,15 +1,15 @@
 class OptimizeResumeJob < ApplicationJob
   queue_as :default
-  
+
   retry_on StandardError, wait: :polynomially_longer, attempts: 3
   discard_on ActiveRecord::RecordNotFound
-  
+
   def perform(resume_id, user_id)
     resume = Resume.find(resume_id)
     user = User.find(user_id)
-    
+
     return unless resume.processing?
-    
+
     begin
       service = ResumeOptimizerService.new(
         content: resume.original_content,
@@ -21,7 +21,7 @@ class OptimizeResumeJob < ApplicationJob
         user_country: user.country_code,
         provider: resume.provider
       )
-      
+
       # Generate optimized resume
       optimized_content = service.optimize
 
@@ -35,7 +35,7 @@ class OptimizeResumeJob < ApplicationJob
       resume.update!(
         optimized_content: optimized_content,
         keywords: keywords,
-        status: 'optimized'
+        status: "optimized"
       )
 
       # Auto-parse optimized content into structured sections for template rendering
@@ -45,15 +45,15 @@ class OptimizeResumeJob < ApplicationJob
       if user.free? && user.credits_remaining > 0
         user.decrement!(:credits_remaining)
       end
-      
+
       # Broadcast update to any connected browsers
-      broadcast_resume_update(resume, 'optimized')
-      
+      broadcast_resume_update(resume, "optimized")
+
       Rails.logger.info "Resume #{resume.id} optimized successfully for user #{user.id}"
-      
+
     rescue StandardError => e
-      resume.update!(status: 'failed')
-      broadcast_resume_update(resume, 'failed')
+      resume.update!(status: "failed")
+      broadcast_resume_update(resume, "failed")
       Rails.logger.error "Resume optimization failed for #{resume.id}: #{e.message}"
       raise e
     end
@@ -65,9 +65,9 @@ class OptimizeResumeJob < ApplicationJob
     return content if content.blank?
 
     # Remove opening ```plaintext, ```text, ```markdown, or just ```
-    content = content.sub(/\A\s*```(?:plaintext|text|markdown|plain)?\s*\n?/, '')
+    content = content.sub(/\A\s*```(?:plaintext|text|markdown|plain)?\s*\n?/, "")
     # Remove closing ```
-    content = content.sub(/\n?\s*```\s*\z/, '')
+    content = content.sub(/\n?\s*```\s*\z/, "")
     content.strip
   end
 

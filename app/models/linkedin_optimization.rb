@@ -3,10 +3,10 @@ class LinkedinOptimization < ApplicationRecord
   belongs_to :resume, optional: true
 
   enum status: {
-    draft: 'draft',
-    processing: 'processing',
-    optimized: 'optimized',
-    failed: 'failed'
+    draft: "draft",
+    processing: "processing",
+    optimized: "optimized",
+    failed: "failed"
   }
 
   validates :target_role, presence: true

@@ -19,15 +19,15 @@ class ResumeSection < ApplicationRecord
 
   def section_icon
     case section_type
-    when 'summary' then 'user'
-    when 'experience' then 'briefcase'
-    when 'education' then 'academic-cap'
-    when 'skills' then 'lightning-bolt'
-    when 'certifications' then 'badge-check'
-    when 'projects' then 'code'
-    when 'languages' then 'globe'
-    when 'awards' then 'star'
-    else 'document'
+    when "summary" then "user"
+    when "experience" then "briefcase"
+    when "education" then "academic-cap"
+    when "skills" then "lightning-bolt"
+    when "certifications" then "badge-check"
+    when "projects" then "code"
+    when "languages" then "globe"
+    when "awards" then "star"
+    else "document"
     end
   end
 end

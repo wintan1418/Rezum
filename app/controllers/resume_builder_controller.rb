@@ -26,13 +26,13 @@ class ResumeBuilderController < ApplicationController
         content = parse_section_content(section.section_type, section_params[:content])
         section.update(
           content: content,
-          visible: section_params[:visible] == '1',
+          visible: section_params[:visible] == "1",
           position: section_params[:position].to_i
         )
       end
     end
 
-    redirect_to edit_resume_builder_path(@resume), notice: 'Resume saved successfully.'
+    redirect_to edit_resume_builder_path(@resume), notice: "Resume saved successfully."
   end
 
   def preview
@@ -57,7 +57,7 @@ class ResumeBuilderController < ApplicationController
   def remove_section
     section = @resume.resume_sections.find(params[:section_id])
     section.destroy
-    redirect_to edit_resume_builder_path(@resume), notice: 'Section removed.'
+    redirect_to edit_resume_builder_path(@resume), notice: "Section removed."
   end
 
   def reorder
@@ -73,7 +73,7 @@ class ResumeBuilderController < ApplicationController
     service = ResumeTemplateService.new(resume: @resume)
     pdf_data = service.render_pdf
     filename = "#{@resume.target_role.parameterize}-resume-#{@resume.template}.pdf"
-    send_data pdf_data, filename: filename, type: 'application/pdf', disposition: 'attachment'
+    send_data pdf_data, filename: filename, type: "application/pdf", disposition: "attachment"
   end
 
   private
@@ -87,30 +87,30 @@ class ResumeBuilderController < ApplicationController
     content = raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw.to_h
 
     case type
-    when 'experience'
-      entries = (content['entries'] || {}).values.map do |e|
-        bullets = e['bullets_text'].present? ? e['bullets_text'].split("\n").map(&:strip).reject(&:blank?) : Array(e['bullets'])
-        { 'title' => e['title'], 'company' => e['company'], 'dates' => e['dates'], 'bullets' => bullets }
+    when "experience"
+      entries = (content["entries"] || {}).values.map do |e|
+        bullets = e["bullets_text"].present? ? e["bullets_text"].split("\n").map(&:strip).reject(&:blank?) : Array(e["bullets"])
+        { "title" => e["title"], "company" => e["company"], "dates" => e["dates"], "bullets" => bullets }
       end
-      { 'entries' => entries }
-    when 'education'
-      entries = (content['entries'] || {}).values.map do |e|
-        { 'degree' => e['degree'], 'school' => e['school'], 'dates' => e['dates'], 'details' => e['details'] }
+      { "entries" => entries }
+    when "education"
+      entries = (content["entries"] || {}).values.map do |e|
+        { "degree" => e["degree"], "school" => e["school"], "dates" => e["dates"], "details" => e["details"] }
       end
-      { 'entries' => entries }
-    when 'skills'
-      items = content['items_text'].present? ? content['items_text'].split(',').map(&:strip).reject(&:blank?) : Array(content['items'])
-      { 'items' => items }
-    when 'certifications', 'awards', 'languages'
-      items = content['items_text'].present? ? content['items_text'].split("\n").map(&:strip).reject(&:blank?) : Array(content['items'])
-      { 'items' => items }
-    when 'projects'
-      entries = (content['entries'] || {}).values.map do |e|
-        { 'name' => e['name'], 'description' => e['description'] }
+      { "entries" => entries }
+    when "skills"
+      items = content["items_text"].present? ? content["items_text"].split(",").map(&:strip).reject(&:blank?) : Array(content["items"])
+      { "items" => items }
+    when "certifications", "awards", "languages"
+      items = content["items_text"].present? ? content["items_text"].split("\n").map(&:strip).reject(&:blank?) : Array(content["items"])
+      { "items" => items }
+    when "projects"
+      entries = (content["entries"] || {}).values.map do |e|
+        { "name" => e["name"], "description" => e["description"] }
       end
-      { 'entries' => entries }
-    when 'summary'
-      { 'text' => content['text'] }
+      { "entries" => entries }
+    when "summary"
+      { "text" => content["text"] }
     else
       content
     end
@@ -118,18 +118,18 @@ class ResumeBuilderController < ApplicationController
 
   def default_content_for(type)
     case type
-    when 'summary'
-      { 'text' => '' }
-    when 'experience'
-      { 'entries' => [{ 'title' => '', 'company' => '', 'dates' => '', 'bullets' => [''] }] }
-    when 'education'
-      { 'entries' => [{ 'degree' => '', 'school' => '', 'dates' => '', 'details' => '' }] }
-    when 'skills'
-      { 'items' => [] }
-    when 'certifications', 'awards', 'languages'
-      { 'items' => [] }
-    when 'projects'
-      { 'entries' => [{ 'name' => '', 'description' => '' }] }
+    when "summary"
+      { "text" => "" }
+    when "experience"
+      { "entries" => [ { "title" => "", "company" => "", "dates" => "", "bullets" => [ "" ] } ] }
+    when "education"
+      { "entries" => [ { "degree" => "", "school" => "", "dates" => "", "details" => "" } ] }
+    when "skills"
+      { "items" => [] }
+    when "certifications", "awards", "languages"
+      { "items" => [] }
+    when "projects"
+      { "entries" => [ { "name" => "", "description" => "" } ] }
     else
       {}
     end

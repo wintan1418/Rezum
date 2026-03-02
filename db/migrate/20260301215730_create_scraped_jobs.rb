@@ -22,8 +22,8 @@ class CreateScrapedJobs < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :scraped_jobs, [:user_id, :status]
-    add_index :scraped_jobs, [:user_id, :match_score]
+    add_index :scraped_jobs, [ :user_id, :status ]
+    add_index :scraped_jobs, [ :user_id, :match_score ]
     add_index :scraped_jobs, :external_id
   end
 end

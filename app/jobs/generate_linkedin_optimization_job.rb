@@ -5,7 +5,7 @@ class GenerateLinkedinOptimizationJob < ApplicationJob
     optimization = LinkedinOptimization.find(linkedin_optimization_id)
     user = User.find(user_id)
 
-    optimization.update!(status: 'processing')
+    optimization.update!(status: "processing")
 
     resume_content = optimization.resume&.original_content
 
@@ -17,17 +17,17 @@ class GenerateLinkedinOptimizationJob < ApplicationJob
       resume_content: resume_content,
       user_id: user_id,
       user_country: user.country_code,
-      provider: optimization.provider || 'openai'
+      provider: optimization.provider || "openai"
     )
 
     result = service.optimize
 
     optimization.update!(
-      optimized_headline: Array(result['headline_options']).join("\n---\n"),
-      optimized_about: result['about'],
-      optimized_experience: result['experience'],
-      suggestions: result['suggestions'] || [],
-      status: 'optimized'
+      optimized_headline: Array(result["headline_options"]).join("\n---\n"),
+      optimized_about: result["about"],
+      optimized_experience: result["experience"],
+      suggestions: result["suggestions"] || [],
+      status: "optimized"
     )
 
     # Deduct credits for pay-per-use users
@@ -36,6 +36,6 @@ class GenerateLinkedinOptimizationJob < ApplicationJob
     end
   rescue => e
     Rails.logger.error "LinkedIn optimization failed: #{e.message}"
-    optimization&.update(status: 'failed')
+    optimization&.update(status: "failed")
   end
 end

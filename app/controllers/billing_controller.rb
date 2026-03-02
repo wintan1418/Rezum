@@ -17,22 +17,22 @@ class BillingController < ApplicationController
     credits = params[:credits].to_i
 
     if credits <= 0
-      return redirect_to billing_index_path, alert: 'Invalid credit amount'
+      return redirect_to billing_index_path, alert: "Invalid credit amount"
     end
 
     # Pricing in kobo (NGN smallest unit). Adjust amounts as needed.
     amount = case credits
-             when 10 then 500_00   # ₦500
-             when 35 then 1500_00  # ₦1,500
-             when 75 then 3000_00  # ₦3,000
-             else credits * 50_00  # ₦50 per credit fallback
-             end
+    when 10 then 500_00   # ₦500
+    when 35 then 1500_00  # ₦1,500
+    when 75 then 3000_00  # ₦3,000
+    else credits * 50_00  # ₦50 per credit fallback
+    end
 
     begin
       result = Payment.create_paystack_transaction(
         user: current_user,
         amount_cents: amount,
-        currency: 'NGN',
+        currency: "NGN",
         description: "#{credits} Credits Purchase",
         credits: credits,
         callback_url: verify_payment_billing_index_url
@@ -54,13 +54,13 @@ class BillingController < ApplicationController
     reference = params[:reference] || params[:trxref]
 
     if reference.blank?
-      return redirect_to billing_index_path, alert: 'Invalid payment reference'
+      return redirect_to billing_index_path, alert: "Invalid payment reference"
     end
 
     payment = current_user.payments.find_by(paystack_reference: reference)
 
     if payment.nil?
-      return redirect_to billing_index_path, alert: 'Payment not found'
+      return redirect_to billing_index_path, alert: "Payment not found"
     end
 
     begin

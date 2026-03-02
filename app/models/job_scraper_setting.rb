@@ -20,20 +20,20 @@ class JobScraperSetting < ApplicationRecord
     return true if last_scraped_at.nil?
 
     case scrape_frequency
-    when 'hourly' then last_scraped_at < 1.hour.ago
-    when 'twice_daily' then last_scraped_at < 12.hours.ago
-    when 'daily' then last_scraped_at < 24.hours.ago
-    when 'weekly' then last_scraped_at < 7.days.ago
+    when "hourly" then last_scraped_at < 1.hour.ago
+    when "twice_daily" then last_scraped_at < 12.hours.ago
+    when "daily" then last_scraped_at < 24.hours.ago
+    when "weekly" then last_scraped_at < 7.days.ago
     else true
     end
   end
 
   def frequency_label
     case scrape_frequency
-    when 'hourly' then 'Every hour'
-    when 'twice_daily' then 'Twice a day'
-    when 'daily' then 'Once a day'
-    when 'weekly' then 'Once a week'
+    when "hourly" then "Every hour"
+    when "twice_daily" then "Twice a day"
+    when "daily" then "Once a day"
+    when "weekly" then "Once a week"
     else scrape_frequency.humanize
     end
   end

@@ -25,11 +25,11 @@ module Rezum
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Internationalization configuration
-    config.i18n.available_locales = [:en, :es, :fr, :de, :pt, :it, :nl]
+    config.i18n.available_locales = [ :en, :es, :fr, :de, :pt, :it, :nl ]
     config.i18n.default_locale = :en
-    config.i18n.fallbacks = [I18n.default_locale]
-    
+    config.i18n.fallbacks = [ I18n.default_locale ]
+
     # Set default time zone
-    config.time_zone = 'UTC'
+    config.time_zone = "UTC"
   end
 end
