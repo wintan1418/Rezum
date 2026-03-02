@@ -75,3 +75,6 @@ application.register("file-upload", FileUploadController)
 
 import JobUrlFetcherController from "./job_url_fetcher_controller"
 application.register("job-url-fetcher", JobUrlFetcherController)
+
+import ResumeWizardController from "./resume_wizard_controller"
+application.register("resume-wizard", ResumeWizardController)
