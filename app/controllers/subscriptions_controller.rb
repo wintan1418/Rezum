@@ -51,6 +51,7 @@ class SubscriptionsController < ApplicationController
         tier: "premium",
         features: [
           "Everything in Pro, plus:",
+          "Unlimited AI Resume Builder",
           "AI Interview Prep (STAR method)",
           "LinkedIn Profile Optimization",
           "Automated Job Scraper",
@@ -68,6 +69,7 @@ class SubscriptionsController < ApplicationController
         tier: "premium",
         features: [
           "Everything in Pro, plus:",
+          "Unlimited AI Resume Builder",
           "AI Interview Prep (STAR method)",
           "LinkedIn Profile Optimization",
           "Automated Job Scraper",
