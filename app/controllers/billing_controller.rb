@@ -98,7 +98,7 @@ class BillingController < ApplicationController
   private
 
   def pricing_for_user(user)
-    if NGN_COUNTRIES.include?(user.country_code&.upcase)
+    if NGN_COUNTRIES.include?(user.country_code&.upcase) || user.currency == "NGN"
       # Nigerian pricing in NGN
       {
         currency: "NGN",
