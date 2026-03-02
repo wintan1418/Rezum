@@ -568,7 +568,7 @@
           <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-900">Free</h3>
             <div class="mt-3 flex items-baseline">
-              <span class="text-4xl font-bold text-gray-900">$0</span>
+              <span class="text-4xl font-bold text-gray-900" data-price-ngn="&#8358;0" data-price-usd="$0" data-pricing-target="price">&#8358;0</span>
             </div>
             <p class="mt-2 text-sm text-gray-500">Perfect for trying it out</p>
           </div>
@@ -603,7 +603,7 @@
           <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-900">Credit Packs</h3>
             <div class="mt-3 flex items-baseline">
-              <span class="text-4xl font-bold text-gray-900">&#8358;5,000</span>
+              <span class="text-4xl font-bold text-gray-900" data-price-ngn="&#8358;5,000" data-price-usd="$5" data-pricing-target="price">&#8358;5,000</span>
               <span class="ml-2 text-sm text-gray-500">for 10 credits</span>
             </div>
             <p class="mt-2 text-sm text-gray-500">Pay as you go, no commitment</p>
@@ -636,10 +636,10 @@
           <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-900">Pro</h3>
             <div class="mt-3 flex items-baseline">
-              <span class="text-4xl font-bold text-gray-900">$29</span>
+              <span class="text-4xl font-bold text-gray-900" data-price-ngn="&#8358;29,000" data-price-usd="$22" data-pricing-target="price">&#8358;29,000</span>
               <span class="ml-2 text-sm text-gray-500">/month</span>
             </div>
-            <p class="mt-2 text-sm text-gray-500">Or $290/year (save $58)</p>
+            <p class="mt-2 text-sm text-gray-500" data-price-ngn="Or &#8358;290,000/year (save &#8358;58,000)" data-price-usd="Or $220/year (save $44)" data-pricing-target="price">Or &#8358;290,000/year (save &#8358;58,000)</p>
           </div>
           <ul class="space-y-3 mb-8 flex-1">
             <li class="flex items-start text-sm text-gray-600">
@@ -925,5 +925,24 @@
     </div>
   </footer>
 
+<script>
+  // Detect visitor location and swap pricing display
+  (function() {
+    var nigerianTimezones = ["Africa/Lagos"];
+    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var isNigeria = nigerianTimezones.indexOf(tz) !== -1;
+
+    // Default is NGN (already rendered). Only swap if international.
+    if (!isNigeria) {
+      var els = document.querySelectorAll("[data-pricing-target='price']");
+      els.forEach(function(el) {
+        var usd = el.getAttribute("data-price-usd");
+        if (usd) {
+          el.textContent = usd;
+        }
+      });
+    }
+  })();
+</script>
 </body>
 </html>
