@@ -55,6 +55,13 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: "We've got a new name! ReZum is now RezumFit")
   end
 
+  def credits_gifted(user, credits:, reason: nil)
+    @user = user
+    @credits = credits
+    @reason = reason.presence
+    mail(to: @user.email, subject: "You've received #{credits} free credits on RezumFit!")
+  end
+
   def follow_up_reminder(user, job_application)
     @user = user
     @job_application = job_application

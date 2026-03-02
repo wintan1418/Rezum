@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [ :show, :toggle_admin, :toggle_disable ]
+    before_action :set_user, only: [ :show, :toggle_admin, :toggle_disable, :gift_credits ]
 
     def index
       @users = User.recent
@@ -40,6 +40,20 @@ module Admin
         @user.update(disabled_at: Time.current)
         redirect_to admin_user_path(@user), notice: "#{@user.full_name} has been disabled."
       end
+    end
+
+    def gift_credits
+      credits = params[:credits].to_i
+      reason = params[:reason].to_s.strip
+
+      if credits <= 0 || credits > 500
+        return redirect_to admin_user_path(@user), alert: "Credits must be between 1 and 500."
+      end
+
+      @user.increment!(:credits_remaining, credits)
+      UserMailer.credits_gifted(@user, credits: credits, reason: reason).deliver_later
+
+      redirect_to admin_user_path(@user), notice: "#{credits} credits gifted to #{@user.full_name}. Email notification sent."
     end
 
     private

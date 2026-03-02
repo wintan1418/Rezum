@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       member do
         patch :toggle_admin
         patch :toggle_disable
+        post :gift_credits
       end
     end
     resources :conversations, only: [ :index, :show ] do

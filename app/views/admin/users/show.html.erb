@@ -63,6 +63,27 @@
           <%= @user.disabled? ? "Enable Account" : "Disable Account" %>
         <% end %>
       </div>
+
+      <!-- Gift Credits -->
+      <div class="mt-6 pt-6 border-t border-gray-100">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Gift Credits</h3>
+        <%= form_with url: gift_credits_admin_user_path(@user), method: :post, class: "space-y-3" do |f| %>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Number of credits</label>
+            <input type="number" name="credits" min="1" max="500" value="10" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Reason (shown in email)</label>
+            <input type="text" name="reason" placeholder="e.g. Welcome bonus, contest prize..." class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          </div>
+          <button type="submit" data-turbo-confirm="Gift credits to <%= @user.full_name %>? They will receive an email notification." class="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl transition-all bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+            </svg>
+            Gift Credits
+          </button>
+        <% end %>
+      </div>
     </div>
 
     <!-- Activity -->
