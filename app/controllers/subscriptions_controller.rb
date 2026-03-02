@@ -57,6 +57,10 @@ class SubscriptionsController < ApplicationController
 
       # Initialize transaction with plan for recurring billing
       paystack_plan_code = Subscription::PLAN_CODES[plan_id]
+      unless paystack_plan_code.present?
+        Rails.logger.error "Missing Paystack plan code for #{plan_id}. Set PAYSTACK_PLAN_* env vars."
+        return redirect_to new_subscription_path, alert: "Plan configuration error. Please contact support."
+      end
 
       result = PaystackService.initialize_transaction(
         email: current_user.email,

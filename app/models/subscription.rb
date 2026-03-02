@@ -17,12 +17,12 @@ class Subscription < ApplicationRecord
   scope :active_subscriptions, -> { where(status: %w[active trialing]) }
   scope :canceled_subscriptions, -> { where(status: "canceled") }
 
-  # Paystack plan codes — update these after creating plans on Paystack dashboard
+  # Paystack plan codes — set via env vars on Hatchbox
   PLAN_CODES = {
-    "price_monthly_pro" => ENV.fetch("PAYSTACK_PLAN_MONTHLY_PRO", "PLN_monthly_pro"),
-    "price_annual_pro" => ENV.fetch("PAYSTACK_PLAN_ANNUAL_PRO", "PLN_annual_pro"),
-    "price_monthly_premium" => ENV.fetch("PAYSTACK_PLAN_MONTHLY_PREMIUM", "PLN_monthly_premium"),
-    "price_annual_premium" => ENV.fetch("PAYSTACK_PLAN_ANNUAL_PREMIUM", "PLN_annual_premium")
+    "price_monthly_pro" => ENV["PAYSTACK_PLAN_MONTHLY_PRO"],
+    "price_annual_pro" => ENV["PAYSTACK_PLAN_ANNUAL_PRO"],
+    "price_monthly_premium" => ENV["PAYSTACK_PLAN_MONTHLY_PREMIUM"],
+    "price_annual_premium" => ENV["PAYSTACK_PLAN_ANNUAL_PREMIUM"]
   }.freeze
 
   def active?
