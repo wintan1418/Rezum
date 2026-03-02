@@ -46,10 +46,10 @@ class GenerateCoverLetterVariationsJob < ApplicationJob
         Rails.logger.info "Cover letter variation #{index + 1} created as #{variation_letter.id}"
       end
 
-      # Deduct credits for variations (reduced cost)
-      credits_to_deduct = [ (count * 0.5).ceil, 1 ].max # Half credit per variation, minimum 1
-      if user.free? && user.credits_remaining >= credits_to_deduct
-        user.update!(credits_remaining: user.credits_remaining - credits_to_deduct)
+      # Deduct 1 credit per variation
+      credits_to_deduct = [count, user.credits_remaining].min
+      if user.free? && credits_to_deduct > 0
+        user.decrement!(:credits_remaining, credits_to_deduct)
       end
 
       Rails.logger.info "Generated #{variations.size} cover letter variations for user #{user.id}"
