@@ -1,0 +1,32 @@
+successful_payment:
+  user: taylor
+  paystack_reference: pay_abc123def456
+  amount_cents: 50000
+  currency: NGN
+  status: success
+  description: "10 Credits Purchase"
+  credits_purchased: 10
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= Time.current %>
+
+pending_payment:
+  user: taylor
+  paystack_reference: pay_pending789
+  amount_cents: 150000
+  currency: NGN
+  status: pending
+  description: "35 Credits Purchase"
+  credits_purchased: 35
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= Time.current %>
+
+failed_payment:
+  user: pro_user
+  paystack_reference: pay_failed000
+  amount_cents: 300000
+  currency: NGN
+  status: failed
+  description: "75 Credits Purchase"
+  credits_purchased: 75
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= Time.current %>

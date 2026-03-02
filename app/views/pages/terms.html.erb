@@ -1,0 +1,116 @@
+<div class="min-h-full">
+  <main class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-12">
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Terms of Service</h1>
+      <p class="text-sm text-gray-500 mb-10">Last updated: <%= Date.today.strftime("%B %d, %Y") %></p>
+
+      <div class="prose prose-gray max-w-none prose-headings:text-gray-900 prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline space-y-6">
+
+        <p>Welcome to ReZum. By accessing or using our service, you agree to be bound by these Terms of Service. Please read them carefully.</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By creating an account or using ReZum ("Service"), you agree to these Terms of Service ("Terms") and our <%= link_to "Privacy Policy", privacy_path %>. If you do not agree, do not use the Service.</p>
+
+        <h2>2. Description of Service</h2>
+        <p>ReZum is an AI-powered platform that helps users optimize resumes and generate cover letters. The Service includes:</p>
+        <ul>
+          <li>Resume parsing and ATS (Applicant Tracking System) optimization</li>
+          <li>AI-generated cover letters tailored to specific job descriptions</li>
+          <li>Resume scoring and keyword analysis</li>
+          <li>Document export in multiple formats (PDF, DOCX)</li>
+        </ul>
+
+        <h2>3. Account Registration</h2>
+        <p>To use the Service, you must create an account and provide accurate, complete information. You are responsible for:</p>
+        <ul>
+          <li>Maintaining the confidentiality of your account credentials</li>
+          <li>All activities that occur under your account</li>
+          <li>Notifying us immediately of any unauthorized use of your account</li>
+        </ul>
+        <p>You must be at least 16 years old to use the Service.</p>
+
+        <h2>4. Credits and Subscriptions</h2>
+        <p>ReZum operates on a credit-based and subscription model:</p>
+        <ul>
+          <li><strong>Free accounts</strong> receive a limited number of credits upon registration</li>
+          <li><strong>Credit packs</strong> can be purchased as one-time transactions</li>
+          <li><strong>Subscriptions</strong> provide recurring credits and additional features on a monthly basis</li>
+        </ul>
+        <p>Credits are non-transferable and non-refundable unless otherwise required by law. Unused credits on free accounts may expire after 12 months of account inactivity.</p>
+
+        <h2>5. Payments and Billing</h2>
+        <p>All payments are processed securely through Paystack. By purchasing credits or subscribing, you agree to:</p>
+        <ul>
+          <li>Provide valid and current payment information</li>
+          <li>Authorize us to charge your payment method for the amounts due</li>
+          <li>Subscription renewals are automatic unless cancelled before the billing date</li>
+        </ul>
+        <p>Prices are listed in your selected currency and may be subject to applicable taxes.</p>
+
+        <h2>6. Cancellation and Refunds</h2>
+        <p>You may cancel your subscription at any time from your billing settings. Upon cancellation:</p>
+        <ul>
+          <li>You retain access to subscription features until the end of your current billing period</li>
+          <li>No partial refunds are provided for unused portions of a billing period</li>
+          <li>Purchased credit packs are non-refundable</li>
+        </ul>
+        <p>We reserve the right to offer refunds on a case-by-case basis at our discretion.</p>
+
+        <h2>7. User Content</h2>
+        <p>You retain ownership of all content you upload or create using the Service, including resumes, cover letters, and personal information. By using the Service, you grant us a limited license to process your content solely for the purpose of providing the Service.</p>
+        <p>You are solely responsible for the accuracy and legality of the content you submit. Do not upload content that:</p>
+        <ul>
+          <li>Infringes on third-party intellectual property rights</li>
+          <li>Contains false or misleading information</li>
+          <li>Violates any applicable law or regulation</li>
+        </ul>
+
+        <h2>8. AI-Generated Content</h2>
+        <p>The Service uses artificial intelligence to optimize resumes and generate cover letters. You acknowledge that:</p>
+        <ul>
+          <li>AI-generated content is provided as suggestions and should be reviewed before use</li>
+          <li>We do not guarantee that AI-optimized documents will result in job interviews or offers</li>
+          <li>ATS scores are estimates based on common ATS algorithms and may vary by employer</li>
+          <li>You are responsible for reviewing and verifying all AI-generated content before submission to employers</li>
+        </ul>
+
+        <h2>9. Prohibited Use</h2>
+        <p>You agree not to:</p>
+        <ul>
+          <li>Use the Service for any unlawful purpose</li>
+          <li>Attempt to reverse-engineer, decompile, or disassemble any part of the Service</li>
+          <li>Use automated tools to scrape, crawl, or extract data from the Service</li>
+          <li>Impersonate another person or misrepresent your affiliation</li>
+          <li>Interfere with or disrupt the Service or its infrastructure</li>
+          <li>Share your account credentials with others or allow multiple users on a single account</li>
+        </ul>
+
+        <h2>10. Intellectual Property</h2>
+        <p>The Service, including its design, features, code, and branding, is owned by ReZum and protected by intellectual property laws. You may not copy, modify, distribute, or create derivative works based on the Service without our prior written consent.</p>
+
+        <h2>11. Privacy</h2>
+        <p>Your use of the Service is also governed by our <%= link_to "Privacy Policy", privacy_path %>, which describes how we collect, use, and protect your personal information.</p>
+
+        <h2>12. Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, ReZum and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or employment opportunities, arising from your use of the Service.</p>
+        <p>Our total liability for any claim related to the Service shall not exceed the amount you paid us in the 12 months preceding the claim.</p>
+
+        <h2>13. Disclaimer of Warranties</h2>
+        <p>The Service is provided "as is" and "as available" without warranties of any kind, either express or implied. We do not warrant that the Service will be uninterrupted, error-free, or that results obtained will be accurate or reliable.</p>
+
+        <h2>14. Account Termination</h2>
+        <p>We reserve the right to suspend or terminate your account at any time if you violate these Terms or engage in conduct that we determine is harmful to the Service or other users. You may delete your account at any time through your account settings.</p>
+
+        <h2>15. Changes to Terms</h2>
+        <p>We may update these Terms from time to time. We will notify you of material changes by posting the updated Terms on the Service and updating the "Last updated" date. Your continued use of the Service after changes are posted constitutes acceptance of the revised Terms.</p>
+
+        <h2>16. Governing Law</h2>
+        <p>These Terms are governed by and construed in accordance with the laws of the jurisdiction in which ReZum operates, without regard to conflict of law principles.</p>
+
+        <h2>17. Contact Us</h2>
+        <p>If you have any questions about these Terms, please contact us at:</p>
+        <p><strong>Email:</strong> support@rezum.com</p>
+      </div>
+    </div>
+  </main>
+</div>

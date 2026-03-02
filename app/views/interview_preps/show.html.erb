@@ -1,0 +1,130 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-6 flex items-center justify-between">
+    <%= link_to interview_preps_path, class: "inline-flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Interview Preps
+    <% end %>
+
+    <%= link_to @interview_prep, data: { turbo_method: :delete, turbo_confirm: 'Delete this interview prep?' }, class: "text-sm text-red-500 hover:text-red-700" do %>
+      Delete
+    <% end %>
+  </div>
+
+  <!-- Header -->
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6">
+    <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-5">
+      <h1 class="text-xl font-bold text-white"><%= @interview_prep.target_role %></h1>
+      <% if @interview_prep.company_name.present? %>
+        <p class="text-purple-100 mt-1"><%= @interview_prep.company_name %></p>
+      <% end %>
+    </div>
+
+    <% if @interview_prep.generating? %>
+      <div class="p-8 text-center" data-controller="auto-refresh" data-auto-refresh-interval-value="5000">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Generating your interview prep...</h3>
+        <p class="text-sm text-gray-500">This usually takes 30-60 seconds. The page will auto-refresh.</p>
+      </div>
+    <% elsif @interview_prep.failed? %>
+      <div class="p-8 text-center">
+        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Generation Failed</h3>
+        <p class="text-sm text-gray-500 mb-4">Something went wrong. Please try again.</p>
+        <%= link_to 'Try Again', new_interview_prep_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+      </div>
+    <% elsif @interview_prep.pending? %>
+      <div class="p-8 text-center">
+        <p class="text-sm text-gray-500">This prep session is pending. It will be processed shortly.</p>
+      </div>
+    <% else %>
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-4 text-sm text-gray-500">
+        <span><%= @interview_prep.questions_list.size %> interview questions</span>
+        <span>&middot;</span>
+        <span><%= @interview_prep.company_questions_list.size %> questions to ask</span>
+        <span>&middot;</span>
+        <span>Created <%= @interview_prep.created_at.strftime('%b %d, %Y') %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @interview_prep.generated? %>
+    <!-- Interview Questions -->
+    <% if @interview_prep.questions_list.any? %>
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Likely Interview Questions</h2>
+        <div class="space-y-3" data-controller="accordion">
+          <% @interview_prep.questions_list.each_with_index do |q, i| %>
+            <% category_colors = { 'behavioral' => 'blue', 'technical' => 'purple', 'situational' => 'yellow', 'role_specific' => 'green' } %>
+            <% color = category_colors[q['category']] || 'gray' %>
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <button type="button"
+                      class="w-full flex items-start justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+                      data-action="click->accordion#toggle"
+                      data-accordion-target="trigger">
+                <div class="flex items-start gap-3 pr-4">
+                  <span class="flex-shrink-0 w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-bold text-gray-600 mt-0.5"><%= i + 1 %></span>
+                  <div>
+                    <p class="text-sm font-semibold text-gray-900"><%= q['question'] %></p>
+                    <span class="inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-<%= color %>-100 text-<%= color %>-700">
+                      <%= (q['category'] || 'general').humanize %>
+                    </span>
+                  </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform mt-1" data-accordion-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div class="hidden px-5 pb-4" data-accordion-target="content">
+                <% if q['why_asked'].present? %>
+                  <div class="mb-3 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-xs font-semibold text-blue-700 mb-1">Why they ask this:</p>
+                    <p class="text-sm text-blue-800"><%= q['why_asked'] %></p>
+                  </div>
+                <% end %>
+                <% if q['answer_framework'].present? %>
+                  <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs font-semibold text-gray-700 mb-1">STAR Answer Framework:</p>
+                    <div class="text-sm text-gray-700 whitespace-pre-line"><%= q['answer_framework'] %></div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Questions to Ask -->
+    <% if @interview_prep.company_questions_list.any? %>
+      <div>
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Questions to Ask the Interviewer</h2>
+        <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+          <% @interview_prep.company_questions_list.each do |q| %>
+            <% cat_colors = { 'culture' => 'purple', 'growth' => 'green', 'role' => 'blue', 'team' => 'yellow', 'strategy' => 'red' } %>
+            <% color = cat_colors[q['category']] || 'gray' %>
+            <div class="px-5 py-4">
+              <div class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-2 h-2 rounded-full bg-<%= color %>-500 mt-2"></span>
+                <div>
+                  <p class="text-sm font-semibold text-gray-900"><%= q['question'] %></p>
+                  <% if q['purpose'].present? %>
+                    <p class="text-xs text-gray-500 mt-1"><%= q['purpose'] %></p>
+                  <% end %>
+                  <span class="inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-<%= color %>-100 text-<%= color %>-700">
+                    <%= (q['category'] || 'general').humanize %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -23,6 +23,12 @@ class User < ApplicationRecord
   has_many :cover_letters, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :payments, dependent: :destroy
+  has_many :visits, class_name: "Ahoy::Visit"
+  has_many :job_applications, dependent: :destroy
+  has_many :interview_preps, dependent: :destroy
+  has_many :linkedin_optimizations, dependent: :destroy
+  has_many :scraped_jobs, dependent: :destroy
+  has_one :job_scraper_setting, dependent: :destroy
   
   # Phone number normalization and validation
   phony_normalize :phone, default_country_code: lambda { |user| user.country_code || 'US' }
@@ -44,6 +50,8 @@ class User < ApplicationRecord
   scope :active, -> { where('last_active_at > ?', 30.days.ago) }
   scope :trial_ending_soon, -> { where(trial_ends_at: 3.days.from_now..7.days.from_now) }
   scope :by_country, ->(code) { where(country_code: code) }
+  scope :inactive_for, ->(days) { where('last_active_at < ?', days.days.ago) }
+  scope :low_credits, -> { where(credits_remaining: 0..1) }
   
   def full_name
     "#{first_name} #{last_name}".strip
@@ -77,6 +85,12 @@ class User < ApplicationRecord
   
   def current_subscription
     subscriptions.active_subscriptions.order(created_at: :desc).first
+  end
+
+  def has_premium_subscription?
+    sub = current_subscription
+    return false unless sub&.active?
+    sub.plan_id.to_s.include?('premium')
   end
   
   def subscription_status
@@ -193,25 +207,24 @@ class User < ApplicationRecord
     current_subscription.days_until_renewal
   end
 
-  # Stripe customer methods
-  def create_stripe_customer!
-    return if stripe_customer_id.present?
-    
-    customer = StripeService.create_customer(
+  # Paystack customer methods
+  def create_paystack_customer!
+    return if paystack_customer_code.present?
+
+    customer = PaystackService.create_customer(
       email: email,
-      name: full_name,
-      metadata: {
-        user_id: id
-      }
+      first_name: first_name,
+      last_name: last_name,
+      metadata: { user_id: id }
     )
-    
-    update!(stripe_customer_id: customer.id)
+
+    update!(paystack_customer_code: customer['customer_code'])
     customer
   end
-  
-  def stripe_customer
-    return nil unless stripe_customer_id
-    @stripe_customer ||= StripeService.retrieve_customer(stripe_customer_id)
+
+  def paystack_customer
+    return nil unless paystack_customer_code
+    @paystack_customer ||= PaystackService.fetch_customer(paystack_customer_code)
   end
   
   private
@@ -221,7 +234,11 @@ class User < ApplicationRecord
   end
   
   def send_welcome_email
-    # UserMailer.welcome_email(self).deliver_later
+    UserMailer.welcome_email(self).deliver_later
+  end
+
+  def subscribed_to_emails?
+    marketing_consent? && unsubscribed_at.nil?
   end
 end
 

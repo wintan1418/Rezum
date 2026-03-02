@@ -1,27 +1,26 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+generated_letter:
+  user: taylor
+  resume: optimized_resume
+  company_name: Acme Corp
+  hiring_manager_name: Jane Smith
+  target_role: Product Manager
+  tone: professional
+  length: medium
+  content: <%= "This is a sample cover letter. " * 20 %>
+  job_description: <%= "Looking for a product manager. " * 5 %>
+  status: generated
+  provider: openai
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= Time.current %>
 
-one:
-  user: one
-  resume: one
-  company_name: MyString
-  hiring_manager_name: MyString
-  target_role: MyString
-  tone: MyString
-  length: MyString
-  content: MyText
-  job_description: MyText
-  status: MyString
-  provider: MyString
-
-two:
-  user: two
-  resume: two
-  company_name: MyString
-  hiring_manager_name: MyString
-  target_role: MyString
-  tone: MyString
-  length: MyString
-  content: MyText
-  job_description: MyText
-  status: MyString
-  provider: MyString
+draft_letter:
+  user: taylor
+  resume: draft_resume
+  company_name: Startup Inc
+  target_role: Software Engineer
+  tone: confident
+  length: short
+  status: draft
+  provider: anthropic
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= Time.current %>

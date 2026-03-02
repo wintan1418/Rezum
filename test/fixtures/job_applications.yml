@@ -1,0 +1,35 @@
+applied_job:
+  user: taylor
+  resume: optimized_resume
+  cover_letter: generated_letter
+  company_name: Google
+  role: Product Manager
+  url: https://careers.google.com/jobs/123
+  status: applied
+  applied_at: <%= 3.days.ago.to_date %>
+  follow_up_at: <%= 2.days.from_now.to_date %>
+  location: Mountain View, CA
+  remote: false
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= Time.current %>
+
+interview_job:
+  user: taylor
+  company_name: Meta
+  role: Software Engineer
+  status: interview
+  applied_at: <%= 10.days.ago.to_date %>
+  location: Remote
+  remote: true
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= Time.current %>
+
+needs_followup_job:
+  user: taylor
+  company_name: Netflix
+  role: Senior Engineer
+  status: applied
+  applied_at: <%= 14.days.ago.to_date %>
+  follow_up_at: <%= 1.day.ago.to_date %>
+  created_at: <%= 14.days.ago %>
+  updated_at: <%= Time.current %>

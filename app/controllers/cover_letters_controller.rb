@@ -40,7 +40,8 @@ class CoverLettersController < ApplicationController
       @cover_letter.update!(status: 'generating', provider: params[:provider] || 'openai')
       
       GenerateCoverLetterJob.perform_later(@cover_letter.id, current_user.id)
-      
+      ahoy.track "cover_letter_generate", cover_letter_id: @cover_letter.id, resume_id: @resume.id
+
       redirect_to [@resume, @cover_letter], notice: 'Cover letter generation started! This will take 30-45 seconds.'
     else
       render :new, status: :unprocessable_entity

@@ -1,114 +1,118 @@
 class Payment < ApplicationRecord
-  
   belongs_to :user
-  
-  validates :stripe_payment_intent_id, presence: true, uniqueness: true
+
+  validates :paystack_reference, presence: true, uniqueness: true
   validates :amount_cents, presence: true, numericality: { greater_than: 0 }
   validates :currency, presence: true
-  validates :status, inclusion: { in: %w[requires_payment_method requires_confirmation requires_action processing requires_capture canceled succeeded] }
+  validates :status, inclusion: { in: %w[pending success failed abandoned canceled] }
   validates :credits_purchased, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
-  
+
   monetize :amount_cents
-  
-  enum status: {
-    requires_payment_method: 'requires_payment_method',
-    requires_confirmation: 'requires_confirmation', 
-    requires_action: 'requires_action',
-    processing: 'processing',
-    requires_capture: 'requires_capture',
-    canceled: 'canceled',
-    succeeded: 'succeeded'
+
+  enum :status, {
+    pending: 'pending',
+    success: 'success',
+    failed: 'failed',
+    abandoned: 'abandoned',
+    canceled: 'canceled'
   }
-  
-  scope :successful, -> { where(status: 'succeeded') }
+
+  scope :successful, -> { where(status: 'success') }
   scope :recent, -> { order(created_at: :desc) }
   scope :credit_purchases, -> { where.not(credits_purchased: nil) }
-  
+
   def successful?
-    status == 'succeeded'
+    status == 'success'
   end
-  
+
   def failed?
-    status.in?(['canceled'])
+    status.in?(%w[failed canceled abandoned])
   end
-  
+
   def pending?
-    status.in?(['requires_payment_method', 'requires_confirmation', 'requires_action', 'processing', 'requires_capture'])
+    status == 'pending'
   end
-  
+
   def amount_display
-    "#{amount.format(symbol: currency_symbol)}"
+    "#{currency_symbol}#{amount_cents / 100.0}"
   end
-  
+
   def currency_symbol
-    case currency.upcase
-    when 'USD'
-      '$'
-    when 'EUR'
-      '€'
-    when 'GBP'
-      '£'
-    else
-      currency.upcase
+    case currency.to_s.upcase
+    when 'NGN' then "\u20A6"
+    when 'USD' then '$'
+    when 'GHS' then 'GH\u20B5'
+    when 'ZAR' then 'R'
+    when 'KES' then 'KSh'
+    when 'EUR' then "\u20AC"
+    when 'GBP' then "\u00A3"
+    else "#{currency.upcase} "
     end
   end
-  
+
   def description_display
     return description if description.present?
-    
+
     if credits_purchased.present?
       "#{credits_purchased} Credits Purchase"
     else
       "Payment"
     end
   end
-  
-  # Sync payment data from Stripe
-  def sync_from_stripe!
-    return unless stripe_payment_intent_id
-    
-    payment_intent = StripeService.retrieve_payment_intent(stripe_payment_intent_id)
-    
+
+  # Verify payment with Paystack
+  def verify_with_paystack!
+    return unless paystack_reference
+
+    data = PaystackService.verify_transaction(paystack_reference)
+
+    new_status = case data['status']
+                 when 'success' then 'success'
+                 when 'failed' then 'failed'
+                 when 'abandoned' then 'abandoned'
+                 else 'pending'
+                 end
+
     update!(
-      status: payment_intent.status,
-      amount_cents: payment_intent.amount,
-      currency: payment_intent.currency
+      status: new_status,
+      amount_cents: data['amount'],
+      currency: data['currency']
     )
-    
-    # If payment succeeded and credits were purchased, add them to user
-    if succeeded? && credits_purchased.present?
+
+    if successful? && credits_purchased.present?
       user.add_credits(credits_purchased)
     end
   end
-  
-  # Create Stripe PaymentIntent
-  def self.create_stripe_payment_intent(user:, amount_cents:, currency: 'usd', description: nil, credits: nil)
-    # Ensure user has a Stripe customer
-    user.create_stripe_customer! unless user.stripe_customer_id
-    
-    payment_intent = StripeService.create_payment_intent(
+
+  # Initialize a Paystack transaction for credit purchase
+  def self.create_paystack_transaction(user:, amount_cents:, currency: 'NGN', description: nil, credits: nil, callback_url: nil)
+    user.create_paystack_customer! unless user.paystack_customer_code.present?
+
+    reference = "pay_#{SecureRandom.hex(12)}"
+
+    data = PaystackService.initialize_transaction(
+      email: user.email,
       amount: amount_cents,
-      currency: currency,
-      customer: user.stripe_customer_id,
-      description: description,
+      reference: reference,
+      callback_url: callback_url,
       metadata: {
         user_id: user.id,
-        credits_purchased: credits
+        credits_purchased: credits,
+        description: description
       }
     )
-    
+
     payment = Payment.create!(
       user: user,
-      stripe_payment_intent_id: payment_intent.id,
-      client_secret: payment_intent.client_secret,
+      paystack_reference: reference,
+      client_secret: data['access_code'],
       amount_cents: amount_cents,
       currency: currency,
-      status: payment_intent.status,
+      status: 'pending',
       description: description,
       credits_purchased: credits
     )
-    
-    # Credits will be added when webhook confirms payment success
-    payment
+
+    { payment: payment, authorization_url: data['authorization_url'] }
   end
 end

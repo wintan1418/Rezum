@@ -13,7 +13,7 @@ Rails.application.configure do
     # Detect unused eager loading
     Bullet.unused_eager_loading_enable = true
     
-    # Detect missing counter cache
-    Bullet.counter_cache_enable = true
+    # Counter cache suggestions are noisy — disable for now
+    Bullet.counter_cache_enable = false
   end
 end if defined?(Bullet) && Rails.env.development?

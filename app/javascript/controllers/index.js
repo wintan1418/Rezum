@@ -19,5 +19,41 @@ application.register("generation-animation", GenerationAnimationController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import MobileMenuController from "./mobile_menu_controller"
+application.register("mobile-menu", MobileMenuController)
+
+import NavbarScrollController from "./navbar_scroll_controller"
+application.register("navbar-scroll", NavbarScrollController)
+
 import NewsletterController from "./newsletter_controller"
 application.register("newsletter", NewsletterController)
+
+import ScrollRevealController from "./scroll_reveal_controller"
+application.register("scroll-reveal", ScrollRevealController)
+
+import AccordionController from "./accordion_controller"
+application.register("accordion", AccordionController)
+
+import FilterController from "./filter_controller"
+application.register("filter", FilterController)
+
+import TabsController from "./tabs_controller"
+application.register("tabs", TabsController)
+
+import ClipboardController from "./clipboard_controller"
+application.register("clipboard", ClipboardController)
+
+import ViewToggleController from "./view_toggle_controller"
+application.register("view-toggle", ViewToggleController)
+
+import KanbanController from "./kanban_controller"
+application.register("kanban", KanbanController)
+
+import SortableController from "./sortable_controller"
+application.register("sortable", SortableController)
+
+import TemplateSelectController from "./template_select_controller"
+application.register("template-select", TemplateSelectController)
+
+import DeveloperCardController from "./developer_card_controller"
+application.register("developer-card", DeveloperCardController)

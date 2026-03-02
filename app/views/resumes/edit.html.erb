@@ -1,2 +1,160 @@
-<h1>Resumes#edit</h1>
-<p>Find me in app/views/resumes/edit.html.erb</p>
+<div class="min-h-full">
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+        <%= link_to resumes_path, class: "hover:text-gray-700" do %>
+          My Resumes
+        <% end %>
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <%= link_to @resume.target_role, resume_path(@resume), class: "hover:text-gray-700" %>
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+        </svg>
+        <span>Edit</span>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">Edit Resume</h1>
+      <p class="mt-1 text-gray-500">Update your resume details, job description, and content</p>
+    </div>
+
+    <%= form_with model: @resume, local: true, html: { multipart: true, class: "space-y-8" } do |f| %>
+
+      <!-- Display errors -->
+      <% if @resume.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div class="flex">
+            <svg class="w-5 h-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">Please fix the following errors:</h3>
+              <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                <% @resume.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Resume Details -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Resume Details</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Target Role -->
+          <div>
+            <%= f.label :target_role, "Target Job Title", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+            <%= f.text_field :target_role,
+                class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
+                placeholder: "e.g., Software Engineer" %>
+          </div>
+
+          <!-- Industry -->
+          <div>
+            <%= f.label :industry, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+            <%= f.select :industry,
+                options_for_select([
+                  ['Technology', 'technology'],
+                  ['Healthcare', 'healthcare'],
+                  ['Finance', 'finance'],
+                  ['Education', 'education'],
+                  ['Manufacturing', 'manufacturing'],
+                  ['Retail', 'retail'],
+                  ['Consulting', 'consulting'],
+                  ['Government', 'government'],
+                  ['Non-profit', 'nonprofit'],
+                  ['Other', 'other']
+                ], @resume.industry),
+                { prompt: "Select industry (optional)" },
+                { class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" } %>
+          </div>
+
+          <!-- Experience Level -->
+          <div>
+            <%= f.label :experience_level, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+            <%= f.select :experience_level,
+                options_for_select([
+                  ['Entry Level (0-2 years)', 'entry'],
+                  ['Mid Level (3-5 years)', 'mid'],
+                  ['Senior Level (6-10 years)', 'senior'],
+                  ['Executive Level (10+ years)', 'executive']
+                ], @resume.experience_level),
+                { prompt: "Select experience level (optional)" },
+                { class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" } %>
+          </div>
+
+          <!-- AI Provider -->
+          <div>
+            <%= f.label :provider, "AI Provider", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+            <%= f.select :provider,
+                options_for_select([
+                  ['OpenAI GPT-4 (Recommended)', 'openai'],
+                  ['Anthropic Claude', 'anthropic'],
+                  ['Google Gemini', 'google']
+                ], @resume.provider || 'openai'),
+                {},
+                { class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Description -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Job Description</h3>
+        <p class="text-sm text-gray-500 mb-4">
+          Add the target job description so our AI can tailor your resume. <strong>Required for optimization</strong> (minimum 50 characters).
+        </p>
+
+        <%= f.text_area :job_description,
+            rows: 10,
+            class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
+            placeholder: "Paste the full job description here...\n\nInclude responsibilities, requirements, and qualifications for the best optimization results." %>
+        <p class="mt-1.5 text-xs text-gray-400"><%= @resume.job_description.to_s.length %> / 50 characters minimum</p>
+      </div>
+
+      <!-- Resume Content -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Resume Content</h3>
+
+        <% if @resume.file.attached? %>
+          <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center text-sm text-blue-800">
+              <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Uploaded file: <strong class="ml-1"><%= @resume.file.filename %></strong>
+            </div>
+          </div>
+
+          <!-- Replace file -->
+          <div class="mb-4">
+            <%= f.label :file, "Replace file (optional)", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+            <%= f.file_field :file,
+                accept: ".pdf,.docx,.doc,.txt",
+                class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
+          </div>
+        <% end %>
+
+        <%= f.label :original_content, "Resume text", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+        <%= f.text_area :original_content,
+            rows: 15,
+            class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none py-2.5 px-3.5 transition-all hover:border-gray-300 font-mono text-sm",
+            placeholder: "Your resume content..." %>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between">
+        <%= link_to "Cancel", resume_path(@resume), class: "text-sm text-gray-500 hover:text-gray-700" %>
+        <div class="flex items-center gap-3">
+          <%= f.submit "Save Changes",
+              class: "px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-blue-800 hover:shadow transition-all cursor-pointer",
+              data: { disable_with: "Saving..." } %>
+        </div>
+      </div>
+    <% end %>
+  </main>
+</div>

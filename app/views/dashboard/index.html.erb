@@ -1,0 +1,318 @@
+<div class="min-h-full">
+  <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+    <!-- Greeting -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
+            <%= time_of_day_greeting %>, <%= current_user.first_name %>
+          </h1>
+          <p class="mt-1 text-gray-500">Here's what's happening with your job search.</p>
+        </div>
+        <%= link_to new_resume_path, class: "hidden sm:inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm hover:shadow transition-all" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          New Resume
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Subscription Status Banner -->
+    <% if !current_user.has_active_subscription? && current_user.credits_remaining == 0 %>
+      <div class="mb-6 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-amber-900">You're out of credits</p>
+            <p class="text-sm text-amber-700">Upgrade to Pro for unlimited generations or purchase credit packs.</p>
+          </div>
+        </div>
+        <%= link_to new_subscription_path, class: "flex-shrink-0 inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all shadow-sm" do %>
+          Upgrade
+        <% end %>
+      </div>
+    <% elsif current_user.trial_active? %>
+      <div class="mb-6 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-blue-900">Trial active</p>
+            <p class="text-sm text-blue-700">Your trial ends <%= time_ago_in_words(current_user.trial_ends_at) %> from now. Upgrade to keep access.</p>
+          </div>
+        </div>
+        <%= link_to new_subscription_path, class: "flex-shrink-0 inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-blue-700 bg-white border border-blue-300 hover:bg-blue-50 transition-all" do %>
+          View Plans
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+      <!-- Credits -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <% if current_user.has_active_subscription? %>
+            <span class="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Unlimited</span>
+          <% end %>
+        </div>
+        <p class="text-2xl font-bold text-gray-900">
+          <%= current_user.has_active_subscription? ? "∞" : @credits_remaining %>
+        </p>
+        <p class="text-sm text-gray-500 mt-0.5">Credits remaining</p>
+      </div>
+
+      <!-- Resumes -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-blue-500"></div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900"><%= @resumes_count %></p>
+        <p class="text-sm text-gray-500 mt-0.5">Resumes <span class="text-green-600 font-medium">(<%= @optimized_count %> optimized)</span></p>
+      </div>
+
+      <!-- Cover Letters -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-500"></div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-50 to-fuchsia-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900"><%= @cover_letters_count %></p>
+        <p class="text-sm text-gray-500 mt-0.5">Cover letters</p>
+      </div>
+
+      <!-- Avg ATS Score -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 to-violet-500"></div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900">
+          <% if @avg_ats_score %>
+            <%= @avg_ats_score %>%
+          <% else %>
+            --
+          <% end %>
+        </p>
+        <p class="text-sm text-gray-500 mt-0.5">Avg ATS score</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Upload Resume -->
+        <%= link_to new_resume_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-blue-200 transition-all" do %>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Upload Resume</p>
+              <p class="text-xs text-gray-500 mt-0.5">Optimize for any job posting</p>
+            </div>
+          </div>
+          <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+
+        <!-- Write Cover Letter -->
+        <% if current_user.resumes.any? %>
+          <%= link_to new_resume_cover_letter_path(current_user.resumes.recent.first), class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-purple-200 transition-all" do %>
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Write Cover Letter</p>
+                <p class="text-xs text-gray-500 mt-0.5">AI-generated, tailored to the job</p>
+              </div>
+            </div>
+            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          <% end %>
+        <% else %>
+          <%= link_to new_resume_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-purple-200 transition-all" do %>
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Write Cover Letter</p>
+                <p class="text-xs text-gray-500 mt-0.5">Upload a resume first to get started</p>
+              </div>
+            </div>
+            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          <% end %>
+        <% end %>
+
+        <!-- View Billing -->
+        <%= link_to billing_index_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-green-200 transition-all" do %>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900 group-hover:text-green-600 transition-colors">Billing & Credits</p>
+              <p class="text-xs text-gray-500 mt-0.5">Manage subscription and credits</p>
+            </div>
+          </div>
+          <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Job Scraper Widget (Premium) -->
+    <% if current_user.has_premium_subscription? %>
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900">Latest Scraped Jobs</h2>
+          <%= link_to scraped_jobs_path, class: "text-sm text-blue-600 hover:text-blue-800 font-medium" do %>
+            View all &rarr;
+          <% end %>
+        </div>
+        <% scraped = current_user.scraped_jobs.not_hidden.high_match.limit(3) %>
+        <% if scraped.any? %>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <% scraped.each do |job| %>
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-gray-300 transition-all">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold
+                    <%= case job.match_color
+                        when 'green' then 'bg-green-100 text-green-800'
+                        when 'yellow' then 'bg-yellow-100 text-yellow-800'
+                        else 'bg-gray-100 text-gray-800'
+                        end %>">
+                    <%= job.match_score %>% match
+                  </span>
+                  <% if job.remote? %>
+                    <span class="text-xs text-green-600 font-medium">Remote</span>
+                  <% end %>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-900 truncate"><%= job.role %></h3>
+                <p class="text-sm text-gray-500 truncate"><%= job.company_name %></p>
+                <% if job.location.present? %>
+                  <p class="text-xs text-gray-400 mt-1"><%= job.location %></p>
+                <% end %>
+                <div class="mt-3">
+                  <%= link_to scraped_job_path(job), class: "text-xs text-blue-600 hover:text-blue-800 font-medium" do %>
+                    View details &rarr;
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="bg-purple-50 border border-purple-200 rounded-xl p-5 text-center">
+            <p class="text-sm text-purple-800 mb-2">No scraped jobs yet. Configure your scraper to get started!</p>
+            <%= link_to "Set Up Scraper", settings_scraped_jobs_path, class: "text-sm font-medium text-purple-700 hover:text-purple-900" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Recent Activity -->
+    <div>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+      <% if @recent_activity.any? %>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+          <% @recent_activity.each do |activity| %>
+            <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
+              <div class="flex items-center space-x-4 min-w-0">
+                <% if activity[:type] == "resume" %>
+                  <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  </div>
+                <% else %>
+                  <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4.5 h-4.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                  </div>
+                <% end %>
+
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate"><%= activity[:title] %></p>
+                  <p class="text-xs text-gray-500">
+                    <%= activity[:type] == "resume" ? "Resume" : "Cover letter" %>
+                    <%= activity[:action] %>
+                    <%= time_ago_in_words(activity[:date]) %> ago
+                  </p>
+                </div>
+              </div>
+
+              <% if activity[:type] == "resume" %>
+                <%= link_to resume_path(activity[:record]), class: "text-sm text-blue-600 hover:text-blue-800 font-medium flex-shrink-0" do %>
+                  View
+                <% end %>
+              <% else %>
+                <%= link_to resume_cover_letter_path(activity[:record].resume, activity[:record]), class: "text-sm text-purple-600 hover:text-purple-800 font-medium flex-shrink-0" do %>
+                  View
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+          </div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-1">No activity yet</h3>
+          <p class="text-sm text-gray-500 mb-4">Upload your first resume to get started.</p>
+          <%= link_to new_resume_path, class: "inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-sm" do %>
+            Upload Resume
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+  </main>
+</div>

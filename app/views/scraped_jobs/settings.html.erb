@@ -1,0 +1,136 @@
+<div class="min-h-full">
+  <main class="max-w-3xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="flex items-center space-x-2 text-sm text-gray-500 mb-6">
+      <%= link_to "Job Scraper", scraped_jobs_path, class: "hover:text-gray-700" %>
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+      <span>Settings</span>
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">Scraper Settings</h1>
+    <p class="text-sm text-gray-500 mb-8">Configure what jobs to look for and how often to search.</p>
+
+    <%= form_with model: @settings, url: update_settings_scraped_jobs_path, method: :patch, local: true, class: "space-y-6" do |f| %>
+
+      <!-- Enable/Disable -->
+      <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Auto-Scraping</h3>
+            <p class="text-sm text-gray-500 mt-1">Automatically search for new jobs on a schedule</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <%= f.check_box :enabled, class: "sr-only peer" %>
+            <div class="w-11 h-6 bg-gray-200 peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Target Roles -->
+      <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Job Preferences</h3>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Target Roles</label>
+            <input type="text" name="job_scraper_setting[target_roles_text]"
+                   value="<%= @settings.target_roles_list.join(', ') %>"
+                   class="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300"
+                   placeholder="Software Engineer, Product Manager, Data Scientist">
+            <p class="mt-1 text-xs text-gray-500">Comma-separated list of job titles to search for. Leave empty to use your resume's target roles.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Target Locations</label>
+            <input type="text" name="job_scraper_setting[target_locations_text]"
+                   value="<%= @settings.target_locations_list.join(', ') %>"
+                   class="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300"
+                   placeholder="New York, San Francisco, Remote">
+            <p class="mt-1 text-xs text-gray-500">Comma-separated list of locations. Leave empty to search everywhere.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Keywords</label>
+            <input type="text" name="job_scraper_setting[keywords_text]"
+                   value="<%= @settings.keywords_list.join(', ') %>"
+                   class="w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300"
+                   placeholder="React, Python, AWS, Machine Learning">
+            <p class="mt-1 text-xs text-gray-500">Extra keywords to include in searches for more relevant results.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Experience Level</label>
+              <%= f.select :experience_level,
+                  options_for_select([
+                    ['Any Level', ''],
+                    ['Entry Level', 'entry'],
+                    ['Mid Level', 'mid'],
+                    ['Senior', 'senior'],
+                    ['Executive', 'executive']
+                  ], @settings.experience_level),
+                  {},
+                  { class: "w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1.5">Minimum Salary</label>
+              <%= f.number_field :min_salary,
+                  class: "w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
+                  placeholder: "e.g. 80000",
+                  min: 0, step: 5000 %>
+              <p class="mt-1 text-xs text-gray-500">Annual salary in USD (optional)</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <%= f.check_box :remote_only, class: "h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" %>
+            <label class="text-sm text-gray-700">Remote jobs only</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Automation -->
+      <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Automation</h3>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Scrape Frequency</label>
+            <%= f.select :scrape_frequency,
+                options_for_select([
+                  ['Every hour', 'hourly'],
+                  ['Twice a day', 'twice_daily'],
+                  ['Once a day (Recommended)', 'daily'],
+                  ['Once a week', 'weekly']
+                ], @settings.scrape_frequency || 'daily'),
+                {},
+                { class: "w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Max Results Per Scrape</label>
+            <%= f.select :max_results_per_scrape,
+                options_for_select([
+                  ['5 jobs', 5],
+                  ['10 jobs', 10],
+                  ['20 jobs (Recommended)', 20],
+                  ['30 jobs', 30],
+                  ['50 jobs', 50]
+                ], @settings.max_results_per_scrape || 20),
+                {},
+                { class: "w-full px-3 py-2.5 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex items-center justify-between">
+        <%= link_to "Cancel", scraped_jobs_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+        <%= f.submit "Save Settings", class: "px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-blue-800 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer transition-all" %>
+      </div>
+    <% end %>
+  </main>
+</div>

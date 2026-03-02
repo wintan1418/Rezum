@@ -1,108 +1,180 @@
 class SubscriptionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_subscription, only: [:show, :cancel, :reactivate, :destroy]
-  
+
   def new
     @subscription = current_user.subscriptions.build
     @plans = [
       {
-        id: 'price_1QExampleMonthly',  # Replace with your actual Stripe Price ID
+        id: 'price_monthly_pro',
         name: 'Monthly Pro',
         price: 29,
+        price_label: "\u20A629,000",
         interval: 'month',
+        tier: 'pro',
         features: ['Unlimited resumes', 'Unlimited cover letters', 'ATS optimization', 'Priority support']
       },
       {
-        id: 'price_1QExampleAnnual',   # Replace with your actual Stripe Price ID
+        id: 'price_annual_pro',
         name: 'Annual Pro',
         price: 290,
+        price_label: "\u20A6290,000",
         interval: 'year',
+        tier: 'pro',
         features: ['Unlimited resumes', 'Unlimited cover letters', 'ATS optimization', 'Priority support', '2 months free']
+      },
+      {
+        id: 'price_monthly_premium',
+        name: 'Monthly Premium',
+        price: 59,
+        price_label: "\u20A659,000",
+        interval: 'month',
+        tier: 'premium',
+        features: ['Everything in Pro', 'AI Job Scraper', 'Automated job matching', 'Interview prep', 'LinkedIn optimization', 'Priority AI models']
+      },
+      {
+        id: 'price_annual_premium',
+        name: 'Annual Premium',
+        price: 590,
+        price_label: "\u20A6590,000",
+        interval: 'year',
+        tier: 'premium',
+        features: ['Everything in Pro', 'AI Job Scraper', 'Automated job matching', 'Interview prep', 'LinkedIn optimization', 'Priority AI models', '2 months free']
       }
     ]
   end
-  
+
   def create
     plan_id = params[:plan_id]
     return redirect_to new_subscription_path, alert: 'Please select a plan' unless plan_id
-    
+
+    # Map plan_id to Paystack plan code and amount
+    plan_config = plan_details(plan_id)
+    return redirect_to new_subscription_path, alert: 'Invalid plan selected' unless plan_config
+
     begin
-      # Ensure user has a Stripe customer
-      current_user.create_stripe_customer! unless current_user.stripe_customer_id
-      
-      # Create Stripe subscription
-      stripe_subscription = StripeService.create_subscription(
-        customer: current_user.stripe_customer_id,
-        items: [{ price: plan_id }],
-        payment_behavior: 'default_incomplete',
-        payment_settings: { save_default_payment_method: 'on_subscription' },
-        expand: ['latest_invoice.payment_intent']
+      current_user.create_paystack_customer! unless current_user.paystack_customer_code.present?
+
+      # Initialize transaction with plan for recurring billing
+      paystack_plan_code = Subscription::PLAN_CODES[plan_id]
+
+      result = PaystackService.initialize_transaction(
+        email: current_user.email,
+        amount: plan_config[:amount],
+        callback_url: verify_subscription_subscriptions_url,
+        metadata: {
+          user_id: current_user.id,
+          plan_id: plan_id,
+          subscription: true
+        },
+        plan: paystack_plan_code
       )
-      
-      # Create local subscription record
-      subscription = current_user.subscriptions.create!(
-        stripe_subscription_id: stripe_subscription.id,
-        status: stripe_subscription.status,
-        plan_id: plan_id,
-        current_period_start: Time.at(stripe_subscription.current_period_start),
-        current_period_end: Time.at(stripe_subscription.current_period_end),
-        trial_start: stripe_subscription.trial_start ? Time.at(stripe_subscription.trial_start) : nil,
-        trial_end: stripe_subscription.trial_end ? Time.at(stripe_subscription.trial_end) : nil
-      )
-      
-      # Handle payment intent for confirmation
-      payment_intent = stripe_subscription.latest_invoice.payment_intent
-      
-      if payment_intent.status == 'requires_action'
-        # Client needs to confirm payment
-        redirect_to subscription_path(subscription, client_secret: payment_intent.client_secret)
-      else
-        redirect_to subscription_path(subscription), notice: 'Subscription created successfully!'
-      end
-      
-    rescue => e
+
+      ahoy.track "subscription_start", plan_id: plan_id
+
+      redirect_to result['authorization_url'], allow_other_host: true
+    rescue PaystackService::PaystackError => e
       Rails.logger.error "Subscription creation failed: #{e.message}"
       redirect_to new_subscription_path, alert: "Subscription failed: #{e.message}"
+    rescue => e
+      Rails.logger.error "Subscription creation failed: #{e.class}: #{e.message}"
+      redirect_to new_subscription_path, alert: "Subscription failed. Please try again."
     end
   end
-  
-  def show
-    @payment_intent_client_secret = params[:client_secret]
+
+  # Paystack redirects here after subscription payment
+  def verify_subscription
+    reference = params[:reference] || params[:trxref]
+
+    if reference.blank?
+      return redirect_to new_subscription_path, alert: 'Invalid payment reference'
+    end
+
+    begin
+      data = PaystackService.verify_transaction(reference)
+
+      if data['status'] == 'success'
+        plan_id = data.dig('metadata', 'plan_id') || 'price_monthly_pro'
+
+        # Find or create the subscription
+        sub_code = data.dig('plan_object', 'subscriptions', 0, 'subscription_code') ||
+                   "sub_#{reference}"
+
+        subscription = current_user.subscriptions.find_or_initialize_by(paystack_subscription_code: sub_code)
+        subscription.assign_attributes(
+          status: 'active',
+          plan_id: plan_id,
+          current_period_start: Time.current,
+          current_period_end: calculate_period_end(plan_id)
+        )
+        subscription.save!
+
+        redirect_to subscription_path(subscription), notice: 'Subscription activated successfully!'
+      else
+        redirect_to new_subscription_path, alert: "Payment was not successful. Status: #{data['status']}"
+      end
+    rescue => e
+      Rails.logger.error "Subscription verification failed: #{e.message}"
+      redirect_to new_subscription_path, alert: "Could not verify subscription. Please contact support."
+    end
   end
-  
+
+  def show; end
+
   def cancel
     begin
       @subscription.cancel_at_period_end!
       redirect_to subscription_path(@subscription), notice: 'Subscription will be canceled at the end of the current period.'
     rescue => e
-      redirect_to subscription_path(@subscription), alert: "Failed to cancel subscription: #{e.message}"
+      redirect_to subscription_path(@subscription), alert: "Failed to cancel: #{e.message}"
     end
   end
-  
+
   def reactivate
     begin
       @subscription.reactivate!
-      redirect_to subscription_path(@subscription), notice: 'Subscription reactivated successfully!'
+      redirect_to subscription_path(@subscription), notice: 'Subscription reactivated!'
     rescue => e
-      redirect_to subscription_path(@subscription), alert: "Failed to reactivate subscription: #{e.message}"
+      redirect_to subscription_path(@subscription), alert: "Failed to reactivate: #{e.message}"
     end
   end
-  
+
   def destroy
     begin
-      # Immediately cancel the subscription
-      StripeService.delete_subscription(@subscription.stripe_subscription_id)
+      PaystackService.disable_subscription(
+        code: @subscription.paystack_subscription_code,
+        token: current_user.email
+      )
       @subscription.update!(status: 'canceled')
-      
       redirect_to billing_index_path, notice: 'Subscription canceled immediately.'
     rescue => e
-      redirect_to subscription_path(@subscription), alert: "Failed to cancel subscription: #{e.message}"
+      redirect_to subscription_path(@subscription), alert: "Failed to cancel: #{e.message}"
     end
   end
-  
+
   private
-  
+
   def set_subscription
     @subscription = current_user.subscriptions.find(params[:id])
+  end
+
+  def plan_details(plan_id)
+    {
+      'price_monthly_pro' => { amount: 29_000_00, interval: 'monthly' },
+      'price_annual_pro' => { amount: 290_000_00, interval: 'annually' },
+      'price_monthly_premium' => { amount: 59_000_00, interval: 'monthly' },
+      'price_annual_premium' => { amount: 590_000_00, interval: 'annually' }
+    }[plan_id]
+  end
+
+  def calculate_period_end(plan_id)
+    case plan_id
+    when 'price_monthly_pro', 'price_monthly_premium'
+      1.month.from_now
+    when 'price_annual_pro', 'price_annual_premium'
+      1.year.from_now
+    else
+      1.month.from_now
+    end
   end
 end

@@ -1,0 +1,85 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-6">
+    <%= link_to linkedin_optimizations_path, class: "inline-flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-5 border-b border-gray-200">
+      <h1 class="text-lg font-bold text-gray-900">Optimize LinkedIn Profile</h1>
+      <p class="mt-1 text-sm text-gray-500">Paste your current LinkedIn sections and get AI-powered improvements</p>
+    </div>
+
+    <div class="p-6">
+      <%= form_with(model: @linkedin_optimization, class: "space-y-6") do |form| %>
+        <% if @linkedin_optimization.errors.any? %>
+          <div class="rounded-lg bg-red-50 border border-red-200 p-4">
+            <ul class="text-sm text-red-700 list-disc pl-5">
+              <% @linkedin_optimization.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- Target Role -->
+        <div>
+          <%= form.label :target_role, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :target_role, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "e.g., Senior Software Engineer", required: true %>
+        </div>
+
+        <!-- Current Headline -->
+        <div>
+          <%= form.label :current_headline, "Current Headline", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :current_headline, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "Your current LinkedIn headline" %>
+          <p class="mt-1 text-xs text-gray-400">The text that appears right below your name</p>
+        </div>
+
+        <!-- Current About -->
+        <div>
+          <%= form.label :current_about, "Current About Section", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_area :current_about, rows: 5, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "Paste your current LinkedIn About section here..." %>
+        </div>
+
+        <!-- Current Experience -->
+        <div>
+          <%= form.label :current_experience, "Current Experience (Key Bullets)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_area :current_experience, rows: 6, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "Paste your most recent experience bullets..." %>
+        </div>
+
+        <!-- Linked Resume -->
+        <div>
+          <%= form.label :resume_id, "Use Resume for Context", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :resume_id, @resumes.map { |r| ["#{r.target_role} (#{r.created_at.strftime('%b %d')})", r.id] }, { include_blank: "No resume" }, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+          <p class="mt-1 text-xs text-gray-400">Your resume helps generate more accurate optimizations</p>
+        </div>
+
+        <!-- AI Provider -->
+        <div>
+          <%= form.label :provider, "AI Provider", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :provider, [['OpenAI GPT-4', 'openai'], ['Anthropic Claude', 'anthropic'], ['Google Gemini', 'google']], {}, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+        </div>
+
+        <!-- Cost Notice -->
+        <div class="bg-blue-50 rounded-lg p-4">
+          <div class="flex">
+            <svg class="h-5 w-5 text-blue-400 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <p class="text-sm text-blue-700">This will use <strong>1 credit</strong>. You have <strong><%= current_user.credits_remaining %> credits</strong> remaining.</p>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+          <%= link_to 'Cancel', linkedin_optimizations_path, class: "px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all" %>
+          <%= form.submit 'Optimize Profile', class: "px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

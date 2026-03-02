@@ -61,7 +61,7 @@
       <% end %>
 
       <!-- Job & Company Information -->
-      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.1s;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.1s;">
         <h3 class="text-lg font-semibold text-gray-900 mb-6">Job & Company Details</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -69,7 +69,7 @@
           <div>
             <%= f.label :company_name, "Company Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.text_field :company_name, 
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
                 placeholder: "e.g., Google, Microsoft, Apple" %>
           </div>
 
@@ -77,7 +77,7 @@
           <div>
             <%= f.label :target_role, "Job Title", class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.text_field :target_role, 
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
                 placeholder: "e.g., Senior Software Engineer" %>
           </div>
 
@@ -85,14 +85,14 @@
           <div class="md:col-span-2">
             <%= f.label :hiring_manager_name, "Hiring Manager Name (Optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.text_field :hiring_manager_name, 
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
                 placeholder: "e.g., Sarah Johnson, John Smith" %>
           </div>
         </div>
       </div>
 
       <!-- Cover Letter Style -->
-      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.2s;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.2s;">
         <h3 class="text-lg font-semibold text-gray-900 mb-6">Cover Letter Style</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,7 +108,7 @@
                   ['Enthusiastic & Energetic', 'enthusiastic']
                 ], @cover_letter.tone),
                 {},
-                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+                { class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
           </div>
 
           <!-- Length -->
@@ -121,13 +121,13 @@
                   ['Long (450-600 words)', 'long']
                 ], @cover_letter.length),
                 {},
-                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+                { class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
           </div>
         </div>
       </div>
 
       <!-- Cover Letter Content -->
-      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.3s;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.3s;">
         <h3 class="text-lg font-semibold text-gray-900 mb-6">Cover Letter Content</h3>
         <p class="text-sm text-gray-600 mb-4">
           Edit your cover letter content below. You can make any changes you'd like to personalize it further.
@@ -135,7 +135,7 @@
         
         <%= f.text_area :content,
             rows: 15,
-            class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-sm",
+            class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300 font-mono text-sm",
             placeholder: "Your cover letter content..." %>
         
         <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
@@ -159,7 +159,7 @@
         
         <div class="flex items-center space-x-4">
           <%= link_to preview_resume_cover_letter_path(@resume, @cover_letter), target: "_blank",
-              class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+              class: "inline-flex items-center px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all" do %>
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -168,7 +168,7 @@
           <% end %>
           
           <%= f.submit "Save Changes", 
-              class: "px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-200",
+              class: "px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all",
               data: { disable_with: "Saving..." } %>
         </div>
       </div>

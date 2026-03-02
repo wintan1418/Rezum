@@ -1,0 +1,61 @@
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">LinkedIn Optimization</h1>
+      <p class="mt-1 text-sm text-gray-500">AI-powered LinkedIn profile optimization for maximum visibility</p>
+    </div>
+    <%= link_to new_linkedin_optimization_path, class: "mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-lg shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all" do %>
+      <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      New Optimization
+    <% end %>
+  </div>
+
+  <% if @linkedin_optimizations.empty? %>
+    <div class="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+      <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Optimize your LinkedIn profile</h3>
+      <p class="text-gray-500 mb-6 max-w-md mx-auto">Get AI-powered suggestions to improve your headline, about section, and experience for maximum recruiter visibility.</p>
+      <%= link_to new_linkedin_optimization_path, class: "inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all" do %>
+        Optimize Your Profile
+      <% end %>
+    </div>
+  <% else %>
+    <div class="grid gap-4">
+      <% @linkedin_optimizations.each do |opt| %>
+        <%= link_to linkedin_optimization_path(opt), class: "block bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow" do %>
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-base font-semibold text-gray-900"><%= opt.target_role %></h3>
+              <p class="text-sm text-gray-500 mt-0.5"><%= opt.created_at.strftime('%b %d, %Y') %></p>
+            </div>
+            <% case opt.status %>
+            <% when 'processing' %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
+                <svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing
+              </span>
+            <% when 'optimized' %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Optimized</span>
+            <% when 'failed' %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Failed</span>
+            <% else %>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">Draft</span>
+            <% end %>
+          </div>
+          <% if opt.suggestions_list.any? %>
+            <p class="text-xs text-gray-400 mt-2"><%= opt.suggestions_list.size %> suggestions</p>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

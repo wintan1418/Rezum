@@ -1,0 +1,116 @@
+<div class="min-h-full">
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Refer & Earn</h1>
+    <p class="text-gray-500 mb-8">Share ReZum with friends and earn free credits for every signup.</p>
+
+    <!-- How It Works -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 sm:p-8 mb-8 text-white">
+      <h2 class="text-lg font-semibold mb-4">How It Works</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 text-sm font-bold">1</div>
+          <div>
+            <p class="font-medium">Share your link</p>
+            <p class="text-sm text-white/80">Send your unique referral link to friends</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 text-sm font-bold">2</div>
+          <div>
+            <p class="font-medium">They sign up</p>
+            <p class="text-sm text-white/80">Your friend creates a free account</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 text-sm font-bold">3</div>
+          <div>
+            <p class="font-medium">You both earn credits</p>
+            <p class="text-sm text-white/80">You get <strong>5 credits</strong>, they get <strong>2 bonus credits</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center">
+        <p class="text-2xl font-bold text-gray-900"><%= @referrals.count %></p>
+        <p class="text-sm text-gray-500">Referrals</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center">
+        <p class="text-2xl font-bold text-blue-600"><%= @referral_credits_earned %></p>
+        <p class="text-sm text-gray-500">Credits Earned</p>
+      </div>
+      <div class="hidden sm:block bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center">
+        <p class="text-2xl font-bold text-purple-600"><%= current_user.credits_remaining %></p>
+        <p class="text-sm text-gray-500">Current Balance</p>
+      </div>
+    </div>
+
+    <!-- Referral Link -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8" data-controller="clipboard">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Your Referral Link</h3>
+      <div class="flex items-center gap-3">
+        <input type="text" value="<%= @referral_link %>" readonly data-clipboard-target="source"
+          class="flex-1 rounded-lg border-gray-300 bg-gray-50 text-sm text-gray-700 cursor-text">
+        <button data-action="click->clipboard#copy" class="inline-flex items-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg transition-all cursor-pointer">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span data-clipboard-target="feedback">Copy</span>
+        </button>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">Code: <strong><%= @referral_code %></strong></p>
+
+      <!-- Share Buttons -->
+      <div class="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+        <span class="text-sm text-gray-500">Share via:</span>
+        <a href="https://twitter.com/intent/tweet?text=<%= ERB::Util.url_encode("I use ReZum to optimize my resume with AI. Try it free: #{@referral_link}") %>" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+          <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Twitter
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= ERB::Util.url_encode(@referral_link) %>" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+          <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:?subject=<%= ERB::Util.url_encode("Try ReZum - AI Resume Optimizer") %>&body=<%= ERB::Util.url_encode("Hey! I've been using ReZum to optimize my resume with AI. You should try it: #{@referral_link}") %>" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Email
+        </a>
+      </div>
+    </div>
+
+    <!-- Referrals List -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Referrals</h3>
+
+      <% if @referrals.any? %>
+        <div class="divide-y divide-gray-100">
+          <% @referrals.each do |referral| %>
+            <div class="flex items-center justify-between py-3">
+              <div class="flex items-center gap-3">
+                <img src="<%= referral.avatar_url(variant: :thumb) %>" alt="" class="w-8 h-8 rounded-full object-cover">
+                <div>
+                  <p class="text-sm font-medium text-gray-900"><%= referral.display_name %></p>
+                  <p class="text-xs text-gray-500">Joined <%= time_ago_in_words(referral.created_at) %> ago</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                +5 credits
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <p class="text-sm text-gray-500">No referrals yet. Share your link to get started!</p>
+        </div>
+      <% end %>
+    </div>
+  </main>
+</div>

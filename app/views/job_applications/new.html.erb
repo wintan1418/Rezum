@@ -1,0 +1,21 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-6">
+    <%= link_to job_applications_path, class: "inline-flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back to Applications
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-5 border-b border-gray-200">
+      <h1 class="text-lg font-bold text-gray-900">Track New Application</h1>
+      <p class="mt-1 text-sm text-gray-500">Add a job you've applied to or want to apply for</p>
+    </div>
+
+    <div class="p-6">
+      <%= render 'form', job_application: @job_application %>
+    </div>
+  </div>
+</div>

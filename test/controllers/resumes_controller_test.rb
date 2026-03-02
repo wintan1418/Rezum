@@ -1,38 +1,102 @@
 require "test_helper"
 
 class ResumesControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get resumes_index_url
-    assert_response :success
+  setup do
+    @user = users(:taylor)
+    @resume = resumes(:draft_resume)
+    @optimized = resumes(:optimized_resume)
+    sign_in @user
   end
 
-  test "should get show" do
-    get resumes_show_url
+  test "redirects to login when not authenticated" do
+    sign_out @user
+    get resumes_path
+    assert_response :redirect
+  end
+
+  test "should get index" do
+    get resumes_path
     assert_response :success
   end
 
   test "should get new" do
-    get resumes_new_url
+    get new_resume_path
     assert_response :success
   end
 
-  test "should get create" do
-    get resumes_create_url
+  test "should get show" do
+    get resume_path(@resume)
     assert_response :success
   end
 
   test "should get edit" do
-    get resumes_edit_url
+    get edit_resume_path(@resume)
     assert_response :success
   end
 
-  test "should get update" do
-    get resumes_update_url
-    assert_response :success
+  test "should create resume with valid params" do
+    assert_difference("Resume.count") do
+      post resumes_path, params: {
+        resume: {
+          original_content: "A" * 150,
+          target_role: "Software Engineer",
+          industry: "Technology",
+          experience_level: "mid"
+        }
+      }
+    end
+    assert_redirected_to resume_path(Resume.last)
   end
 
-  test "should get destroy" do
-    get resumes_destroy_url
-    assert_response :success
+  test "should not create resume with invalid params" do
+    assert_no_difference("Resume.count") do
+      post resumes_path, params: {
+        resume: {
+          original_content: "too short",
+          target_role: ""
+        }
+      }
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "should update resume" do
+    patch resume_path(@resume), params: {
+      resume: { target_role: "Senior Engineer" }
+    }
+    assert_redirected_to resume_path(@resume)
+    assert_equal "Senior Engineer", @resume.reload.target_role
+  end
+
+  test "should destroy resume" do
+    assert_difference("Resume.count", -1) do
+      delete resume_path(@resume)
+    end
+    assert_redirected_to resumes_path
+  end
+
+  test "should not access other user's resume" do
+    other_resume = resumes(:processing_resume)
+    get resume_path(other_resume)
+    assert_response :not_found
+  end
+
+  test "optimize redirects when no credits" do
+    broke = users(:broke_user)
+    sign_in broke
+    broke_resume = broke.resumes.create!(
+      original_content: "X" * 150,
+      target_role: "Developer",
+      status: "draft"
+    )
+    post optimize_resume_path(broke_resume)
+    assert_redirected_to resume_path(broke_resume)
+    assert_match(/credits/i, flash[:alert])
+  end
+
+  test "optimize redirects when no job description" do
+    post optimize_resume_path(@resume)
+    assert_redirected_to edit_resume_path(@resume)
+    assert_match(/job description/i, flash[:alert])
   end
 end

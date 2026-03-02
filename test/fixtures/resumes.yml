@@ -1,27 +1,40 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+draft_resume:
+  user: taylor
+  original_content: <%= "A" * 150 %>
+  target_role: Software Engineer
+  industry: Technology
+  experience_level: mid
+  status: draft
+  provider: openai
+  template: professional
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= Time.current %>
 
-one:
-  user: one
-  original_content: MyText
-  optimized_content: MyText
-  job_description: MyText
-  target_role: MyString
-  industry: MyString
-  experience_level: MyString
-  ats_score: 1
-  keywords: MyText
-  status: MyString
-  provider: MyString
+optimized_resume:
+  user: taylor
+  original_content: <%= "B" * 150 %>
+  optimized_content: <%= "C" * 200 %>
+  job_description: <%= "D" * 100 %>
+  target_role: Product Manager
+  industry: Technology
+  experience_level: senior
+  ats_score: 85
+  keywords: "product management, agile, roadmap, stakeholder"
+  status: optimized
+  provider: openai
+  template: modern
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= Time.current %>
 
-two:
-  user: two
-  original_content: MyText
-  optimized_content: MyText
-  job_description: MyText
-  target_role: MyString
-  industry: MyString
-  experience_level: MyString
-  ats_score: 1
-  keywords: MyText
-  status: MyString
-  provider: MyString
+processing_resume:
+  user: pro_user
+  original_content: <%= "E" * 150 %>
+  job_description: <%= "F" * 100 %>
+  target_role: Data Scientist
+  industry: Technology
+  experience_level: entry
+  status: processing
+  provider: anthropic
+  template: professional
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= Time.current %>

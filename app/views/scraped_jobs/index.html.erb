@@ -1,0 +1,202 @@
+<div class="min-h-full">
+  <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Job Scraper</h1>
+        <p class="mt-1 text-sm text-gray-500">AI-powered job discovery based on your resume and preferences</p>
+      </div>
+      <div class="mt-4 sm:mt-0 flex items-center gap-3">
+        <%= link_to settings_scraped_jobs_path, class: "inline-flex items-center px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          Settings
+        <% end %>
+        <%= button_to scrape_now_scraped_jobs_path, method: :post, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-xl text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-sm" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          Scrape Now
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <p class="text-2xl font-bold text-gray-900"><%= @stats[:total] %></p>
+        <p class="text-sm text-gray-500">Total Found</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <p class="text-2xl font-bold text-blue-600"><%= @stats[:new_count] %></p>
+        <p class="text-sm text-gray-500">New</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <p class="text-2xl font-bold text-yellow-600"><%= @stats[:saved_count] %></p>
+        <p class="text-sm text-gray-500">Saved</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <p class="text-2xl font-bold text-green-600"><%= @stats[:applied_count] %></p>
+        <p class="text-sm text-gray-500">Applied</p>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        <p class="text-2xl font-bold text-purple-600"><%= @stats[:high_match] %></p>
+        <p class="text-sm text-gray-500">High Match (70%+)</p>
+      </div>
+    </div>
+
+    <!-- Scraper Status -->
+    <% if @settings.persisted? && @settings.enabled? %>
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+            <span class="text-sm text-green-800 font-medium">Scraper active</span>
+            <span class="text-sm text-green-600 ml-2">(<%= @settings.frequency_label %>)</span>
+          </div>
+          <% if @settings.last_scraped_at %>
+            <span class="text-xs text-green-600">Last scraped: <%= time_ago_in_words(@settings.last_scraped_at) %> ago</span>
+          <% end %>
+        </div>
+      </div>
+    <% elsif !@settings.persisted? %>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6 text-center">
+        <svg class="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <h3 class="text-lg font-semibold text-blue-900 mb-1">Configure Your Job Scraper</h3>
+        <p class="text-sm text-blue-700 mb-4">Set your target roles, locations, and preferences to start finding jobs automatically.</p>
+        <%= link_to "Set Up Scraper", settings_scraped_jobs_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700" %>
+      </div>
+    <% end %>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="text-sm font-medium text-gray-700">Filter:</span>
+        <%= link_to "All", scraped_jobs_path, class: "px-3 py-1.5 rounded-full text-sm font-medium #{params[:status].blank? ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+        <%= link_to "New", scraped_jobs_path(status: 'new'), class: "px-3 py-1.5 rounded-full text-sm font-medium #{params[:status] == 'new' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+        <%= link_to "Saved", scraped_jobs_path(status: 'saved'), class: "px-3 py-1.5 rounded-full text-sm font-medium #{params[:status] == 'saved' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+        <%= link_to "Applied", scraped_jobs_path(status: 'applied'), class: "px-3 py-1.5 rounded-full text-sm font-medium #{params[:status] == 'applied' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+        <span class="text-gray-300">|</span>
+        <%= link_to "High Match", scraped_jobs_path(min_score: 70), class: "px-3 py-1.5 rounded-full text-sm font-medium #{params[:min_score] == '70' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+        <%= link_to "Remote", scraped_jobs_path(remote: '1'), class: "px-3 py-1.5 rounded-full text-sm font-medium #{params[:remote] == '1' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+      </div>
+    </div>
+
+    <!-- Job List -->
+    <% if @scraped_jobs.any? %>
+      <div class="space-y-4">
+        <% @scraped_jobs.each do |job| %>
+          <div class="bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all p-6">
+            <div class="flex items-start justify-between">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3 mb-1">
+                  <h3 class="text-lg font-semibold text-gray-900 truncate">
+                    <% if job.url.present? %>
+                      <a href="<%= job.url %>" target="_blank" class="hover:text-blue-600"><%= job.role %></a>
+                    <% else %>
+                      <%= job.role %>
+                    <% end %>
+                  </h3>
+                  <!-- Match Score Badge -->
+                  <span class="flex-shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+                    <%= case job.match_color
+                        when 'green' then 'bg-green-100 text-green-800'
+                        when 'yellow' then 'bg-yellow-100 text-yellow-800'
+                        when 'red' then 'bg-red-100 text-red-800'
+                        else 'bg-gray-100 text-gray-800'
+                        end %>">
+                    <%= job.match_score %>% match
+                  </span>
+                </div>
+
+                <p class="text-sm font-medium text-gray-700"><%= job.company_name %></p>
+
+                <div class="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                  <% if job.location.present? %>
+                    <span class="flex items-center">
+                      <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      </svg>
+                      <%= job.location %>
+                    </span>
+                  <% end %>
+                  <% if job.remote? %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-green-50 text-green-700 text-xs font-medium">Remote</span>
+                  <% end %>
+                  <% if job.salary_range.present? %>
+                    <span class="flex items-center">
+                      <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <%= job.salary_range %>
+                    </span>
+                  <% end %>
+                  <span class="text-xs text-gray-400"><%= time_ago_in_words(job.created_at) %> ago</span>
+                </div>
+
+                <% if job.description.present? %>
+                  <p class="mt-2 text-sm text-gray-600 line-clamp-2"><%= job.short_description %></p>
+                <% end %>
+
+                <!-- Tags -->
+                <% if job.tags_list.any? %>
+                  <div class="flex flex-wrap gap-1.5 mt-3">
+                    <% job.tags_list.first(4).each do |tag| %>
+                      <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs"><%= tag %></span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex items-center gap-2 ml-4 flex-shrink-0">
+                <% if job.status == 'new' %>
+                  <%= button_to scraped_job_path(job), method: :patch, params: { scraped_job: { status: 'saved' } }, class: "p-2 text-gray-400 hover:text-yellow-500 rounded-lg hover:bg-yellow-50", title: "Save" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                  <% end %>
+                <% elsif job.status == 'saved' %>
+                  <%= button_to scraped_job_path(job), method: :patch, params: { scraped_job: { status: 'applied' } }, class: "p-2 text-yellow-500 hover:text-green-500 rounded-lg hover:bg-green-50", title: "Mark as Applied" do %>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                  <% end %>
+                <% end %>
+
+                <% if job.url.present? %>
+                  <a href="<%= job.url %>" target="_blank" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50" title="Open job posting">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                  </a>
+                <% end %>
+
+                <%= button_to scraped_job_path(job), method: :delete, class: "p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50", title: "Hide" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-16">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-1">No jobs found yet</h3>
+        <p class="text-sm text-gray-500 mb-4">Configure your settings and run the scraper to find matching jobs.</p>
+        <%= link_to "Configure Scraper", settings_scraped_jobs_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700" %>
+      </div>
+    <% end %>
+  </main>
+</div>

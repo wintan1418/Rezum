@@ -8,8 +8,8 @@
           <p class="mt-2 text-gray-600">View all your billing transactions and receipts</p>
         </div>
         
-        <%= link_to billing_index_path, 
-            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+        <%= link_to billing_index_path,
+            class: "inline-flex items-center px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all" do %>
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
@@ -21,9 +21,9 @@
     <div class="px-4 sm:px-0">
       <% if @payments.any? %>
         <!-- Payments Table -->
-        <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">Transaction History</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Transaction History</h3>
           </div>
           
           <div class="overflow-x-auto">
@@ -75,7 +75,7 @@
                             <%= payment.description_display %>
                           </p>
                           <p class="text-xs text-gray-500">
-                            ID: <%= payment.stripe_payment_intent_id&.last(12) || payment.id %>
+                            Ref: <%= payment.paystack_reference&.last(12) || payment.id %>
                           </p>
                         </div>
                       </div>
@@ -96,7 +96,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
                         <%= case payment.status
-                            when 'succeeded' then 'bg-green-100 text-green-800'
+                            when 'success' then 'bg-green-100 text-green-800'
                             when 'canceled' then 'bg-red-100 text-red-800'
                             when 'processing' then 'bg-yellow-100 text-yellow-800'
                             else 'bg-gray-100 text-gray-800'
@@ -147,7 +147,7 @@
 
         <!-- Summary Stats -->
         <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white shadow rounded-lg p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg class="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,13 +157,13 @@
               <div class="ml-3">
                 <p class="text-sm font-medium text-gray-500">Total Spent</p>
                 <p class="text-2xl font-bold text-gray-900">
-                  $<%= current_user.total_spent %>
+                  &#8358;<%= current_user.total_spent %>
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="bg-white shadow rounded-lg p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg class="h-8 w-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,13 +173,13 @@
               <div class="ml-3">
                 <p class="text-sm font-medium text-gray-500">Total Credits Purchased</p>
                 <p class="text-2xl font-bold text-gray-900">
-                  <%= @payments.where(status: 'succeeded').sum(:credits_purchased) || 0 %>
+                  <%= @payments.where(status: 'success').sum(:credits_purchased) || 0 %>
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="bg-white shadow rounded-lg p-6">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
                 <svg class="h-8 w-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@
               <div class="ml-3">
                 <p class="text-sm font-medium text-gray-500">Successful Transactions</p>
                 <p class="text-2xl font-bold text-gray-900">
-                  <%= @payments.where(status: 'succeeded').count %>
+                  <%= @payments.where(status: 'success').count %>
                 </p>
               </div>
             </div>
@@ -198,7 +198,7 @@
 
       <% else %>
         <!-- Empty State -->
-        <div class="bg-white shadow rounded-lg">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
           <div class="px-6 py-12 text-center">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -207,13 +207,13 @@
             <p class="mt-1 text-sm text-gray-500">You haven't made any payments yet. Start by purchasing credits or subscribing to a plan.</p>
             
             <div class="mt-6 flex justify-center space-x-3">
-              <%= link_to billing_index_path, 
-                  class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" do %>
+              <%= link_to billing_index_path,
+                  class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all" do %>
                 Buy Credits
               <% end %>
-              
-              <%= link_to new_subscription_path, 
-                  class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+
+              <%= link_to new_subscription_path,
+                  class: "inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all" do %>
                 Subscribe
               <% end %>
             </div>

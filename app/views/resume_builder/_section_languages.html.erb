@@ -1,0 +1,4 @@
+<div>
+  <label class="block text-xs font-medium text-gray-500 mb-1">Languages (one per line, e.g., "English - Native")</label>
+  <textarea name="sections[<%= section.id %>][content][items_text]" rows="3" class="w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm transition-all hover:border-gray-300" placeholder="English - Native&#10;Spanish - Intermediate&#10;French - Basic"><%= Array(section.content_data['items']).join("\n") %></textarea>
+</div>

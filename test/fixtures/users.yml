@@ -1,11 +1,41 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+taylor:
+  first_name: Taylor
+  last_name: Trial
+  email: taylor@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  credits_remaining: 5
+  experience_level: 1
+  language: en
+  currency: USD
+  referral_code: TAYL1234
+  onboarding_completed: true
+  created_at: <%= 30.days.ago %>
+  updated_at: <%= Time.current %>
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+pro_user:
+  first_name: Pro
+  last_name: User
+  email: pro@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  credits_remaining: 50
+  experience_level: 2
+  language: en
+  currency: NGN
+  referral_code: PROU5678
+  onboarding_completed: true
+  created_at: <%= 60.days.ago %>
+  updated_at: <%= Time.current %>
+
+broke_user:
+  first_name: Broke
+  last_name: User
+  email: broke@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  credits_remaining: 0
+  experience_level: 0
+  language: en
+  currency: NGN
+  referral_code: BROK9999
+  onboarding_completed: false
+  created_at: <%= 7.days.ago %>
+  updated_at: <%= Time.current %>

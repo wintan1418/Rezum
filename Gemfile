@@ -46,15 +46,18 @@ gem "phony_rails" # International phone number validation
 gem "geocoder" # IP-based location detection
 gem "money-rails"
 
-# Payment Processing
-gem "stripe", require: "stripe"
+# Payment Processing (Paystack - uses Net::HTTP, no gem needed)
 
 # SEO & URLs
 gem "friendly_id"
 
 # Background Jobs
 gem "sidekiq"
+gem "sidekiq-cron"
 gem "redis", ">= 4.0.1"
+
+# Analytics
+gem "ahoy_matey"
 
 # AI Integration
 gem "ruby-openai"

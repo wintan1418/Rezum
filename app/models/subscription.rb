@@ -1,110 +1,129 @@
 class Subscription < ApplicationRecord
   belongs_to :user
-  
-  validates :stripe_subscription_id, presence: true, uniqueness: true
-  validates :status, inclusion: { in: %w[active trialing past_due canceled unpaid incomplete incomplete_expired] }
+
+  validates :paystack_subscription_code, presence: true, uniqueness: true
+  validates :status, inclusion: { in: %w[active trialing past_due canceled unpaid incomplete] }
   validates :plan_id, presence: true
-  
-  enum status: {
+
+  enum :status, {
     active: 'active',
     trialing: 'trialing',
     past_due: 'past_due',
     canceled: 'canceled',
     unpaid: 'unpaid',
-    incomplete: 'incomplete',
-    incomplete_expired: 'incomplete_expired'
+    incomplete: 'incomplete'
   }
-  
-  scope :active_subscriptions, -> { where(status: ['active', 'trialing']) }
+
+  scope :active_subscriptions, -> { where(status: %w[active trialing]) }
   scope :canceled_subscriptions, -> { where(status: 'canceled') }
-  
+
+  # Paystack plan codes — update these after creating plans on Paystack dashboard
+  PLAN_CODES = {
+    'price_monthly_pro' => ENV.fetch('PAYSTACK_PLAN_MONTHLY_PRO', 'PLN_monthly_pro'),
+    'price_annual_pro' => ENV.fetch('PAYSTACK_PLAN_ANNUAL_PRO', 'PLN_annual_pro'),
+    'price_monthly_premium' => ENV.fetch('PAYSTACK_PLAN_MONTHLY_PREMIUM', 'PLN_monthly_premium'),
+    'price_annual_premium' => ENV.fetch('PAYSTACK_PLAN_ANNUAL_PREMIUM', 'PLN_annual_premium')
+  }.freeze
+
   def active?
-    status.in?(['active', 'trialing']) && current_period_end&.future?
+    status.in?(%w[active trialing]) && current_period_end&.future?
   end
-  
+
   def trialing?
     status == 'trialing' && trial_end&.future?
   end
-  
+
   def expired?
     current_period_end&.past?
   end
-  
+
   def days_until_renewal
     return 0 unless current_period_end
     [(current_period_end.to_date - Date.current).to_i, 0].max
   end
-  
+
   def plan_name
     case plan_id
-    when 'price_monthly_pro'
-      'Monthly Pro'
-    when 'price_annual_pro'
-      'Annual Pro'
-    else
-      plan_id&.humanize || 'Unknown Plan'
+    when 'price_monthly_pro' then 'Monthly Pro'
+    when 'price_annual_pro' then 'Annual Pro'
+    when 'price_monthly_premium' then 'Monthly Premium'
+    when 'price_annual_premium' then 'Annual Premium'
+    else plan_id&.humanize || 'Unknown Plan'
     end
   end
-  
+
   def plan_price
     case plan_id
-    when 'price_monthly_pro'
-      29
-    when 'price_annual_pro'
-      290
-    else
-      0
+    when 'price_monthly_pro' then 29
+    when 'price_annual_pro' then 290
+    when 'price_monthly_premium' then 59
+    when 'price_annual_premium' then 590
+    else 0
     end
   end
-  
+
   def billing_cycle
     case plan_id
-    when 'price_monthly_pro'
-      'monthly'
-    when 'price_annual_pro'
-      'annual'
-    else
-      'unknown'
+    when 'price_monthly_pro', 'price_monthly_premium' then 'monthly'
+    when 'price_annual_pro', 'price_annual_premium' then 'annual'
+    else 'unknown'
     end
   end
-  
-  # Sync subscription data from Stripe
-  def sync_from_stripe!
-    return unless stripe_subscription_id
-    
-    stripe_subscription = Stripe::Subscription.retrieve(stripe_subscription_id)
-    
-    update!(
-      status: stripe_subscription.status,
-      current_period_start: Time.at(stripe_subscription.current_period_start),
-      current_period_end: Time.at(stripe_subscription.current_period_end),
-      cancel_at_period_end: stripe_subscription.cancel_at_period_end,
-      trial_start: stripe_subscription.trial_start ? Time.at(stripe_subscription.trial_start) : nil,
-      trial_end: stripe_subscription.trial_end ? Time.at(stripe_subscription.trial_end) : nil
-    )
+
+  def premium?
+    plan_id.to_s.include?('premium')
   end
-  
-  # Cancel subscription at period end
+
+  # Sync from Paystack
+  def sync_from_paystack!
+    return unless paystack_subscription_code
+
+    data = PaystackService.fetch_subscription(paystack_subscription_code)
+    return unless data
+
+    new_status = case data['status']
+                 when 'active' then 'active'
+                 when 'non-renewing' then 'canceled'
+                 when 'attention' then 'past_due'
+                 else data['status']
+                 end
+
+    attrs = { status: new_status }
+    attrs[:current_period_start] = Time.parse(data['createdAt']) if data['createdAt']
+    if data['next_payment_date']
+      attrs[:current_period_end] = Time.parse(data['next_payment_date'])
+    end
+
+    update!(attrs)
+  end
+
+  # Cancel at period end (disable subscription)
   def cancel_at_period_end!
-    return unless stripe_subscription_id
-    
-    Stripe::Subscription.update(
-      stripe_subscription_id,
-      { cancel_at_period_end: true }
+    return unless paystack_subscription_code
+
+    PaystackService.disable_subscription(
+      code: paystack_subscription_code,
+      token: email_token
     )
-    
+
     update!(cancel_at_period_end: true)
   end
-  
-  # Reactivate canceled subscription
+
+  # Reactivate subscription
   def reactivate!
-    return unless stripe_subscription_id && cancel_at_period_end?
-    
-    Stripe::Subscription.update(
-      stripe_subscription_id,
-      { cancel_at_period_end: false }
+    return unless paystack_subscription_code && cancel_at_period_end?
+
+    PaystackService.enable_subscription(
+      code: paystack_subscription_code,
+      token: email_token
     )
-    
+
     update!(cancel_at_period_end: false)
+  end
+
+  private
+
+  def email_token
+    user.email
   end
 end

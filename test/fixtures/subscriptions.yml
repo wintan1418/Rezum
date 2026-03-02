@@ -1,0 +1,21 @@
+active_subscription:
+  user: pro_user
+  paystack_subscription_code: SUB_active123
+  status: active
+  plan_id: price_monthly_pro
+  current_period_start: <%= 15.days.ago %>
+  current_period_end: <%= 15.days.from_now %>
+  cancel_at_period_end: false
+  created_at: <%= 15.days.ago %>
+  updated_at: <%= Time.current %>
+
+canceled_subscription:
+  user: taylor
+  paystack_subscription_code: SUB_canceled456
+  status: canceled
+  plan_id: price_annual_pro
+  current_period_start: <%= 60.days.ago %>
+  current_period_end: <%= 5.days.ago %>
+  cancel_at_period_end: false
+  created_at: <%= 60.days.ago %>
+  updated_at: <%= Time.current %>

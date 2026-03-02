@@ -1,7 +1,7 @@
 class OptimizeResumeJob < ApplicationJob
   queue_as :default
   
-  retry_on StandardError, wait: :exponentially_longer, attempts: 3
+  retry_on StandardError, wait: :polynomially_longer, attempts: 3
   discard_on ActiveRecord::RecordNotFound
   
   def perform(resume_id, user_id)
@@ -24,17 +24,23 @@ class OptimizeResumeJob < ApplicationJob
       
       # Generate optimized resume
       optimized_content = service.optimize
-      
+
+      # Strip markdown code fences the AI sometimes wraps content in
+      optimized_content = strip_code_fences(optimized_content)
+
       # Extract keywords
       keywords = service.extract_keywords
-      
+
       # Update resume with results
       resume.update!(
         optimized_content: optimized_content,
         keywords: keywords,
         status: 'optimized'
       )
-      
+
+      # Auto-parse optimized content into structured sections for template rendering
+      rebuild_sections_from_content(resume)
+
       # Deduct credits for pay-per-use users
       if user.free? && user.credits_remaining > 0
         user.decrement!(:credits_remaining)
@@ -54,6 +60,35 @@ class OptimizeResumeJob < ApplicationJob
   end
 
   private
+
+  def strip_code_fences(content)
+    return content if content.blank?
+
+    # Remove opening ```plaintext, ```text, ```markdown, or just ```
+    content = content.sub(/\A\s*```(?:plaintext|text|markdown|plain)?\s*\n?/, '')
+    # Remove closing ```
+    content = content.sub(/\n?\s*```\s*\z/, '')
+    content.strip
+  end
+
+  def rebuild_sections_from_content(resume)
+    # Clear existing auto-generated sections and re-parse from optimized content
+    resume.resume_sections.destroy_all
+
+    parser = ResumeContentParserService.new(resume.optimized_content)
+    parsed = parser.parse
+
+    parsed.each do |section_data|
+      resume.resume_sections.create!(
+        section_type: section_data[:section_type],
+        content: section_data[:content],
+        position: section_data[:position],
+        visible: true
+      )
+    end
+  rescue => e
+    Rails.logger.warn "Auto-parsing sections after optimization failed: #{e.message}"
+  end
 
   def broadcast_resume_update(resume, status)
     # Broadcast to the specific resume channel

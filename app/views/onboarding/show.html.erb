@@ -1,0 +1,132 @@
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+  <div class="max-w-2xl mx-auto py-12 px-4 sm:px-6">
+    <!-- Skip -->
+    <div class="flex justify-end mb-6">
+      <%= link_to skip_onboarding_path, data: { turbo_method: :post }, class: "text-sm text-gray-400 hover:text-gray-600 transition-colors" do %>
+        Skip for now →
+      <% end %>
+    </div>
+
+    <!-- Progress -->
+    <div class="flex items-center justify-center mb-10">
+      <% (1..3).each do |step| %>
+        <div class="flex items-center">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold
+            <%= step <= @step ? 'bg-blue-600 text-white' : step == @step + 1 ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-600' : 'bg-gray-100 text-gray-400' %>">
+            <% if step <= @step %>
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            <% else %>
+              <%= step %>
+            <% end %>
+          </div>
+          <% if step < 3 %>
+            <div class="w-16 sm:w-24 h-0.5 mx-2 <%= step <= @step ? 'bg-blue-600' : 'bg-gray-200' %>"></div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Step Content -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10 text-center">
+      <% case @step %>
+      <% when 0 %>
+        <!-- Step 1: Upload Resume -->
+        <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-3">Upload Your Resume</h2>
+        <p class="text-gray-500 mb-8 max-w-md mx-auto">Start by uploading your current resume. We support PDF, DOCX, and TXT files up to 10MB.</p>
+
+        <div class="space-y-4">
+          <%= link_to new_resume_path, class: "inline-flex items-center px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm transition-all" do %>
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Upload Resume
+          <% end %>
+
+          <% if current_user.resumes.any? %>
+            <div class="pt-2">
+              <%= link_to onboarding_path(step: 1), data: { turbo_method: :patch }, class: "text-sm text-blue-600 hover:text-blue-800 font-medium" do %>
+                I already have a resume — Continue →
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+      <% when 1 %>
+        <!-- Step 2: Job Description -->
+        <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-3">Add a Job Description</h2>
+        <p class="text-gray-500 mb-8 max-w-md mx-auto">Paste a job posting you're interested in. Our AI will tailor your resume specifically for this role.</p>
+
+        <div class="space-y-4">
+          <% resume = current_user.resumes.recent.first %>
+          <% if resume %>
+            <%= link_to edit_resume_path(resume), class: "inline-flex items-center px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm transition-all" do %>
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Add Job Description
+            <% end %>
+          <% end %>
+
+          <div class="pt-2">
+            <%= link_to onboarding_path(step: 2), data: { turbo_method: :patch }, class: "text-sm text-blue-600 hover:text-blue-800 font-medium" do %>
+              Skip this step →
+            <% end %>
+          </div>
+        </div>
+
+      <% when 2 %>
+        <!-- Step 3: Optimize -->
+        <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-3">Optimize with AI</h2>
+        <p class="text-gray-500 mb-8 max-w-md mx-auto">Your resume is ready to be optimized! Our AI will analyze and enhance it to improve your ATS score.</p>
+
+        <div class="space-y-4">
+          <% resume = current_user.resumes.recent.first %>
+          <% if resume %>
+            <%= link_to optimize_resume_path(resume), data: { turbo_method: :post }, class: "inline-flex items-center px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm transition-all" do %>
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Optimize My Resume
+            <% end %>
+          <% end %>
+
+          <div class="pt-2">
+            <%= link_to onboarding_path(step: 3), data: { turbo_method: :patch }, class: "text-sm text-blue-600 hover:text-blue-800 font-medium" do %>
+              I'll do this later →
+            <% end %>
+          </div>
+        </div>
+
+      <% end %>
+    </div>
+
+    <!-- Helpful Tips -->
+    <div class="mt-8 text-center">
+      <p class="text-xs text-gray-400">
+        <% case @step %>
+        <% when 0 %>
+          Tip: PDF and DOCX formats work best for parsing accuracy.
+        <% when 1 %>
+          Tip: Copy the full job posting including requirements and qualifications.
+        <% when 2 %>
+          Tip: This uses 1 credit. You have <strong><%= current_user.credits_remaining %></strong> credits available.
+        <% end %>
+      </p>
+    </div>
+  </div>
+</div>

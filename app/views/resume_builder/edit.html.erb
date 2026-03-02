@@ -1,0 +1,169 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+    <div>
+      <div class="flex items-center gap-3 mb-1">
+        <%= link_to resume_path(@resume), class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        <% end %>
+        <h1 class="text-xl font-bold text-gray-900">Resume Builder</h1>
+      </div>
+      <p class="text-sm text-gray-500"><%= @resume.target_role %></p>
+    </div>
+    <div class="mt-4 sm:mt-0 flex items-center gap-3">
+      <%= link_to preview_resume_builder_path(@resume), target: '_blank', class: "inline-flex items-center px-4 py-2 bg-white border border-gray-200 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-all" do %>
+        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+        Full Preview
+      <% end %>
+      <%= link_to download_pdf_resume_builder_path(@resume), class: "inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all" do %>
+        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Download PDF
+      <% end %>
+    </div>
+  </div>
+
+  <% template_meta = {
+    'professional' => { desc: 'Classic & clean', accent: '#2563eb', line: '#bfdbfe', heading: '#93c5fd' },
+    'modern' => { desc: 'Contemporary', accent: '#6366f1', line: '#c7d2fe', heading: '#a5b4fc' },
+    'minimal' => { desc: 'Simple & clean', accent: '#059669', line: '#a7f3d0', heading: '#6ee7b7' },
+    'creative' => { desc: 'Bold & unique', accent: '#7c3aed', line: '#ddd6fe', heading: '#c4b5fd' },
+    'executive' => { desc: 'Senior presence', accent: '#b45309', line: '#fde68a', heading: '#fbbf24' }
+  } %>
+
+  <%= form_with(url: resume_builder_path(@resume), method: :patch, class: "space-y-6") do |form| %>
+    <!-- Template Selector -->
+    <div class="bg-white rounded-xl border border-gray-200 p-5" data-controller="template-select">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-gray-900">Choose Template</h2>
+        <span class="text-xs text-gray-400">All templates are ATS-optimized</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <% @templates.each do |tmpl| %>
+          <% meta = template_meta[tmpl] %>
+          <% is_selected = @resume.template == tmpl %>
+          <label class="relative cursor-pointer group" data-template-select-target="label" data-template="<%= tmpl %>">
+            <input type="radio" name="resume[template]" value="<%= tmpl %>" class="sr-only"
+                   data-template-select-target="radio"
+                   data-action="change->template-select#select"
+                   <%= 'checked' if is_selected %>>
+            <div class="template-card p-3 rounded-xl border-2 transition-all text-center <%= is_selected ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-300' %>">
+              <!-- Mini resume preview -->
+              <div class="w-full aspect-[8.5/11] mx-auto mb-2 bg-white rounded border border-gray-200 p-2 relative overflow-hidden">
+                <div class="h-1.5 w-8 mx-auto rounded-full mb-1.5" style="background: <%= meta[:accent] %>;"></div>
+                <div class="h-0.5 w-6 mx-auto bg-gray-200 rounded-full mb-1"></div>
+                <div class="h-px w-full mb-1.5" style="background: <%= meta[:line] %>;"></div>
+                <div class="space-y-0.5 mb-1.5">
+                  <div class="h-0.5 w-4 rounded-full" style="background: <%= meta[:heading] %>;"></div>
+                  <div class="h-px w-full bg-gray-100"></div>
+                  <div class="h-px w-10 bg-gray-100"></div>
+                  <div class="h-px w-8 bg-gray-100"></div>
+                </div>
+                <div class="space-y-0.5">
+                  <div class="h-0.5 w-4 rounded-full" style="background: <%= meta[:heading] %>;"></div>
+                  <div class="h-px w-full bg-gray-100"></div>
+                  <div class="h-px w-9 bg-gray-100"></div>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-gray-800"><%= tmpl.capitalize %></span>
+              <p class="text-[10px] text-gray-400 mt-0.5"><%= meta[:desc] %></p>
+            </div>
+            <!-- Checkmark -->
+            <div class="template-check absolute -top-1.5 -right-1.5 w-5 h-5 bg-blue-600 rounded-full items-center justify-center <%= is_selected ? 'flex' : 'hidden' %>">
+              <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Sections -->
+    <div data-controller="sortable" data-resume-id="<%= @resume.id %>">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-gray-900">Sections (<%= @sections.count %>)</h2>
+        <span class="text-xs text-gray-400">Drag to reorder</span>
+      </div>
+
+      <% if @sections.empty? %>
+        <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+          <svg class="w-10 h-10 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p class="text-sm text-gray-500 mb-1">No sections yet</p>
+          <p class="text-xs text-gray-400">Add sections below to start building your resume</p>
+        </div>
+      <% end %>
+
+      <div class="space-y-4">
+        <% @sections.each do |section| %>
+          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden"
+               data-sortable-target="item"
+               data-section-id="<%= section.id %>"
+               draggable="true"
+               data-action="dragstart->sortable#dragstart dragend->sortable#dragend dragover->sortable#dragover drop->sortable#drop">
+
+            <!-- Section Header -->
+            <div class="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200 cursor-grab active:cursor-grabbing">
+              <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+                </svg>
+                <h3 class="text-sm font-semibold text-gray-900"><%= section.section_label %></h3>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="checkbox" name="sections[<%= section.id %>][visible]" value="1" <%= 'checked' if section.visible? %> class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="text-xs text-gray-500">Visible</span>
+                </label>
+                <%= link_to remove_section_resume_builder_path(@resume, section_id: section.id), data: { turbo_method: :delete, turbo_confirm: 'Remove this section?' }, class: "text-gray-400 hover:text-red-500 transition-colors" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Section Content -->
+            <div class="p-5">
+              <input type="hidden" name="sections[<%= section.id %>][position]" value="<%= section.position %>">
+              <%= render "resume_builder/section_#{section.section_type}", section: section %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Add Section -->
+    <% if @available_types.any? %>
+      <div class="bg-white rounded-xl border border-gray-200 border-dashed p-5">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Add Section</h3>
+        <div class="flex flex-wrap gap-2">
+          <% @available_types.each do |type| %>
+            <%= link_to add_section_resume_builder_path(@resume, section_type: type), data: { turbo_method: :post }, class: "inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors" do %>
+              <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              <%= type.humanize.titleize %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Save Button -->
+    <div class="flex justify-end gap-3">
+      <%= link_to preview_resume_builder_path(@resume), target: '_blank', class: "px-6 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-all" do %>
+        Preview Resume
+      <% end %>
+      <%= form.submit 'Save Resume', class: "px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 transition-all cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

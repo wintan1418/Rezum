@@ -83,7 +83,7 @@
       <% end %>
 
       <!-- Job & Company Information -->
-      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.1s;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.1s;">
         <h3 class="text-lg font-semibold text-gray-900 mb-6">Job & Company Details</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -91,7 +91,7 @@
           <div>
             <%= f.label :company_name, "Company Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.text_field :company_name, 
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
                 placeholder: "e.g., Google, Microsoft, Apple" %>
             <p class="mt-1 text-xs text-gray-500">The company you're applying to</p>
           </div>
@@ -101,7 +101,7 @@
             <%= f.label :target_role, "Job Title", class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.text_field :target_role, 
                 value: @cover_letter.target_role || @resume.target_role,
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
                 placeholder: "e.g., Senior Software Engineer" %>
             <p class="mt-1 text-xs text-gray-500">The specific role you're applying for</p>
           </div>
@@ -110,7 +110,7 @@
           <div class="md:col-span-2">
             <%= f.label :hiring_manager_name, "Hiring Manager Name (Optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.text_field :hiring_manager_name, 
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all",
+                class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300",
                 placeholder: "e.g., Sarah Johnson, John Smith" %>
             <p class="mt-1 text-xs text-gray-500">If you know the hiring manager's name, it will personalize your letter</p>
           </div>
@@ -118,7 +118,7 @@
       </div>
 
       <!-- Cover Letter Style -->
-      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.2s;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.2s;">
         <h3 class="text-lg font-semibold text-gray-900 mb-6">Cover Letter Style</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -134,7 +134,7 @@
                   ['Enthusiastic & Energetic', 'enthusiastic']
                 ], @cover_letter.tone || 'professional'),
                 {},
-                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+                { class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
             <p class="mt-1 text-xs text-gray-500">The overall tone and voice of your cover letter</p>
           </div>
 
@@ -148,7 +148,7 @@
                   ['Long (450-600 words)', 'long']
                 ], @cover_letter.length || 'medium'),
                 {},
-                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+                { class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
             <p class="mt-1 text-xs text-gray-500">How detailed should your cover letter be</p>
           </div>
 
@@ -162,7 +162,7 @@
                   ['Google Gemini', 'google']
                 ], 'openai'),
                 {},
-                { class: "w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" } %>
+                { class: "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300" } %>
             <p class="mt-1 text-xs text-gray-500">Choose your preferred AI model for generation</p>
           </div>
         </div>
@@ -201,7 +201,7 @@
       </div>
 
       <!-- Job Description (Optional) -->
-      <div class="bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 0.4s;">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.4s;">
         <h3 class="text-lg font-semibold text-gray-900 mb-6">Job Description (Optional but Recommended)</h3>
         <p class="text-sm text-gray-600 mb-4">
           Paste the job description to create a highly targeted cover letter. Our AI will analyze the requirements and tailor your letter accordingly.
@@ -222,7 +222,7 @@
         <textarea 
           name="job_description"
           rows="10"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all hover:border-gray-300"
           placeholder="Paste the job description here...
 
 Example:
@@ -268,7 +268,7 @@ Requirements:
           
           <% unless current_user.can_generate? %>
             <%= link_to "#", 
-                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" do %>
+                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all" do %>
               Upgrade Plan
             <% end %>
           <% end %>
@@ -279,11 +279,11 @@ Requirements:
       <div class="flex justify-center fade-in" style="animation-delay: 0.6s;">
         <% if current_user.can_generate? %>
           <%= f.submit "Generate Cover Letter with AI", 
-              class: "px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 transition-all duration-200",
+              class: "px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all",
               data: { disable_with: "Generating..." } %>
         <% else %>
           <button type="button" disabled
-              class="px-8 py-4 bg-gray-400 text-white font-semibold rounded-lg shadow-lg cursor-not-allowed">
+              class="px-8 py-4 bg-gray-400 text-white font-semibold rounded-xl shadow-sm cursor-not-allowed">
             Insufficient Credits
           </button>
         <% end %>

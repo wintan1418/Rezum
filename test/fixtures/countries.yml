@@ -1,21 +1,19 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+nigeria:
+  code: NG
+  name: Nigeria
+  currency: NGN
+  timezone: Africa/Lagos
+  supported_languages: <%= ["en"].to_json %>
+  payment_methods: <%= ["paystack"].to_json %>
+  vat_rate: 0.075
+  is_active: true
 
-one:
-  code: MyString
-  name: MyString
-  currency: MyString
-  timezone: MyString
-  supported_languages: 
-  payment_methods: 
-  vat_rate: 9.99
-  is_active: false
-
-two:
-  code: MyString
-  name: MyString
-  currency: MyString
-  timezone: MyString
-  supported_languages: 
-  payment_methods: 
-  vat_rate: 9.99
-  is_active: false
+united_states:
+  code: US
+  name: United States
+  currency: USD
+  timezone: America/New_York
+  supported_languages: <%= ["en", "es"].to_json %>
+  payment_methods: <%= ["paystack"].to_json %>
+  vat_rate: 0.0
+  is_active: true

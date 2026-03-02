@@ -1,0 +1,171 @@
+<div class="min-h-full">
+  <main class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+
+    <!-- Tabs -->
+    <div data-controller="tabs">
+      <div class="border-b border-gray-200 mb-8">
+        <nav class="flex space-x-8">
+          <button data-tabs-target="tab" data-action="click->tabs#switch" data-index="0" class="border-b-2 border-blue-600 text-blue-600 py-3 px-1 text-sm font-medium transition-colors">Profile</button>
+          <button data-tabs-target="tab" data-action="click->tabs#switch" data-index="1" class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-3 px-1 text-sm font-medium transition-colors">Preferences</button>
+          <button data-tabs-target="tab" data-action="click->tabs#switch" data-index="2" class="border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-3 px-1 text-sm font-medium transition-colors">Account</button>
+        </nav>
+      </div>
+
+      <%= form_with model: current_user, url: settings_path, method: :patch, class: "space-y-6" do |f| %>
+
+        <!-- Profile Tab -->
+        <div data-tabs-target="panel">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">Profile Information</h3>
+              <p class="text-sm text-gray-500">Update your personal details and social links.</p>
+            </div>
+
+            <div class="p-6 space-y-6">
+              <!-- Avatar -->
+              <div class="flex items-center gap-5">
+                <img src="<%= current_user.avatar_url(variant: :medium) %>" alt="" class="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100 shadow-sm">
+                <div>
+                  <%= f.file_field :avatar, accept: "image/*", class: "text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer file:transition-colors" %>
+                  <p class="text-xs text-gray-400 mt-1.5">JPG, PNG. Max 5MB.</p>
+                </div>
+              </div>
+
+              <!-- Name -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <%= f.label :first_name, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.text_field :first_name, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+                </div>
+                <div>
+                  <%= f.label :last_name, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.text_field :last_name, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+                </div>
+              </div>
+
+              <!-- Email (read-only) -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                <input type="email" value="<%= current_user.email %>" disabled class="w-full rounded-xl border border-gray-200 bg-gray-50 text-gray-500 text-sm py-2.5 px-3.5 cursor-not-allowed">
+                <p class="text-xs text-gray-400 mt-1.5">Contact support to change your email.</p>
+              </div>
+
+              <!-- Phone -->
+              <div>
+                <%= f.label :phone, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                <%= f.phone_field :phone, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "+1 (555) 123-4567" %>
+              </div>
+
+              <!-- Job Title -->
+              <div>
+                <%= f.label :job_title, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                <%= f.text_field :job_title, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "e.g. Software Engineer" %>
+              </div>
+
+              <!-- Bio -->
+              <div>
+                <%= f.label :bio, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                <%= f.text_area :bio, rows: 3, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300 resize-y", placeholder: "A brief description about yourself" %>
+              </div>
+
+              <!-- Links -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <%= f.label :linkedin_url, "LinkedIn URL", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.url_field :linkedin_url, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "https://linkedin.com/in/..." %>
+                </div>
+                <div>
+                  <%= f.label :portfolio_url, "Portfolio URL", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.url_field :portfolio_url, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300", placeholder: "https://..." %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div data-tabs-target="panel" class="hidden">
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">Preferences</h3>
+              <p class="text-sm text-gray-500">Customize your localization and notification settings.</p>
+            </div>
+
+            <div class="p-6 space-y-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <%= f.label :country_code, "Country", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.select :country_code, country_select_options, { include_blank: "Select country" }, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+                </div>
+                <div>
+                  <%= f.label :language, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.select :language, [["English", "en"], ["Spanish", "es"], ["French", "fr"], ["German", "de"], ["Portuguese", "pt"], ["Italian", "it"], ["Dutch", "nl"]], {}, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <%= f.label :timezone, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.time_zone_select :timezone, nil, { include_blank: "Select timezone" }, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+                </div>
+                <div>
+                  <%= f.label :currency, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+                  <%= f.select :currency, [["USD ($)", "USD"], ["EUR (\u20AC)", "EUR"], ["GBP (\u00A3)", "GBP"], ["NGN (\u20A6)", "NGN"], ["CAD ($)", "CAD"], ["AUD ($)", "AUD"]], {}, class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300" %>
+                </div>
+              </div>
+
+              <!-- Marketing Consent -->
+              <div class="flex items-start gap-3 pt-5 border-t border-gray-100">
+                <%= f.check_box :marketing_consent, class: "mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4" %>
+                <div>
+                  <%= f.label :marketing_consent, "Email notifications", class: "text-sm font-medium text-gray-700" %>
+                  <p class="text-xs text-gray-500 mt-0.5">Receive product updates, tips, and special offers.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end">
+          <%= f.submit "Save Changes", class: "inline-flex items-center px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer" %>
+        </div>
+      <% end %>
+
+      <!-- Account Tab -->
+      <div data-tabs-target="panel" class="hidden">
+        <div class="space-y-6">
+          <!-- Change Password -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+            <div class="p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">Password</h3>
+              <p class="text-sm text-gray-500">Update your password to keep your account secure.</p>
+            </div>
+            <div class="p-6">
+              <%= link_to edit_user_registration_path, class: "inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl transition-all" do %>
+                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                Change Password
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="bg-white rounded-xl shadow-sm border border-red-200">
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-1">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                <h3 class="text-lg font-semibold text-red-600">Danger Zone</h3>
+              </div>
+              <p class="text-sm text-gray-500 mb-5">Permanently delete your account and all associated data. This action cannot be undone.</p>
+              <%= link_to destroy_account_settings_path, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete your account? This will permanently remove all your resumes, cover letters, and payment history. This cannot be undone." }, class: "inline-flex items-center px-4 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition-all" do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Delete Account
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

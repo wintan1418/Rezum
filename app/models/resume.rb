@@ -1,12 +1,17 @@
 class Resume < ApplicationRecord
   belongs_to :user
   has_many :cover_letters, dependent: :destroy
+  has_many :job_applications
+  has_many :resume_sections, -> { order(position: :asc) }, dependent: :destroy
+  accepts_nested_attributes_for :resume_sections
   
   # File attachments
   has_one_attached :file do |attachable|
     attachable.variant :thumbnail, resize_to_limit: [200, 300]
   end
   
+  before_save :strip_code_fences
+
   validates :original_content, presence: true, length: { minimum: 100 }
   validates :target_role, presence: true, length: { minimum: 2 }
   validates :status, inclusion: { in: %w[draft processing optimized failed] }
@@ -48,7 +53,7 @@ class Resume < ApplicationRecord
   
   def ats_score_color
     return 'gray' if ats_score.blank?
-    
+
     case ats_score
     when 0..40
       'red'
@@ -58,6 +63,25 @@ class Resume < ApplicationRecord
       'green'
     else
       'gray'
+    end
+  end
+
+  private
+
+  def strip_code_fences
+    [original_content, optimized_content].each_with_index do |content, i|
+      next if content.blank?
+
+      cleaned = content
+        .sub(/\A\s*```(?:plaintext|text|markdown|plain|ruby|json)?\s*\n?/, '')
+        .sub(/\n?\s*```\s*\z/, '')
+        .strip
+
+      if i == 0
+        self.original_content = cleaned
+      else
+        self.optimized_content = cleaned
+      end
     end
   end
 end

@@ -1,16 +1,27 @@
-<h2>Forgot your password?</h2>
+<% content_for(:page_title) { "Reset your password" } %>
+<% content_for(:page_subtitle) { "Enter your email and we'll send you a reset link" } %>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-5" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  <div>
+    <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+    <%= f.email_field :email,
+        class: "auth-input block w-full rounded-xl border border-gray-200 shadow-sm focus:outline-none sm:text-sm py-2.5 px-3.5",
+        placeholder: "you@example.com",
+        autofocus: true,
+        autocomplete: "email" %>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Send me reset password instructions" %>
+  <div class="pt-1">
+    <%= f.submit "Send reset instructions",
+        class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all cursor-pointer" %>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
+<% content_for(:footer_links) do %>
+  <p class="text-center text-sm text-gray-500">
+    Remember your password?
+    <%= link_to "Sign in", new_session_path(resource_name), class: "font-semibold text-blue-600 hover:text-blue-500" %>
+  </p>
+<% end %>

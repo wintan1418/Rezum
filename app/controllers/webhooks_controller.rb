@@ -1,89 +1,113 @@
 class WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
-  before_action :verify_stripe_signature
-  
-  def stripe
-    case @event.type
-    when 'customer.subscription.created', 'customer.subscription.updated'
-      handle_subscription_update(@event.data.object)
-    when 'customer.subscription.deleted'
-      handle_subscription_deleted(@event.data.object)
-    when 'payment_intent.succeeded'
-      handle_payment_succeeded(@event.data.object)
-    when 'payment_intent.payment_failed'
-      handle_payment_failed(@event.data.object)
-    when 'invoice.payment_succeeded'
-      handle_invoice_payment_succeeded(@event.data.object)
+  before_action :verify_paystack_signature
+
+  def paystack
+    event = @event['event']
+    data = @event['data']
+
+    case event
+    when 'charge.success'
+      handle_charge_success(data)
+    when 'subscription.create'
+      handle_subscription_create(data)
+    when 'subscription.not_renew'
+      handle_subscription_not_renew(data)
+    when 'subscription.disable'
+      handle_subscription_disable(data)
+    when 'invoice.create', 'invoice.update'
+      handle_invoice(data)
+    when 'transfer.success', 'transfer.failed'
+      Rails.logger.info "Paystack transfer event: #{event}"
     else
-      Rails.logger.info "Unhandled Stripe event: #{@event.type}"
+      Rails.logger.info "Unhandled Paystack event: #{event}"
     end
-    
+
     head :ok
   end
-  
+
   private
-  
-  def verify_stripe_signature
+
+  def verify_paystack_signature
     payload = request.body.read
-    sig_header = request.env['HTTP_STRIPE_SIGNATURE']
-    endpoint_secret = Rails.application.config.stripe.webhook_secret
-    
-    begin
-      @event = StripeService.construct_webhook_event(payload, sig_header, endpoint_secret)
-    rescue JSON::ParserError => e
-      Rails.logger.error "Invalid JSON: #{e}"
-      head :bad_request
-      return
-    rescue => e
-      Rails.logger.error "Invalid signature: #{e}"
+    signature = request.headers['X-Paystack-Signature']
+
+    unless PaystackService.verify_webhook(payload, signature)
+      Rails.logger.error "Invalid Paystack webhook signature"
       head :bad_request
       return
     end
+
+    @event = JSON.parse(payload)
+  rescue JSON::ParserError => e
+    Rails.logger.error "Invalid JSON in Paystack webhook: #{e.message}"
+    head :bad_request
   end
-  
-  def handle_subscription_update(stripe_subscription)
-    subscription = Subscription.find_by(stripe_subscription_id: stripe_subscription.id)
-    return unless subscription
-    
-    subscription.update!(
-      status: stripe_subscription.status,
-      current_period_start: Time.at(stripe_subscription.current_period_start),
-      current_period_end: Time.at(stripe_subscription.current_period_end),
-      cancel_at_period_end: stripe_subscription.cancel_at_period_end,
-      trial_start: stripe_subscription.trial_start ? Time.at(stripe_subscription.trial_start) : nil,
-      trial_end: stripe_subscription.trial_end ? Time.at(stripe_subscription.trial_end) : nil
+
+  def handle_charge_success(data)
+    reference = data['reference']
+    return unless reference
+
+    payment = Payment.find_by(paystack_reference: reference)
+    return unless payment
+
+    payment.update!(status: 'success')
+
+    if payment.credits_purchased.present?
+      payment.user.add_credits(payment.credits_purchased)
+    end
+  end
+
+  def handle_subscription_create(data)
+    subscription_code = data['subscription_code']
+    customer_code = data.dig('customer', 'customer_code')
+    return unless subscription_code && customer_code
+
+    user = User.find_by(paystack_customer_code: customer_code)
+    return unless user
+
+    plan_code = data.dig('plan', 'plan_code')
+    plan_id = Subscription::PLAN_CODES.key(plan_code) || plan_code
+
+    subscription = user.subscriptions.find_or_initialize_by(paystack_subscription_code: subscription_code)
+    subscription.assign_attributes(
+      status: 'active',
+      plan_id: plan_id,
+      current_period_start: data['createdAt'] ? Time.parse(data['createdAt']) : Time.current,
+      current_period_end: data['next_payment_date'] ? Time.parse(data['next_payment_date']) : 1.month.from_now
     )
+    subscription.save!
   end
-  
-  def handle_subscription_deleted(stripe_subscription)
-    subscription = Subscription.find_by(stripe_subscription_id: stripe_subscription.id)
+
+  def handle_subscription_not_renew(data)
+    subscription_code = data['subscription_code']
+    return unless subscription_code
+
+    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
     return unless subscription
-    
+
+    subscription.update!(cancel_at_period_end: true)
+  end
+
+  def handle_subscription_disable(data)
+    subscription_code = data['subscription_code']
+    return unless subscription_code
+
+    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
+    return unless subscription
+
     subscription.update!(status: 'canceled')
   end
-  
-  def handle_payment_succeeded(payment_intent)
-    payment = Payment.find_by(stripe_payment_intent_id: payment_intent.id)
-    return unless payment
-    
-    payment.sync_from_stripe!
-  end
-  
-  def handle_payment_failed(payment_intent)
-    payment = Payment.find_by(stripe_payment_intent_id: payment_intent.id)
-    return unless payment
-    
-    payment.update!(status: 'canceled')
-  end
-  
-  def handle_invoice_payment_succeeded(invoice)
-    subscription_id = invoice.subscription
-    return unless subscription_id
-    
-    subscription = Subscription.find_by(stripe_subscription_id: subscription_id)
+
+  def handle_invoice(data)
+    subscription_code = data.dig('subscription', 'subscription_code')
+    return unless subscription_code
+
+    subscription = Subscription.find_by(paystack_subscription_code: subscription_code)
     return unless subscription
-    
-    # Update subscription status to active if payment succeeded
-    subscription.update!(status: 'active') if subscription.status != 'active'
+
+    if data['paid']
+      subscription.update!(status: 'active')
+    end
   end
 end

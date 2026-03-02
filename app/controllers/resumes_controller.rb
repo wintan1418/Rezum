@@ -11,6 +11,13 @@ class ResumesController < ApplicationController
   def show
     @cover_letters = @resume.cover_letters.recent.limit(5)
     @ats_analysis = @resume.ats_score.present?
+
+    if @resume.optimized? && @resume.optimized_content.present?
+      @diff_html = ResumeDiffService.new(
+        original: @resume.original_content,
+        optimized: @resume.optimized_content
+      ).generate_html_diff
+    end
   end
   
   def new
@@ -46,6 +53,7 @@ class ResumesController < ApplicationController
     end
     
     if @resume.save
+      ahoy.track "resume_upload", resume_id: @resume.id
       if @resume.file.attached?
         redirect_to @resume, notice: 'Resume uploaded and processed successfully! Ready for optimization.'
       else
@@ -77,11 +85,17 @@ class ResumesController < ApplicationController
       redirect_to @resume, alert: 'Insufficient credits. Please upgrade your plan.'
       return
     end
-    
+
+    if @resume.job_description.blank? || @resume.job_description.length < 50
+      redirect_to edit_resume_path(@resume), alert: 'Please add a job description (at least 50 characters) before optimizing.'
+      return
+    end
+
     @resume.update!(status: 'processing', provider: params[:provider] || 'openai')
-    
+    ahoy.track "resume_optimize", resume_id: @resume.id, provider: @resume.provider
+
     OptimizeResumeJob.perform_later(@resume.id, current_user.id)
-    
+
     redirect_to @resume, notice: 'Resume optimization started! This will take 30-60 seconds.'
   end
   
