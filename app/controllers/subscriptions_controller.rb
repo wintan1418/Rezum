@@ -12,7 +12,16 @@ class SubscriptionsController < ApplicationController
         price_label: "\u20A629,000",
         interval: "month",
         tier: "pro",
-        features: [ "Unlimited resumes", "Unlimited cover letters", "ATS optimization", "Priority support" ]
+        features: [
+          "Unlimited resume optimizations",
+          "Unlimited cover letters",
+          "ATS scoring & keyword extraction",
+          "AI Resume Builder (from scratch)",
+          "5 professional templates",
+          "PDF & DOCX downloads",
+          "Job Application Tracker",
+          "Priority support"
+        ]
       },
       {
         id: "price_annual_pro",
@@ -21,7 +30,17 @@ class SubscriptionsController < ApplicationController
         price_label: "\u20A6290,000",
         interval: "year",
         tier: "pro",
-        features: [ "Unlimited resumes", "Unlimited cover letters", "ATS optimization", "Priority support", "2 months free" ]
+        features: [
+          "Unlimited resume optimizations",
+          "Unlimited cover letters",
+          "ATS scoring & keyword extraction",
+          "AI Resume Builder (from scratch)",
+          "5 professional templates",
+          "PDF & DOCX downloads",
+          "Job Application Tracker",
+          "Priority support",
+          "2 months free"
+        ]
       },
       {
         id: "price_monthly_premium",
@@ -30,7 +49,15 @@ class SubscriptionsController < ApplicationController
         price_label: "\u20A659,000",
         interval: "month",
         tier: "premium",
-        features: [ "Everything in Pro", "AI Job Scraper", "Automated job matching", "Interview prep", "LinkedIn optimization", "Priority AI models" ]
+        features: [
+          "Everything in Pro, plus:",
+          "AI Interview Prep (STAR method)",
+          "LinkedIn Profile Optimization",
+          "Automated Job Scraper",
+          "AI job matching & scoring",
+          "Priority AI models (GPT-4, Claude)",
+          "Early access to new features"
+        ]
       },
       {
         id: "price_annual_premium",
@@ -39,7 +66,16 @@ class SubscriptionsController < ApplicationController
         price_label: "\u20A6590,000",
         interval: "year",
         tier: "premium",
-        features: [ "Everything in Pro", "AI Job Scraper", "Automated job matching", "Interview prep", "LinkedIn optimization", "Priority AI models", "2 months free" ]
+        features: [
+          "Everything in Pro, plus:",
+          "AI Interview Prep (STAR method)",
+          "LinkedIn Profile Optimization",
+          "Automated Job Scraper",
+          "AI job matching & scoring",
+          "Priority AI models (GPT-4, Claude)",
+          "Early access to new features",
+          "2 months free"
+        ]
       }
     ]
   end

@@ -138,6 +138,103 @@
           </div>
         <% end %>
 
+        <!-- What's Included -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-base font-semibold text-gray-900">What's Included</h3>
+          </div>
+          <div class="p-6">
+            <% if @subscription && @subscription.active? %>
+              <% if @subscription.plan_id&.include?("premium") %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <% [
+                    "Unlimited resume optimizations",
+                    "Unlimited cover letters",
+                    "ATS scoring & keywords",
+                    "AI Resume Builder",
+                    "5 professional templates",
+                    "PDF & DOCX downloads",
+                    "Job Application Tracker",
+                    "AI Interview Prep (STAR)",
+                    "LinkedIn Optimization",
+                    "Automated Job Scraper",
+                    "AI job matching & scoring",
+                    "Priority AI models",
+                    "Priority support",
+                    "Early access to new features"
+                  ].each do |perk| %>
+                    <div class="flex items-center gap-2">
+                      <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="text-sm text-gray-700"><%= perk %></span>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <% [
+                    "Unlimited resume optimizations",
+                    "Unlimited cover letters",
+                    "ATS scoring & keywords",
+                    "AI Resume Builder",
+                    "5 professional templates",
+                    "PDF & DOCX downloads",
+                    "Job Application Tracker",
+                    "Priority support"
+                  ].each do |perk| %>
+                    <div class="flex items-center gap-2">
+                      <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="text-sm text-gray-700"><%= perk %></span>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                  <p class="text-xs font-medium text-purple-800 mb-1">Upgrade to Premium for:</p>
+                  <p class="text-xs text-purple-600">Interview Prep, LinkedIn Optimization, Job Scraper, Priority AI models</p>
+                  <%= link_to "Upgrade", new_subscription_path, class: "inline-block mt-2 text-xs font-semibold text-purple-700 hover:text-purple-900" %>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <% [
+                  ["Resume optimization", true],
+                  ["Cover letter generation", true],
+                  ["ATS scoring", true],
+                  ["AI Resume Builder", true],
+                  ["PDF & DOCX downloads", true],
+                  ["5 professional templates", true],
+                  ["Interview Prep", false],
+                  ["LinkedIn Optimization", false],
+                  ["Job Scraper", false],
+                  ["Priority AI models", false]
+                ].each do |perk, available| %>
+                  <div class="flex items-center gap-2">
+                    <% if available %>
+                      <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="text-sm text-gray-700"><%= perk %> <span class="text-xs text-gray-400">(uses credits)</span></span>
+                    <% else %>
+                      <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                      </svg>
+                      <span class="text-sm text-gray-400"><%= perk %> <span class="text-xs">(Pro/Premium)</span></span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="mt-4 text-center">
+                <%= link_to new_subscription_path, class: "inline-flex items-center px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg transition-all" do %>
+                  Unlock All Features
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
         <!-- Recent Payments -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100">
           <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
