@@ -98,6 +98,8 @@ class PaystackService
     # ==================== WEBHOOK VERIFICATION ====================
 
     def verify_webhook(payload, signature)
+      return false if secret_key.blank? || payload.blank? || signature.blank?
+
       computed = OpenSSL::HMAC.hexdigest("SHA512", secret_key, payload)
       ActiveSupport::SecurityUtils.secure_compare(computed, signature.to_s)
     end

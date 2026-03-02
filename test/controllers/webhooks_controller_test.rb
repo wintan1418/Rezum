@@ -1,9 +1,17 @@
 require "test_helper"
 
 class WebhooksControllerTest < ActionDispatch::IntegrationTest
+  TEST_KEY = "sk_test_fake_key_for_testing"
+
   setup do
     @payment = payments(:pending_payment)
     @subscription = subscriptions(:active_subscription)
+    @original_key = Rails.application.config.paystack.secret_key
+    Rails.application.config.paystack.secret_key ||= TEST_KEY
+  end
+
+  teardown do
+    Rails.application.config.paystack.secret_key = @original_key
   end
 
   test "rejects request without valid signature" do
