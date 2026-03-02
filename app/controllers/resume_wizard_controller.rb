@@ -1,8 +1,8 @@
 class ResumeWizardController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, only: [ :create, :preview ]
 
   def new
-    # Chat wizard page
+    # Public — anyone can try the wizard
   end
 
   def create

@@ -455,8 +455,16 @@ export default class extends Controller {
       },
       body: JSON.stringify({ wizard: payload })
     })
-    .then(response => response.json())
+    .then(response => {
+      // Not logged in — redirect to sign up
+      if (response.status === 401 || response.redirected) {
+        window.location.href = "/users/sign_up"
+        return null
+      }
+      return response.json()
+    })
     .then(data => {
+      if (!data) return
       if (data.redirect_url) {
         window.location.href = data.redirect_url
       } else if (data.error) {

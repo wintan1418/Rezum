@@ -44,7 +44,7 @@ Rails.application.routes.draw do
       post :skip, on: :member
     end
 
-    resources :resume_wizard, only: [:new, :create] do
+    resources :resume_wizard, only: [:create] do
       member do
         get :preview
       end
@@ -138,6 +138,9 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+
+  # Resume Builder Wizard (public - anyone can try, auth required to save)
+  get "resume_wizard/new", to: "resume_wizard#new", as: :new_resume_wizard
 
   # Blog (public)
   resources :articles, only: [ :index, :show ], path: "blog"
