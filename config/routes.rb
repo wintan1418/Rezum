@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   # Admin panel
   namespace :admin do
     root to: "dashboard#index"
+    post "send_bulk_email", to: "dashboard#send_bulk_email", as: :send_bulk_email
     resources :users, only: [ :index, :show ] do
       member do
         patch :toggle_admin
