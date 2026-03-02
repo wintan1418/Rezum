@@ -194,7 +194,7 @@ class ResumeGeneratorService < AiService
   def build_plain_text_content(sections_data)
     lines = []
     lines << full_name
-    lines << [email, phone, location].compact.reject(&:blank?).join(" | ")
+    lines << [ email, phone, location ].compact.reject(&:blank?).join(" | ")
     lines << ""
 
     sections_data.each do |section|

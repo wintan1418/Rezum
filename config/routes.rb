@@ -45,7 +45,7 @@ Rails.application.routes.draw do
       post :skip, on: :member
     end
 
-    resources :resume_wizard, only: [:new, :create] do
+    resources :resume_wizard, only: [ :new, :create ] do
       member do
         get :preview
         post :unlock

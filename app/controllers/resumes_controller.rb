@@ -240,21 +240,21 @@ class ResumesController < ApplicationController
     '<Default Extension="xml" ContentType="application/xml"/>' \
     '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' \
     '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' \
-    '</Types>'
+    "</Types>"
   end
 
   def docx_rels
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
     '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' \
     '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' \
-    '</Relationships>'
+    "</Relationships>"
   end
 
   def docx_document_rels
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
     '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' \
     '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' \
-    '</Relationships>'
+    "</Relationships>"
   end
 
   def docx_document_xml(content)
@@ -273,7 +273,7 @@ class ResumesController < ApplicationController
 
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
     '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' \
-    '<w:body>' + paragraphs + '</w:body></w:document>'
+    "<w:body>" + paragraphs + "</w:body></w:document>"
   end
 
   def docx_styles
@@ -281,6 +281,6 @@ class ResumesController < ApplicationController
     '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' \
     '<w:style w:type="paragraph" w:default="1" w:styleId="Normal">' \
     '<w:name w:val="Normal"/><w:rPr><w:sz w:val="22"/><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/></w:rPr>' \
-    '</w:style></w:styles>'
+    "</w:style></w:styles>"
   end
 end

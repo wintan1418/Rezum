@@ -43,7 +43,7 @@ class OptimizeResumeJob < ApplicationJob
 
       # Deduct 2 credits for resume optimization
       if user.free? && user.credits_remaining > 0
-        credits_to_deduct = [2, user.credits_remaining].min
+        credits_to_deduct = [ 2, user.credits_remaining ].min
         user.decrement!(:credits_remaining, credits_to_deduct)
       end
 

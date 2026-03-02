@@ -47,7 +47,7 @@ class GenerateCoverLetterVariationsJob < ApplicationJob
       end
 
       # Deduct 1 credit per variation
-      credits_to_deduct = [count, user.credits_remaining].min
+      credits_to_deduct = [ count, user.credits_remaining ].min
       if user.free? && credits_to_deduct > 0
         user.decrement!(:credits_remaining, credits_to_deduct)
       end
