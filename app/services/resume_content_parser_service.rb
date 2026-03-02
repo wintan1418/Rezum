@@ -78,10 +78,20 @@ class ResumeContentParserService
   def detect_section_type(line)
     stripped = line.strip
     return nil if stripped.blank?
-    return nil if stripped.length > 50
+    return nil if stripped.length > 60
+
+    # Clean common AI formatting: **Header**, ## Header, Header:, === Header ===
+    cleaned = stripped
+      .gsub(/\A[#*=\-]+\s*/, "")    # leading #, *, =, -
+      .gsub(/\s*[#*=\-]+\z/, "")    # trailing #, *, =, -
+      .gsub(/\A\*\*(.+)\*\*\z/, '\1') # **bold**
+      .gsub(/:\s*\z/, "")           # trailing colon
+      .strip
+
+    return nil if cleaned.blank?
 
     SECTION_PATTERNS.each do |type, pattern|
-      return type if stripped.match?(pattern)
+      return type if cleaned.match?(pattern) || stripped.match?(pattern)
     end
 
     nil

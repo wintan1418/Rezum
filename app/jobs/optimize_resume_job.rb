@@ -72,11 +72,17 @@ class OptimizeResumeJob < ApplicationJob
   end
 
   def rebuild_sections_from_content(resume)
-    # Clear existing auto-generated sections and re-parse from optimized content
-    resume.resume_sections.destroy_all
-
     parser = ResumeContentParserService.new(resume.optimized_content)
     parsed = parser.parse
+
+    # Only destroy existing sections if parsing produced real results
+    # (more than just a summary fallback)
+    if parsed.blank? || (parsed.length == 1 && parsed.first[:section_type] == "summary" && parsed.first[:content]["text"]&.length.to_i < 50)
+      Rails.logger.warn "Section parsing produced insufficient results for resume #{resume.id}, keeping existing sections"
+      return
+    end
+
+    resume.resume_sections.destroy_all
 
     parsed.each do |section_data|
       resume.resume_sections.create!(
