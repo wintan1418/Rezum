@@ -1,6 +1,7 @@
 class ResumeBuilderController < ApplicationController
   before_action :authenticate_user!
   before_action :set_resume
+  before_action :check_wizard_lock
 
   def edit
     # Auto-populate sections from resume content if none exist
@@ -80,6 +81,12 @@ class ResumeBuilderController < ApplicationController
 
   def set_resume
     @resume = current_user.resumes.find(params[:resume_id])
+  end
+
+  def check_wizard_lock
+    if @resume.expires_at.present? && !current_user.has_premium_subscription?
+      redirect_to preview_resume_wizard_path(@resume), alert: "Upgrade to Premium to edit and download this resume."
+    end
   end
 
   def parse_section_content(type, raw)

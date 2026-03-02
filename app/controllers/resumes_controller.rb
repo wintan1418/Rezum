@@ -9,6 +9,10 @@ class ResumesController < ApplicationController
   end
 
   def show
+    if @resume.expires_at.present? && !current_user.has_premium_subscription?
+      redirect_to preview_resume_wizard_path(@resume) and return
+    end
+
     @cover_letters = @resume.cover_letters.recent.limit(5)
     @ats_analysis = @resume.ats_score.present?
 
@@ -133,6 +137,10 @@ class ResumesController < ApplicationController
   end
 
   def download
+    if @resume.expires_at.present? && !current_user.has_premium_subscription?
+      redirect_to preview_resume_wizard_path(@resume), alert: "Upgrade to Premium to download this resume." and return
+    end
+
     format = params[:format] || "txt"
     content = @resume.optimized_content.present? ? @resume.optimized_content : @resume.original_content
 
