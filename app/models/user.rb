@@ -37,7 +37,7 @@ class User < ApplicationRecord
   # Validations
   validates :first_name, :last_name, presence: true
   validates :referral_code, uniqueness: true, allow_nil: true
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, format: { with: /\A[a-zA-Z0-9.!\#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}\z/, message: "must be a valid email address" }
   validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
   validates :language, inclusion: { in: %w[en es fr de pt it nl sv da no] }
   validates :credits_remaining, numericality: { greater_than_or_equal_to: 0 }

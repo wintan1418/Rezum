@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   # Configure Devise permitted parameters
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :store_referral_code
+  before_action :store_return_to
 
   private
 
@@ -18,6 +19,22 @@ class ApplicationController < ActionController::Base
     if params[:ref].present? && !user_signed_in?
       session[:referral_code] = params[:ref]
     end
+  end
+
+  def store_return_to
+    if params[:return_to].present? && !user_signed_in?
+      session[:return_to_after_auth] = params[:return_to]
+    end
+  end
+
+  def after_sign_in_path_for(resource)
+    stored = session.delete(:return_to_after_auth)
+    stored || super
+  end
+
+  def after_sign_up_path_for(resource)
+    stored = session.delete(:return_to_after_auth)
+    stored || super
   end
 
   def layout_by_resource
