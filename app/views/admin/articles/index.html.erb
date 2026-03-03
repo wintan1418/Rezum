@@ -1,0 +1,78 @@
+<div class="p-6 sm:p-8">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Blog Articles</h1>
+      <p class="text-sm text-gray-500 mt-1"><%= @published_count %> published, <%= @draft_count %> drafts</p>
+    </div>
+    <%= link_to new_admin_article_path, class: "inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors" do %>
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      New Article
+    <% end %>
+  </div>
+
+  <!-- Category Filters -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    <%= link_to "All (#{Article.count})", admin_articles_path, class: "px-3 py-1.5 rounded-lg text-xs font-medium #{params[:category].blank? ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+    <% Article::CATEGORIES.each do |cat| %>
+      <% count = Article.where(category: cat).count %>
+      <%= link_to "#{cat.humanize.titleize} (#{count})", admin_articles_path(category: cat), class: "px-3 py-1.5 rounded-lg text-xs font-medium #{params[:category] == cat ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
+    <% end %>
+  </div>
+
+  <!-- Articles Table -->
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <% if @articles.any? %>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Category</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Date</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @articles.each do |article| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4">
+                <div class="max-w-xs">
+                  <p class="text-sm font-semibold text-gray-900 truncate"><%= article.title %></p>
+                  <p class="text-xs text-gray-400 mt-0.5"><%= article.reading_time %> min read &middot; By <%= article.author || "—" %></p>
+                </div>
+              </td>
+              <td class="px-6 py-4 hidden sm:table-cell">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <%= article.category_badge_classes %>"><%= article.category_label %></span>
+              </td>
+              <td class="px-6 py-4 hidden md:table-cell">
+                <% if article.published? %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Published</span>
+                <% else %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Draft</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-400 hidden lg:table-cell">
+                <%= article.published_at&.strftime("%b %d, %Y") || "—" %>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <%= link_to edit_admin_article_path(article), class: "text-xs font-medium text-blue-600 hover:text-blue-700" do %>Edit<% end %>
+                  <%= button_to toggle_publish_admin_article_path(article), method: :patch, class: "text-xs font-medium #{article.published? ? 'text-yellow-600 hover:text-yellow-700' : 'text-green-600 hover:text-green-700'}", data: { turbo_confirm: article.published? ? "Unpublish this article?" : nil } do %>
+                    <%= article.published? ? "Unpublish" : "Publish" %>
+                  <% end %>
+                  <%= button_to admin_article_path(article), method: :delete, class: "text-xs font-medium text-red-600 hover:text-red-700", data: { turbo_confirm: "Delete \"#{article.title}\"? This cannot be undone." } do %>Delete<% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="text-center py-12">
+        <p class="text-gray-500">No articles yet.</p>
+        <%= link_to "Create your first article", new_admin_article_path, class: "mt-2 inline-block text-sm font-medium text-blue-600 hover:underline" %>
+      </div>
+    <% end %>
+  </div>
+</div>

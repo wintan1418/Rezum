@@ -47,6 +47,12 @@
                 <span class="ml-auto inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold"><%= unread_conversations %></span>
               <% end %>
             <% end %>
+            <%= link_to admin_articles_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'articles' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+              </svg>
+              Blog Articles
+            <% end %>
           </nav>
 
           <!-- Back to App -->
@@ -82,6 +88,7 @@
           <div class="flex items-center space-x-2">
             <%= link_to admin_root_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Dashboard<% end %>
             <%= link_to admin_users_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Users<% end %>
+            <%= link_to admin_articles_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Blog<% end %>
             <%= link_to dashboard_path, class: "text-gray-400 hover:text-white px-2 py-1 text-sm" do %>App<% end %>
           </div>
         </div>

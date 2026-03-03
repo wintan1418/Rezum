@@ -29,6 +29,11 @@ Rails.application.routes.draw do
         patch :reopen
       end
     end
+    resources :articles do
+      member do
+        patch :toggle_publish
+      end
+    end
   end
 
   # Main AI features - protected by authentication

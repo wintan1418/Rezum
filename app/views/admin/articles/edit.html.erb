@@ -1,0 +1,16 @@
+<div class="p-6 sm:p-8">
+  <div class="max-w-4xl">
+    <div class="mb-6">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-gray-900">Edit Article</h1>
+        <% if @article.published? %>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Published</span>
+        <% else %>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Draft</span>
+        <% end %>
+      </div>
+      <p class="text-sm text-gray-500 mt-1">Last updated <%= time_ago_in_words(@article.updated_at) %> ago</p>
+    </div>
+    <%= render "form", article: @article %>
+  </div>
+</div>

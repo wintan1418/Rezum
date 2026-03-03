@@ -1,0 +1,96 @@
+<%= form_with model: [:admin, article], local: true, html: { class: "space-y-6" } do |f| %>
+
+  <% if article.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <p class="text-sm font-medium text-red-800">Please fix the following errors:</p>
+      <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+        <% article.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Title & Category -->
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <h3 class="text-sm font-semibold text-gray-900 mb-4">Basic Info</h3>
+    <div class="space-y-4">
+      <div>
+        <%= f.label :title, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :title, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Article title" %>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <%= f.label :category, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.select :category, Article::CATEGORIES.map { |c| [c.humanize.titleize, c] }, { include_blank: "Select category" }, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        <div>
+          <%= f.label :author, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :author, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Author name" %>
+        </div>
+        <div>
+          <%= f.label :reading_time, "Read time (min)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.number_field :reading_time, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", min: 1, max: 60 %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :excerpt, "Excerpt / Summary", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :excerpt, rows: 2, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Brief summary shown on blog cards..." %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <h3 class="text-sm font-semibold text-gray-900 mb-1">Content</h3>
+    <p class="text-xs text-gray-400 mb-4">Write in HTML. Use h2/h3 for headings, p for paragraphs, ul/ol for lists, strong/em for emphasis.</p>
+    <%= f.text_area :content, rows: 25, class: "w-full rounded-lg border border-gray-300 px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "<h2>Section Title</h2>\n<p>Paragraph text...</p>" %>
+  </div>
+
+  <!-- SEO -->
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <h3 class="text-sm font-semibold text-gray-900 mb-4">SEO & Media</h3>
+    <div class="space-y-4">
+      <div>
+        <%= f.label :meta_title, "SEO Title", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :meta_title, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Custom page title for search engines (optional)" %>
+      </div>
+      <div>
+        <%= f.label :meta_description, "SEO Description", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :meta_description, rows: 2, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Meta description for search engines (optional, max 160 chars)" %>
+      </div>
+      <div>
+        <%= f.label :featured_image_url, "Featured Image URL", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :featured_image_url, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "https://..." %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Publishing -->
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <h3 class="text-sm font-semibold text-gray-900 mb-4">Publishing</h3>
+    <div class="flex items-center gap-6">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <%= f.check_box :published, class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500" %>
+        <span class="text-sm text-gray-700">Published</span>
+      </label>
+      <div>
+        <%= f.label :published_at, "Publish date", class: "text-sm font-medium text-gray-700 mr-2" %>
+        <%= f.datetime_local_field :published_at, class: "rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex items-center justify-between">
+    <%= link_to "Cancel", admin_articles_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+    <div class="flex items-center gap-3">
+      <% if article.persisted? %>
+        <%= link_to "View on site", article_path(article), target: "_blank", class: "text-sm text-blue-600 hover:underline" %>
+      <% end %>
+      <%= f.submit article.persisted? ? "Save Changes" : "Create Article", class: "px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors cursor-pointer" %>
+    </div>
+  </div>
+<% end %>
