@@ -5,7 +5,7 @@ module Admin
         all: User.where(unsubscribed_at: nil).count,
         free: User.where(unsubscribed_at: nil).where.not(id: Subscription.where(status: [ :active, :trialing ]).select(:user_id)).count,
         trial_ending: User.where(unsubscribed_at: nil).where(trial_ends_at: 3.days.from_now..7.days.from_now).count,
-        inactive: User.where(unsubscribed_at: nil).where("last_sign_in_at < ?", 7.days.ago).count,
+        inactive: User.where(unsubscribed_at: nil).where("last_active_at < ?", 7.days.ago).count,
         low_credits: User.where(unsubscribed_at: nil).where(credits_remaining: 0..1).count,
         subscribers: Subscription.where(status: [ :active, :trialing ]).select(:user_id).distinct.count
       }
@@ -37,7 +37,7 @@ module Admin
 
       when "re_engagement"
         inactive_users.find_each do |user|
-          days = ((Time.current - user.last_sign_in_at) / 1.day).to_i
+          days = ((Time.current - user.last_active_at) / 1.day).to_i
           UserMailer.re_engagement(user, inactive_days: days).deliver_later
           count += 1
         end
@@ -86,7 +86,7 @@ module Admin
     end
 
     def inactive_users
-      eligible_users.where("last_sign_in_at < ?", 7.days.ago)
+      eligible_users.where("last_active_at < ?", 7.days.ago)
     end
 
     def low_credit_users
