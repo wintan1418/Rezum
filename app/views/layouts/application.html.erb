@@ -29,7 +29,11 @@
   </head>
 
   <body class="h-full flex flex-col">
-    <% if user_signed_in? && controller_name != 'home' %>
+    <% if controller_name == 'home' %>
+      <%# Home page has its own inline nav/footer %>
+    <% elsif controller_name == 'articles' %>
+      <%= render 'shared/public_navigation' %>
+    <% elsif user_signed_in? %>
       <%= render 'shared/navigation' %>
     <% end %>
 
@@ -39,7 +43,11 @@
       <%= yield %>
     </div>
 
-    <% if user_signed_in? && controller_name != 'home' %>
+    <% if controller_name == 'home' %>
+      <%# Home page has its own inline footer %>
+    <% elsif controller_name == 'articles' %>
+      <%= render 'shared/footer' %>
+    <% elsif user_signed_in? %>
       <%= render 'shared/footer' %>
       <%= render 'shared/chat_widget' %>
     <% end %>
