@@ -3,7 +3,7 @@ module Admin
     before_action :set_user, only: [ :show, :toggle_admin, :toggle_disable, :gift_credits ]
 
     def index
-      @users = User.recent
+      @users = User.recent.includes(:subscriptions)
       @users = @users.search(params[:q]) if params[:q].present?
 
       case params[:filter]

@@ -37,7 +37,7 @@
               Users
             <% end %>
 
-            <% unread_conversations = Conversation.open.joins(:messages).where(messages: { read: false }).where.not(messages: { user_id: current_user.id }).distinct.count %>
+            <% unread_conversations = @unread_conversations || 0 %>
             <%= link_to admin_conversations_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'conversations' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
               <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
@@ -61,7 +61,7 @@
               Marketing
             <% end %>
 
-            <% unread_hire = HireMessage.unread.count %>
+            <% unread_hire = @unread_hire || 0 %>
             <%= link_to admin_hire_messages_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'hire_messages' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
               <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>

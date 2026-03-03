@@ -167,6 +167,9 @@ Rails.application.routes.draw do
   get "privacy", to: "pages#privacy", as: :privacy
   get "unsubscribe", to: "email_unsubscribes#show", as: :unsubscribe
 
+  # Sitemap
+  get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: :xml }
+
   # Defines the root path route ("/")
   root "home#index"
 end

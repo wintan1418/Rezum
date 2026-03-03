@@ -1,1 +1,14 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /sidekiq
+Disallow: /settings
+Disallow: /dashboard
+Disallow: /resumes
+Disallow: /cover_letters
+Disallow: /chat
+Disallow: /onboarding
+Disallow: /subscriptions
+Disallow: /billing
+
+Sitemap: https://rezumfit.com/sitemap.xml

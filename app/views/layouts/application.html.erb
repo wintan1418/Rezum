@@ -4,9 +4,28 @@
     <title><%= content_for(:title) || "RezumFit - AI Resume & Cover Letter Generator" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <% if content_for?(:meta_description) %>
-      <meta name="description" content="<%= content_for(:meta_description) %>">
-    <% end %>
+    <% page_title = content_for(:title) || "RezumFit - AI Resume & Cover Letter Generator" %>
+    <% page_description = content_for?(:meta_description) ? content_for(:meta_description) : "Optimize your resume for ATS systems and generate tailored cover letters in seconds. AI-powered tools trusted by thousands of job seekers." %>
+    <% page_image = content_for?(:og_image) ? content_for(:og_image) : "#{request.base_url}/icon.png" %>
+
+    <meta name="description" content="<%= page_description %>">
+    <link rel="canonical" href="<%= request.original_url.split('?').first %>">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="<%= content_for?(:og_type) ? content_for(:og_type) : 'website' %>">
+    <meta property="og:site_name" content="RezumFit">
+    <meta property="og:title" content="<%= page_title %>">
+    <meta property="og:description" content="<%= page_description %>">
+    <meta property="og:url" content="<%= request.original_url.split('?').first %>">
+    <meta property="og:image" content="<%= page_image %>">
+    <%= yield :og_extra %>
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= page_title %>">
+    <meta name="twitter:description" content="<%= page_description %>">
+    <meta name="twitter:image" content="<%= page_image %>">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 

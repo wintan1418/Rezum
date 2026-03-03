@@ -2,6 +2,19 @@
 <% content_for :meta_description, "Check your resume's ATS compatibility score for free. Upload your resume and get instant feedback on formatting, keywords, and improvements to pass applicant tracking systems." %>
 
 <% content_for :head do %>
+  <!-- WebApplication Schema -->
+  <script type="application/ld+json">
+  <%= raw({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Free ATS Resume Score Checker",
+    "url": ats_checker_url,
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Check your resume's ATS compatibility score for free. Get instant feedback on formatting, keywords, and improvements."
+  }.to_json) %>
+  </script>
   <style>
     @keyframes score-fill { from { stroke-dashoffset: 283; } }
     @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

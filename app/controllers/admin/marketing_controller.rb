@@ -1,14 +1,16 @@
 module Admin
   class MarketingController < BaseController
     def index
-      @segments = {
-        all: User.where(unsubscribed_at: nil).count,
-        free: User.where(unsubscribed_at: nil).where.not(id: Subscription.where(status: [ :active, :trialing ]).select(:user_id)).count,
-        trial_ending: User.where(unsubscribed_at: nil).where(trial_ends_at: 3.days.from_now..7.days.from_now).count,
-        inactive: User.where(unsubscribed_at: nil).where("last_active_at < ?", 7.days.ago).count,
-        low_credits: User.where(unsubscribed_at: nil).where(credits_remaining: 0..1).count,
-        subscribers: Subscription.where(status: [ :active, :trialing ]).select(:user_id).distinct.count
-      }
+      @segments = Rails.cache.fetch("admin:marketing_segments", expires_in: 15.minutes) do
+        {
+          all: User.where(unsubscribed_at: nil).count,
+          free: User.where(unsubscribed_at: nil).where.not(id: Subscription.where(status: [ :active, :trialing ]).select(:user_id)).count,
+          trial_ending: User.where(unsubscribed_at: nil).where(trial_ends_at: 3.days.from_now..7.days.from_now).count,
+          inactive: User.where(unsubscribed_at: nil).where("last_active_at < ?", 7.days.ago).count,
+          low_credits: User.where(unsubscribed_at: nil).where(credits_remaining: 0..1).count,
+          subscribers: Subscription.where(status: [ :active, :trialing ]).select(:user_id).distinct.count
+        }
+      end
     end
 
     def send_campaign

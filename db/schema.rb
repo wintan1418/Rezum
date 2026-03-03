@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_03_135940) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -102,6 +102,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category"], name: "index_articles_on_category"
+    t.index ["published", "published_at"], name: "index_articles_on_published_and_published_at"
     t.index ["published"], name: "index_articles_on_published"
     t.index ["slug"], name: "index_articles_on_slug", unique: true
   end
@@ -113,6 +114,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.datetime "last_message_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_conversations_on_status"
     t.index ["user_id"], name: "index_conversations_on_user_id"
   end
 
@@ -146,6 +148,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["resume_id"], name: "index_cover_letters_on_resume_id"
+    t.index ["user_id", "status"], name: "index_cover_letters_on_user_id_and_status"
     t.index ["user_id"], name: "index_cover_letters_on_user_id"
   end
 
@@ -246,6 +249,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.boolean "read", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["conversation_id", "read"], name: "index_messages_on_conversation_id_and_read"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
@@ -261,6 +265,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "client_secret"
+    t.index ["user_id", "status"], name: "index_payments_on_user_id_and_status"
     t.index ["user_id"], name: "index_payments_on_user_id"
   end
 
@@ -292,6 +297,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.datetime "updated_at", null: false
     t.string "template", default: "professional"
     t.datetime "expires_at"
+    t.index ["user_id", "status"], name: "index_resumes_on_user_id_and_status"
     t.index ["user_id"], name: "index_resumes_on_user_id"
   end
 
@@ -333,6 +339,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_122500) do
     t.datetime "trial_end"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["status", "user_id"], name: "index_subscriptions_on_status_and_user_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
 
