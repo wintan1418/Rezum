@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <% page_title = content_for(:title) || "RezumFit - AI Resume & Cover Letter Generator" %>
     <% page_description = content_for?(:meta_description) ? content_for(:meta_description) : "Optimize your resume for ATS systems and generate tailored cover letters in seconds. AI-powered tools trusted by thousands of job seekers." %>
-    <% page_image = content_for?(:og_image) ? content_for(:og_image) : "#{request.base_url}/icon.png" %>
+    <% page_image = content_for?(:og_image) ? content_for(:og_image) : "#{request.base_url}/og-image.png" %>
 
     <meta name="description" content="<%= page_description %>">
     <link rel="canonical" href="<%= request.original_url.split('?').first %>">
