@@ -45,8 +45,9 @@
   <!-- Content -->
   <div class="bg-white rounded-xl border border-gray-200 p-6">
     <h3 class="text-sm font-semibold text-gray-900 mb-1">Content</h3>
-    <p class="text-xs text-gray-400 mb-4">Write in HTML. Use h2/h3 for headings, p for paragraphs, ul/ol for lists, strong/em for emphasis.</p>
-    <%= f.text_area :content, rows: 25, class: "w-full rounded-lg border border-gray-300 px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "<h2>Section Title</h2>\n<p>Paragraph text...</p>" %>
+    <p class="text-xs text-gray-400 mb-4">Use the toolbar to format your article — headings, bold, lists, links, etc.</p>
+    <%= f.hidden_field :content, id: "article_content_hidden" %>
+    <trix-editor input="article_content_hidden" class="trix-content"></trix-editor>
   </div>
 
   <!-- SEO -->
