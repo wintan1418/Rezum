@@ -95,7 +95,14 @@ class ResumesController < ApplicationController
       return
     end
 
-    @resume.update!(status: "processing", provider: params[:provider] || "openai")
+    selected_provider = params[:provider] || "openai"
+
+    # Anthropic Claude is Premium-only
+    if selected_provider == "anthropic" && !current_user.has_premium_subscription?
+      selected_provider = "openai"
+    end
+
+    @resume.update!(status: "processing", provider: selected_provider)
     ahoy.track "resume_optimize", resume_id: @resume.id, provider: @resume.provider
 
     OptimizeResumeJob.perform_later(@resume.id, current_user.id)
