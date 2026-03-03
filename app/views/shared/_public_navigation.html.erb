@@ -1,35 +1,60 @@
-<nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
+<nav class="bg-white border-b border-gray-200 sticky top-0 z-40" data-controller="mobile-menu">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between h-16">
-      <!-- Left: Logo + Nav Links -->
-      <div class="flex items-center">
-        <%= link_to root_path, class: "flex items-center space-x-2 mr-8" do %>
-          <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
-            <span class="text-white font-bold text-lg">R</span>
-          </div>
-          <span class="text-xl font-bold text-gray-900 hidden sm:block">RezumFit</span>
-        <% end %>
-
-        <div class="hidden sm:flex items-center space-x-1">
-          <%= link_to articles_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium transition-colors #{controller_name == 'articles' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'}" do %>
-            Blog
-          <% end %>
-          <%= link_to ats_checker_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" do %>
-            Free ATS Checker
-          <% end %>
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <%= link_to root_path, class: "flex items-center space-x-2" do %>
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
+          <span class="text-white font-bold text-lg">R</span>
         </div>
+        <span class="text-xl font-bold text-gray-900 hidden sm:block">RezumFit</span>
+      <% end %>
+
+      <!-- Desktop Links -->
+      <div class="hidden md:flex items-center space-x-6">
+        <%= link_to "Home", root_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
+        <%= link_to "Free ATS Checker", ats_checker_path, class: "text-sm font-medium #{controller_name == 'ats_checker' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'} transition-colors" %>
+        <%= link_to "Blog", articles_path, class: "text-sm font-medium #{controller_name == 'articles' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'} transition-colors" %>
       </div>
 
-      <!-- Right: Auth buttons -->
-      <div class="flex items-center space-x-3">
+      <!-- Right: Auth -->
+      <div class="hidden md:flex items-center space-x-3">
         <% if user_signed_in? %>
-          <%= link_to dashboard_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" do %>Dashboard<% end %>
+          <%= link_to "Dashboard", dashboard_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
           <% if current_user.admin? %>
-            <%= link_to admin_root_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" do %>Admin<% end %>
+            <%= link_to "Admin", admin_root_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
           <% end %>
         <% else %>
-          <%= link_to new_user_session_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" do %>Sign In<% end %>
-          <%= link_to new_user_registration_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors" do %>Get Started Free<% end %>
+          <%= link_to "Sign In", new_user_session_path, class: "text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 transition-colors" %>
+          <%= link_to new_user_registration_path, class: "text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all" do %>
+            Get Started Free
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button type="button" data-action="click->mobile-menu#toggle" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100">
+        <svg data-mobile-menu-target="openIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg data-mobile-menu-target="closeIcon" class="hidden w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div data-mobile-menu-target="menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
+    <div class="px-4 py-4 space-y-2">
+      <%= link_to "Home", root_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      <%= link_to "Free ATS Checker", ats_checker_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'ats_checker' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}" %>
+      <%= link_to "Blog", articles_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'articles' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}" %>
+      <div class="pt-3 border-t border-gray-100 space-y-2">
+        <% if user_signed_in? %>
+          <%= link_to "Dashboard", dashboard_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+        <% else %>
+          <%= link_to "Sign In", new_user_session_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+          <%= link_to "Get Started Free", new_user_registration_path, class: "block px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 text-center" %>
         <% end %>
       </div>
     </div>

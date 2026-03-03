@@ -29,9 +29,10 @@
   </head>
 
   <body class="h-full flex flex-col">
+    <% public_pages = %w[articles ats_checker pages] %>
     <% if controller_name == 'home' %>
       <%# Home page has its own inline nav/footer %>
-    <% elsif controller_name == 'articles' %>
+    <% elsif public_pages.include?(controller_name) %>
       <%= render 'shared/public_navigation' %>
     <% elsif user_signed_in? %>
       <%= render 'shared/navigation' %>
@@ -45,7 +46,7 @@
 
     <% if controller_name == 'home' %>
       <%# Home page has its own inline footer %>
-    <% elsif controller_name == 'articles' %>
+    <% elsif public_pages.include?(controller_name) %>
       <%= render 'shared/public_footer' %>
     <% elsif user_signed_in? %>
       <%= render 'shared/footer' %>

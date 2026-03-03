@@ -1,7 +1,7 @@
 class AtsCheckerController < ApplicationController
   before_action :check_rate_limit, only: :check
 
-  layout false
+  layout "application"
 
   def show
     @rate_limited = already_used_free_check? && !user_signed_in?
