@@ -45,28 +45,6 @@
     </div>
   </div>
 
-  <!-- Bulk Email -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <h3 class="text-sm font-semibold text-gray-900">Send Bulk Email</h3>
-        <p class="text-xs text-gray-500 mt-1">Send emails to all users (excludes unsubscribed)</p>
-      </div>
-      <div class="flex items-center gap-2 text-xs text-gray-400">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-        <%= User.where(unsubscribed_at: nil).count %> eligible users
-      </div>
-    </div>
-
-    <%= form_with url: admin_send_bulk_email_path, method: :post, local: true, class: "flex items-end gap-3" do |f| %>
-      <div class="flex-1">
-        <label class="block text-xs font-medium text-gray-600 mb-1.5">Email Template</label>
-        <%= f.select :email_type, @available_emails.map { |k, v| [v, k] }, {}, class: "w-full rounded-lg border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500" %>
-      </div>
-      <%= f.submit "Send to All Users", class: "px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all cursor-pointer whitespace-nowrap", data: { confirm: "Are you sure? This will send emails to ALL users." } %>
-    <% end %>
-  </div>
-
   <!-- Recent Users -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">

@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   # Admin panel
   namespace :admin do
     root to: "dashboard#index"
-    post "send_bulk_email", to: "dashboard#send_bulk_email", as: :send_bulk_email
+    post "send_bulk_email", to: "marketing#send_campaign", as: :send_bulk_email # deprecated, use marketing
     resources :users, only: [ :index, :show ] do
       member do
         patch :toggle_admin
@@ -35,6 +35,11 @@ Rails.application.routes.draw do
       end
     end
     resources :hire_messages, only: [ :index, :show, :destroy ]
+    resources :marketing, only: [ :index ] do
+      collection do
+        post :send_campaign
+      end
+    end
   end
 
   # Main AI features - protected by authentication

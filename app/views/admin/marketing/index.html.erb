@@ -1,0 +1,167 @@
+<div class="p-6 sm:p-8">
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Marketing Campaigns</h1>
+    <p class="text-sm text-gray-500 mt-1">Send targeted emails to engage and convert your users.</p>
+  </div>
+
+  <!-- Audience Segments -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+      <p class="text-2xl font-bold text-gray-900"><%= @segments[:all] %></p>
+      <p class="text-xs text-gray-500 mt-1">All Users</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+      <p class="text-2xl font-bold text-orange-600"><%= @segments[:free] %></p>
+      <p class="text-xs text-gray-500 mt-1">Free Users</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+      <p class="text-2xl font-bold text-amber-600"><%= @segments[:trial_ending] %></p>
+      <p class="text-xs text-gray-500 mt-1">Trial Ending</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+      <p class="text-2xl font-bold text-red-600"><%= @segments[:inactive] %></p>
+      <p class="text-xs text-gray-500 mt-1">Inactive (7d+)</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+      <p class="text-2xl font-bold text-rose-600"><%= @segments[:low_credits] %></p>
+      <p class="text-xs text-gray-500 mt-1">Low Credits</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
+      <p class="text-2xl font-bold text-green-600"><%= @segments[:subscribers] %></p>
+      <p class="text-xs text-gray-500 mt-1">Subscribers</p>
+    </div>
+  </div>
+
+  <!-- Campaign Cards -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- 1. Upgrade to Pro -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700"><%= @segments[:free] %> users</span>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">Upgrade to Pro</h3>
+        <p class="text-sm text-gray-500 mb-4">Encourage free users to subscribe. Highlights unlimited resumes, AI optimization, and premium features they're missing.</p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :campaign, value: "upgrade_nudge" %>
+          <%= f.submit "Send to #{@segments[:free]} Free Users", class: "w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer", data: { turbo_confirm: "Send upgrade email to #{@segments[:free]} free users?" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 2. Trial Ending -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700"><%= @segments[:trial_ending] %> users</span>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">Trial Ending Reminder</h3>
+        <p class="text-sm text-gray-500 mb-4">Remind users whose trial expires in 3-7 days. Creates urgency to subscribe before losing access.</p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :campaign, value: "trial_ending" %>
+          <%= f.submit "Send to #{@segments[:trial_ending]} Trial Users", class: "w-full px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer", data: { turbo_confirm: "Send trial reminder to #{@segments[:trial_ending]} users?" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 3. Credits Running Low -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 bg-rose-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-700"><%= @segments[:low_credits] %> users</span>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">Credits Running Low</h3>
+        <p class="text-sm text-gray-500 mb-4">Nudge users with 0-1 credits to purchase more or upgrade to a subscription for unlimited access.</p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :campaign, value: "credits_low" %>
+          <%= f.submit "Send to #{@segments[:low_credits]} Users", class: "w-full px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer", data: { turbo_confirm: "Send credits low email to #{@segments[:low_credits]} users?" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 4. We Miss You -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700"><%= @segments[:inactive] %> users</span>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">We Miss You</h3>
+        <p class="text-sm text-gray-500 mb-4">Re-engage users who haven't logged in for 7+ days. Remind them of pending job applications and new features.</p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :campaign, value: "re_engagement" %>
+          <%= f.submit "Send to #{@segments[:inactive]} Inactive Users", class: "w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer", data: { turbo_confirm: "Send re-engagement email to #{@segments[:inactive]} inactive users?" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 5. Weekly Tips -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700"><%= @segments[:all] %> users</span>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">Weekly Career Tips</h3>
+        <p class="text-sm text-gray-500 mb-4">Send helpful career tips to all users. Rotates through 5 topics: ATS hacks, resume mistakes, cover letters, keywords, job search.</p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true do |f| %>
+          <%= f.hidden_field :campaign, value: "weekly_tips" %>
+          <%= f.submit "Send to #{@segments[:all]} Users", class: "w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer", data: { turbo_confirm: "Send weekly tips to #{@segments[:all]} users?" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- 6. Custom Announcement -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700"><%= @segments[:all] %> users</span>
+        </div>
+        <h3 class="text-base font-bold text-gray-900 mb-1">Custom Announcement</h3>
+        <p class="text-sm text-gray-500 mb-4">Send a one-off announcement with your own subject and message. Great for new features, promos, or updates.</p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true, class: "space-y-3" do |f| %>
+          <%= f.hidden_field :campaign, value: "feature_announcement" %>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Subject</label>
+            <%= f.text_field :announcement_subject, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Exciting new feature..." %>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Message</label>
+            <%= f.text_area :announcement_body, rows: 3, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Write your announcement..." %>
+          </div>
+          <%= f.submit "Send to #{@segments[:all]} Users", class: "w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer", data: { turbo_confirm: "Send this announcement to #{@segments[:all]} users?" } %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>

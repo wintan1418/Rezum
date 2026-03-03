@@ -54,6 +54,13 @@
               Blog Articles
             <% end %>
 
+            <%= link_to admin_marketing_index_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'marketing' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Marketing
+            <% end %>
+
             <% unread_hire = HireMessage.unread.count %>
             <%= link_to admin_hire_messages_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'hire_messages' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
               <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,6 +113,7 @@
             <%= link_to admin_root_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Dashboard<% end %>
             <%= link_to admin_users_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Users<% end %>
             <%= link_to admin_articles_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Blog<% end %>
+            <%= link_to admin_marketing_index_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Marketing<% end %>
             <%= link_to admin_hire_messages_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Hire<% end %>
             <%= link_to root_path(preview: 1), target: "_blank", data: { turbo: false }, class: "text-gray-400 hover:text-white px-2 py-1 text-sm" do %>Site<% end %>
           </div>
