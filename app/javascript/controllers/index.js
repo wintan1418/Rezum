@@ -78,3 +78,9 @@ application.register("job-url-fetcher", JobUrlFetcherController)
 
 import ResumeWizardController from "./resume_wizard_controller"
 application.register("resume-wizard", ResumeWizardController)
+
+import AtsCheckerController from "./ats_checker_controller"
+application.register("ats-checker", AtsCheckerController)
+
+import ScoreGaugeController from "./score_gauge_controller"
+application.register("score-gauge", ScoreGaugeController)

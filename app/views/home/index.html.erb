@@ -40,6 +40,7 @@
 
         <!-- Desktop Links -->
         <div class="hidden md:flex items-center space-x-8">
+          <%= link_to "Free ATS Checker", ats_checker_path, class: "text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors" %>
           <a href="#features" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Features</a>
           <a href="#how-it-works" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">How It Works</a>
           <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
@@ -69,6 +70,7 @@
     <!-- Mobile Menu -->
     <div data-mobile-menu-target="menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
       <div class="px-4 py-4 space-y-2">
+        <%= link_to "Free ATS Checker", ats_checker_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-blue-600 hover:bg-blue-50" %>
         <a href="#features" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Features</a>
         <a href="#how-it-works" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
         <a href="#pricing" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Pricing</a>
@@ -120,11 +122,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
               </svg>
             <% end %>
-            <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-xl transition-all" do %>
+            <%= link_to ats_checker_path, class: "inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 rounded-xl transition-all" do %>
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
-              Create Free Account
+              Check ATS Score &mdash; Free
             <% end %>
           </div>
 

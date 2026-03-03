@@ -1,0 +1,45 @@
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fade-up">
+  <div class="text-center">
+    <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <svg class="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900 mb-2">You've Used Your Free Check</h3>
+    <p class="text-sm text-gray-600 max-w-sm mx-auto">Create a free account to check more resumes, get AI-powered optimization, and download ATS-friendly versions.</p>
+
+    <div class="mt-6 space-y-3">
+      <%= link_to new_user_registration_path, class: "block w-full py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-md hover:shadow-lg transition-all text-center" do %>
+        Create Free Account
+        <svg class="w-4 h-4 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      <% end %>
+
+      <p class="text-xs text-gray-500">
+        Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-blue-600 hover:underline font-medium" %>
+      </p>
+    </div>
+
+    <!-- Perks -->
+    <div class="mt-6 pt-5 border-t border-gray-100 text-left">
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">What you get with a free account:</p>
+      <ul class="space-y-2">
+        <li class="flex items-center gap-2 text-sm text-gray-600">
+          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          Unlimited ATS score checks
+        </li>
+        <li class="flex items-center gap-2 text-sm text-gray-600">
+          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          3 free AI resume optimizations
+        </li>
+        <li class="flex items-center gap-2 text-sm text-gray-600">
+          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          AI cover letter generator
+        </li>
+        <li class="flex items-center gap-2 text-sm text-gray-600">
+          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          PDF & DOCX downloads
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

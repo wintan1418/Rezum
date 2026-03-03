@@ -6,7 +6,6 @@ class ResumeFileProcessorService
   attribute :user_id, :integer
 
   validates :file, presence: true
-  validates :user_id, presence: true
 
   SUPPORTED_FORMATS = %w[application/pdf application/vnd.openxmlformats-officedocument.wordprocessingml.document application/msword text/plain].freeze
   MAX_FILE_SIZE = 10.megabytes

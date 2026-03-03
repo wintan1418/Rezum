@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" class="scroll-smooth">
+<head>
+  <title>Free ATS Resume Score Checker - RezumFit</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Check your resume's ATS compatibility score for free. Upload your resume and get instant feedback on formatting, keywords, and improvements to pass applicant tracking systems.">
+  <meta name="keywords" content="ATS score checker, resume scanner, ATS compatibility, resume check, free resume tool">
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/icon.png" type="image/png">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    @keyframes score-fill { from { stroke-dashoffset: 283; } }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-up { animation: fade-up 0.5s ease-out; }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <a href="/" class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-sm">R</span>
+          </div>
+          <span class="text-lg font-bold text-gray-900">RezumFit</span>
+        </a>
+
+        <div class="flex items-center space-x-3">
+          <% if user_signed_in? %>
+            <%= link_to "Dashboard", dashboard_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2" %>
+          <% else %>
+            <%= link_to "Sign In", new_user_session_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2" %>
+            <%= link_to "Get Started Free", new_user_registration_path, class: "text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-4 py-2 rounded-xl transition-all" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 py-8 sm:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Header -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-green-50 border border-green-200 mb-4">
+          <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+          <span class="text-xs font-semibold text-green-700">100% Free - No Sign Up Required</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight">
+          Free ATS Resume <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Score Checker</span>
+        </h1>
+        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+          Upload your resume and get an instant ATS compatibility score with actionable feedback to help you pass applicant tracking systems.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+        <!-- Left: Upload Form -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8" data-controller="ats-checker">
+          <h2 class="text-lg font-semibold text-gray-900 mb-1">Upload Your Resume</h2>
+          <p class="text-sm text-gray-500 mb-6">Supports PDF, DOCX, and TXT files (max 10MB)</p>
+
+          <%= form_with url: ats_checker_check_path, method: :post, multipart: true, data: { ats_checker_target: "form", action: "submit->ats-checker#submit", turbo: true } do |f| %>
+
+            <!-- Drop Zone -->
+            <div data-ats-checker-target="dropZone"
+                 data-action="dragover->ats-checker#dragOver dragenter->ats-checker#dragOver dragleave->ats-checker#dragLeave drop->ats-checker#drop click->ats-checker#openFilePicker"
+                 class="relative border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all">
+
+              <!-- Upload Icon -->
+              <div data-ats-checker-target="uploadIcon">
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                </div>
+                <p class="text-sm font-medium text-gray-700">Drag & drop your resume here</p>
+                <p class="text-xs text-gray-400 mt-1">or click to browse files</p>
+              </div>
+
+              <!-- File Selected State -->
+              <div data-ats-checker-target="fileInfo" class="hidden">
+                <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <p class="text-sm font-medium text-gray-700" data-ats-checker-target="fileName"></p>
+                <p class="text-xs text-gray-400 mt-1" data-ats-checker-target="fileSize"></p>
+              </div>
+
+            </div>
+
+            <input type="file" name="resume_file" accept=".pdf,.docx,.doc,.txt" class="hidden" data-ats-checker-target="fileInput" data-action="change->ats-checker#fileSelected">
+
+            <!-- Submit -->
+            <button type="submit" data-ats-checker-target="submitBtn"
+                    class="mt-6 w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    disabled>
+              <span data-ats-checker-target="submitText">Check My ATS Score</span>
+              <span data-ats-checker-target="loadingText" class="hidden items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Analyzing your resume...
+              </span>
+            </button>
+          <% end %>
+
+          <% if @rate_limited %>
+            <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+              <p class="text-sm text-amber-800 font-medium">You've used your free check.</p>
+              <p class="text-xs text-amber-600 mt-1">Create a free account to check more resumes and unlock AI optimization.</p>
+              <div class="mt-3 flex gap-2">
+                <%= link_to "Create Free Account", new_user_registration_path, class: "text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-lg" %>
+                <%= link_to "Sign In", new_user_session_path, class: "text-xs font-medium text-gray-600 hover:text-gray-900 px-4 py-2" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Right: Results Area -->
+        <div id="ats-results">
+          <!-- Initial placeholder -->
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 text-center">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Your Score Will Appear Here</h3>
+            <p class="text-sm text-gray-500 max-w-sm mx-auto">Upload your resume to get an instant ATS compatibility analysis with actionable improvements.</p>
+
+            <div class="mt-6 space-y-3 text-left max-w-xs mx-auto">
+              <div class="flex items-center gap-3 text-sm text-gray-500">
+                <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>ATS format compatibility check</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm text-gray-500">
+                <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>Content quality analysis</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm text-gray-500">
+                <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>Actionable improvement tips</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Social Proof -->
+      <div class="mt-16 text-center">
+        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-6">Trusted by job seekers worldwide</p>
+        <div class="flex flex-wrap justify-center gap-8 text-gray-400">
+          <div class="text-center">
+            <p class="text-2xl font-bold text-gray-900">10K+</p>
+            <p class="text-xs text-gray-500 mt-1">Resumes Analyzed</p>
+          </div>
+          <div class="text-center">
+            <p class="text-2xl font-bold text-gray-900">85%</p>
+            <p class="text-xs text-gray-500 mt-1">Avg Score Improvement</p>
+          </div>
+          <div class="text-center">
+            <p class="text-2xl font-bold text-gray-900">4.8/5</p>
+            <p class="text-xs text-gray-500 mt-1">User Rating</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-100 py-8 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-xs">R</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-700">RezumFit</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-gray-500">
+          <%= link_to "Home", root_path, class: "hover:text-gray-700" %>
+          <%= link_to "Blog", articles_path, class: "hover:text-gray-700" %>
+          <%= link_to "Terms", terms_path, class: "hover:text-gray-700" %>
+          <%= link_to "Privacy", privacy_path, class: "hover:text-gray-700" %>
+        </div>
+        <p class="text-xs text-gray-400">&copy; <%= Date.current.year %> RezumFit. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

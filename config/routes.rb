@@ -141,6 +141,10 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
+  # Free ATS Score Checker (public lead magnet)
+  get "ats-checker", to: "ats_checker#show", as: :ats_checker
+  post "ats-checker", to: "ats_checker#check", as: :ats_checker_check
+
   # Blog (public)
   resources :articles, only: [ :index, :show ], path: "blog"
 
