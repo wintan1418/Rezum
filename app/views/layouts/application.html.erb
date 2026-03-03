@@ -46,7 +46,7 @@
     <% if controller_name == 'home' %>
       <%# Home page has its own inline footer %>
     <% elsif controller_name == 'articles' %>
-      <%= render 'shared/footer' %>
+      <%= render 'shared/public_footer' %>
     <% elsif user_signed_in? %>
       <%= render 'shared/footer' %>
       <%= render 'shared/chat_widget' %>
