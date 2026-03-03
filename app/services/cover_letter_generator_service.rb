@@ -19,7 +19,7 @@ class CoverLetterGeneratorService < AiService
 
     # Use Claude for more creative writing, OpenAI as fallback
     provider = determine_best_provider
-    model = provider == :anthropic ? CLAUDE_3_5_SONNET : GPT_4_MODEL
+    model = provider == :anthropic ? CLAUDE_SONNET : GPT_4_MODEL
 
     generate_completion(
       messages: messages,

@@ -13,6 +13,6 @@ RubyLLM.configure do |config|
   # Anthropic Claude (optional)
   config.anthropic_api_key = Rails.application.credentials.anthropic_api_key || ENV["ANTHROPIC_API_KEY"]
 
-  # Google Gemini (optional) - may not be available in all versions
-  # config.google_api_key = Rails.application.credentials.google_api_key || ENV['GOOGLE_API_KEY']
+  # Google Gemini (optional)
+  config.google_api_key = Rails.application.credentials.google_api_key || ENV["GOOGLE_API_KEY"]
 end

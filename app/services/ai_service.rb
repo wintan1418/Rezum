@@ -5,8 +5,8 @@ class AiService
   # Available AI Models
   GPT_4_MODEL = "gpt-4o".freeze
   GPT_4_MINI_MODEL = "gpt-4o-mini".freeze
-  CLAUDE_3_5_SONNET = "claude-3-5-sonnet-20241022".freeze
-  GEMINI_PRO = "gemini-1.5-pro".freeze
+  CLAUDE_SONNET = "claude-sonnet-4-6".freeze
+  GEMINI_PRO = "gemini-2.0-flash".freeze
 
   attribute :user_id, :integer
   attribute :user_country, :string
@@ -76,7 +76,7 @@ class AiService
     when :openai
       GPT_4_MINI_MODEL
     when :anthropic
-      CLAUDE_3_5_SONNET
+      CLAUDE_SONNET
     when :google
       GEMINI_PRO
     else
