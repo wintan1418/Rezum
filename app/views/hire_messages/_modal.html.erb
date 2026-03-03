@@ -1,0 +1,10 @@
+<!-- Hire Me Modal -->
+<div data-hire-modal-target="modal"
+     data-action="click->hire-modal#backdropClose keydown@window->hire-modal#keydown"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div data-card class="w-full max-w-lg bg-white rounded-2xl shadow-2xl transform transition-all duration-200 scale-95 opacity-0">
+    <div id="hire-modal-content">
+      <%= render "hire_messages/form", hire_message: HireMessage.new %>
+    </div>
+  </div>
+</div>

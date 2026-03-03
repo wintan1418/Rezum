@@ -84,3 +84,6 @@ application.register("ats-checker", AtsCheckerController)
 
 import ScoreGaugeController from "./score_gauge_controller"
 application.register("score-gauge", ScoreGaugeController)
+
+import HireModalController from "./hire_modal_controller"
+application.register("hire-modal", HireModalController)

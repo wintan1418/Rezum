@@ -1,0 +1,41 @@
+<div class="p-6 sm:p-8">
+  <div class="max-w-2xl">
+    <!-- Back -->
+    <div class="mb-6">
+      <%= link_to admin_hire_messages_path, class: "inline-flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors" do %>
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to messages
+      <% end %>
+    </div>
+
+    <!-- Message Card -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-lg font-bold text-gray-900"><%= @message.name %></h1>
+            <p class="text-sm text-gray-500"><%= @message.email %></p>
+          </div>
+          <p class="text-xs text-gray-400"><%= @message.created_at.strftime("%B %d, %Y at %l:%M %p") %></p>
+        </div>
+      </div>
+
+      <div class="px-6 py-5">
+        <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"><%= @message.message %></p>
+      </div>
+
+      <div class="px-6 py-4 bg-gray-50 flex items-center justify-between">
+        <a href="mailto:<%= @message.email %>?subject=Re: Your message on RezumFit&body=%0A%0A----%0AOriginal message from <%= ERB::Util.url_encode(@message.name) %>:%0A<%= ERB::Util.url_encode(@message.message) %>"
+           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Reply via Email
+        </a>
+
+        <%= link_to admin_hire_message_path(@message), data: { turbo_method: :delete, turbo_confirm: "Delete this message permanently?" }, class: "inline-flex items-center px-4 py-2 text-red-600 hover:bg-red-50 text-sm font-medium rounded-xl transition-colors" do %>
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          Delete
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

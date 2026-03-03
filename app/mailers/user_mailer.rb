@@ -62,6 +62,11 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: "You've received #{credits} free credits on RezumFit!")
   end
 
+  def hire_message_notification(hire_message)
+    @hire_message = hire_message
+    mail(to: ENV.fetch("MAILER_FROM", "wintan1418@gmail.com"), subject: "New Hire Message from #{hire_message.name}")
+  end
+
   def follow_up_reminder(user, job_application)
     @user = user
     @job_application = job_application

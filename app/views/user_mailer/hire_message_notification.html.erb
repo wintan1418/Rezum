@@ -1,0 +1,23 @@
+<h2>New Hire Message</h2>
+
+<p>Someone wants to work with you!</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+  <tr>
+    <td style="padding: 8px 12px; font-weight: bold; color: #374151; width: 100px;">Name:</td>
+    <td style="padding: 8px 12px; color: #111827;"><%= @hire_message.name %></td>
+  </tr>
+  <tr>
+    <td style="padding: 8px 12px; font-weight: bold; color: #374151;">Email:</td>
+    <td style="padding: 8px 12px; color: #111827;"><a href="mailto:<%= @hire_message.email %>"><%= @hire_message.email %></a></td>
+  </tr>
+</table>
+
+<div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 20px 0;">
+  <p style="font-weight: bold; color: #374151; margin-bottom: 8px;">Message:</p>
+  <p style="color: #111827; white-space: pre-wrap;"><%= @hire_message.message %></p>
+</div>
+
+<p>
+  <a href="mailto:<%= @hire_message.email %>?subject=Re: Your message on RezumFit" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Reply to <%= @hire_message.name %></a>
+</p>

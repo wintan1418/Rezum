@@ -34,6 +34,7 @@ Rails.application.routes.draw do
         patch :toggle_publish
       end
     end
+    resources :hire_messages, only: [ :index, :show, :destroy ]
   end
 
   # Main AI features - protected by authentication
@@ -145,6 +146,9 @@ Rails.application.routes.draw do
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+
+  # Hire Me contact form (public)
+  resources :hire_messages, only: [ :create ]
 
   # Free ATS Score Checker (public lead magnet)
   get "ats-checker", to: "ats_checker#show", as: :ats_checker

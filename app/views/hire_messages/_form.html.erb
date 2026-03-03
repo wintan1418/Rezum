@@ -1,0 +1,44 @@
+<%= form_with model: hire_message, url: hire_messages_path, id: "hire-form", data: { turbo_frame: "_top", action: "turbo:submit-start->hire-modal#submitStart" } do |f| %>
+  <div class="p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Let's work together</h3>
+        <p class="text-sm text-gray-500">Send me a message and I'll get back to you.</p>
+      </div>
+      <button type="button" data-action="click->hire-modal#close" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <% if hire_message.errors.any? %>
+      <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <% hire_message.errors.full_messages.each do |msg| %>
+          <p><%= msg %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="space-y-4">
+      <div>
+        <%= f.label :name, "Your Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :name, class: "w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "John Doe", required: true %>
+      </div>
+
+      <div>
+        <%= f.label :email, "Your Email", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.email_field :email, class: "w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "john@example.com", required: true %>
+      </div>
+
+      <div>
+        <%= f.label :message, "Message", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_area :message, rows: 4, class: "w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder: "Tell me about your project or opportunity...", required: true %>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex items-center justify-end gap-3">
+    <button type="button" data-action="click->hire-modal#close" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Cancel</button>
+    <%= f.submit "Send Message", data: { submit_btn: true }, class: "inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors cursor-pointer" %>
+  </div>
+<% end %>
