@@ -114,6 +114,10 @@ class User < ApplicationRecord
     sub.plan_id.to_s.include?("premium")
   end
 
+  def has_paid_subscription?
+    has_active_subscription?
+  end
+
   def subscription_status
     return "free" unless current_subscription
     current_subscription.status

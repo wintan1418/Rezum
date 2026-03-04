@@ -1,13 +1,22 @@
 class ResumeTemplateService
   TEMPLATES = %w[professional modern minimal creative executive].freeze
+  FREE_TEMPLATES = %w[professional modern].freeze
 
   TEMPLATE_META = {
-    "professional" => { label: "Professional", color: "#1f2937", accent: "#2563eb", description: "Classic, clean layout trusted by recruiters" },
-    "modern" => { label: "Modern", color: "#0f172a", accent: "#6366f1", description: "Contemporary design with color accents" },
-    "minimal" => { label: "Minimal", color: "#111827", accent: "#059669", description: "Clean and simple — content first" },
-    "creative" => { label: "Creative", color: "#1e1b4b", accent: "#7c3aed", description: "Bold style with personality" },
-    "executive" => { label: "Executive", color: "#0c0a09", accent: "#b45309", description: "Sophisticated, senior-level presence" }
+    "professional" => { label: "Professional", color: "#1f2937", accent: "#2563eb", description: "Classic, clean layout trusted by recruiters", tier: "free" },
+    "modern" => { label: "Modern", color: "#0f172a", accent: "#6366f1", description: "Contemporary design with color accents", tier: "free" },
+    "minimal" => { label: "Minimal", color: "#111827", accent: "#059669", description: "Clean and simple — content first", tier: "pro" },
+    "creative" => { label: "Creative", color: "#1e1b4b", accent: "#7c3aed", description: "Bold style with personality", tier: "pro" },
+    "executive" => { label: "Executive", color: "#0c0a09", accent: "#b45309", description: "Sophisticated, senior-level presence", tier: "pro" }
   }.freeze
+
+  def self.accessible_templates(user)
+    user.has_paid_subscription? ? TEMPLATES : FREE_TEMPLATES
+  end
+
+  def self.template_locked?(template, user)
+    !accessible_templates(user).include?(template)
+  end
 
   attr_reader :resume, :sections, :template
 

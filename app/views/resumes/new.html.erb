@@ -304,6 +304,47 @@
           </div>
         </div>
 
+        <!-- LinkedIn Import -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.35s;">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">Import from LinkedIn</h3>
+              <p class="text-sm text-gray-500">Copy your LinkedIn profile text and paste it below</p>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-4 mb-4">
+            <p class="text-xs font-medium text-gray-700 mb-2">How to export your LinkedIn profile:</p>
+            <ol class="text-xs text-gray-500 space-y-1 list-decimal list-inside">
+              <li>Go to your LinkedIn profile page</li>
+              <li>Select all text on the page (Ctrl+A / Cmd+A)</li>
+              <li>Copy it (Ctrl+C / Cmd+C)</li>
+              <li>Paste it in the box below</li>
+            </ol>
+          </div>
+
+          <%= form_with url: import_linkedin_resumes_path, method: :post, local: true do |f| %>
+            <%= f.text_area :linkedin_text,
+                rows: 8,
+                class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
+                placeholder: "Paste your full LinkedIn profile text here...\n\nExample:\nJohn Doe\nSenior Software Engineer at Google\n\nAbout\nPassionate engineer with 8+ years...\n\nExperience\nSenior Software Engineer\nGoogle · Full-time\nJan 2020 - Present · 4 yrs\n• Led migration of core services to Kubernetes...\n\nEducation\nMIT\nB.S. Computer Science\n2012 - 2016\n\nSkills\nPython\nJavaScript\nReact..." %>
+            <div class="mt-3 flex justify-end">
+              <%= f.submit "Import LinkedIn Profile",
+                  class: "inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-blue-700 transition-all cursor-pointer",
+                  data: { disable_with: "Importing..." } %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative fade-in" style="animation-delay: 0.35s;">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+          <div class="relative flex justify-center"><span class="px-3 bg-gray-50 text-sm text-gray-400">OR</span></div>
+        </div>
+
         <!-- Manual Text Input (Alternative) -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.4s;">
           <h3 class="text-lg font-semibold text-gray-900 mb-6">

@@ -64,6 +64,9 @@ Rails.application.routes.draw do
     end
 
     resources :resumes do
+      collection do
+        post :import_linkedin
+      end
       member do
         post :optimize
         post :ats_score

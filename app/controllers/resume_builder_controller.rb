@@ -11,12 +11,19 @@ class ResumeBuilderController < ApplicationController
 
     @sections = @resume.resume_sections.ordered.reload
     @templates = ResumeTemplateService::TEMPLATES
+    @accessible_templates = ResumeTemplateService.accessible_templates(current_user)
     @available_types = ResumeSection::SECTION_TYPES - @sections.map(&:section_type)
   end
 
   def update
-    if params[:resume].present?
-      @resume.update(template: params[:resume][:template]) if params[:resume][:template].present?
+    if params[:resume].present? && params[:resume][:template].present?
+      chosen = params[:resume][:template]
+      if ResumeTemplateService.accessible_templates(current_user).include?(chosen)
+        @resume.update(template: chosen)
+      else
+        redirect_to edit_resume_builder_path(@resume), alert: "Upgrade your plan to use the #{chosen.capitalize} template."
+        return
+      end
     end
 
     if params[:sections].present?

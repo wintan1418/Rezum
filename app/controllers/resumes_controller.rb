@@ -172,6 +172,35 @@ class ResumesController < ApplicationController
     end
   end
 
+  def import_linkedin
+    linkedin_text = params[:linkedin_text].to_s.strip
+    if linkedin_text.blank?
+      redirect_to new_resume_path, alert: "Please paste your LinkedIn profile text."
+      return
+    end
+
+    parser = LinkedinProfileParserService.new(linkedin_text)
+    result = parser.parse
+
+    @resume = current_user.resumes.create!(
+      original_content: result[:raw_text],
+      target_role: result[:headline].presence || "Professional",
+      status: "draft",
+      template: "professional"
+    )
+
+    result[:sections].each do |section_data|
+      @resume.resume_sections.create!(
+        section_type: section_data[:section_type],
+        content: section_data[:content],
+        position: section_data[:position],
+        visible: true
+      )
+    end
+
+    redirect_to edit_resume_builder_path(@resume), notice: "LinkedIn profile imported! Review and edit your sections, then download."
+  end
+
   private
 
   def set_resume
