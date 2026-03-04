@@ -40,10 +40,10 @@ export default class extends Controller {
       const html = await response.text()
 
       // If the response no longer contains our auto-refresh controller,
-      // processing is done — reload the page properly via Turbo
+      // processing is done — reload the page
       if (!html.includes('data-controller="auto-refresh"')) {
         this.stopPolling()
-        window.Turbo.visit(window.location.href, { action: "replace" })
+        window.location.reload()
       }
     } catch (error) {
       // Continue polling on error

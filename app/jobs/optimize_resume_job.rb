@@ -11,14 +11,13 @@ class OptimizeResumeJob < ApplicationJob
     return unless resume.processing?
 
     begin
-      # For re-optimization: use previously optimized content as base
-      # and feed ATS analysis (if available) so the AI knows what to fix
+      # Detect re-optimization: ATS feedback available from previous analysis
       has_ats_feedback = resume.ats_score.present? && resume.respond_to?(:ats_analysis) && resume.ats_analysis.present?
-      is_reoptimization = resume.optimized_content.present?
-      base_content = is_reoptimization ? resume.optimized_content : resume.original_content
 
+      # Always use original content as base — re-polishing polished text
+      # produces near-identical output. Instead, start fresh with ATS feedback.
       service = ResumeOptimizerService.new(
-        content: base_content,
+        content: resume.original_content,
         job_description: resume.job_description,
         target_role: resume.target_role,
         industry: resume.industry,
@@ -39,7 +38,7 @@ class OptimizeResumeJob < ApplicationJob
       # Extract keywords
       keywords = service.extract_keywords
 
-      # Update resume with results (clear old ATS score so user re-analyzes the new version)
+      # Update resume with results
       update_attrs = {
         optimized_content: optimized_content,
         keywords: keywords,
@@ -57,6 +56,13 @@ class OptimizeResumeJob < ApplicationJob
       if resume.expires_at.nil? && user.free? && user.credits_remaining > 0
         credits_to_deduct = [ 2, user.credits_remaining ].min
         user.decrement!(:credits_remaining, credits_to_deduct)
+      end
+
+      # Auto-trigger ATS analysis if job description is present
+      # so user sees their new score without clicking "Analyze" manually
+      if resume.job_description.present?
+        resume.update!(status: "processing")
+        AnalyzeAtsScoreJob.perform_later(resume.id)
       end
 
       Rails.logger.info "Resume #{resume.id} optimized successfully for user #{user.id}"

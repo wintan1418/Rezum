@@ -150,12 +150,13 @@
 
           <!-- ATS Analysis -->
           <% if @ats_analysis && @resume.ats_score.present? %>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" data-controller="toggle" data-toggle-show-text-value="View Details" data-toggle-hide-text-value="Hide Details">
               <div class="px-6 py-4 border-b border-gray-100">
                 <div class="flex items-center justify-between">
                   <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">ATS Analysis</h3>
                   <button type="button"
-                          id="toggle-ats-details"
+                          data-action="click->toggle#toggle"
+                          data-toggle-target="trigger"
                           class="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors">
                     View Details
                   </button>
@@ -221,7 +222,7 @@
                 </div>
 
                 <!-- Detailed Analysis (Hidden by default) -->
-                <div id="ats-details" class="hidden mt-5 space-y-4">
+                <div data-toggle-target="content" class="hidden mt-5 space-y-4">
                   <!-- Keyword Analysis -->
                   <% if @resume.keywords.present? %>
                     <div class="rounded-xl border border-gray-100 p-4">
@@ -406,22 +407,3 @@
     </main>
   </div>
 
-<script>
-  // ATS Details Toggle
-  document.addEventListener('DOMContentLoaded', function() {
-    const atsToggleBtn = document.getElementById('toggle-ats-details')
-    const atsDetails = document.getElementById('ats-details')
-
-    if (atsToggleBtn && atsDetails) {
-      atsToggleBtn.addEventListener('click', function() {
-        if (atsDetails.classList.contains('hidden')) {
-          atsDetails.classList.remove('hidden')
-          atsToggleBtn.textContent = 'Hide Details'
-        } else {
-          atsDetails.classList.add('hidden')
-          atsToggleBtn.textContent = 'View Details'
-        }
-      })
-    }
-  })
-</script>
