@@ -87,3 +87,6 @@ application.register("score-gauge", ScoreGaugeController)
 
 import HireModalController from "./hire_modal_controller"
 application.register("hire-modal", HireModalController)
+
+import ToggleController from "./toggle_controller"
+application.register("toggle", ToggleController)
