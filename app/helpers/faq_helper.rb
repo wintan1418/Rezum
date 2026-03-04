@@ -14,7 +14,7 @@ module FaqHelper
     },
     {
       question: "How are credits used?",
-      answer: "Each resume optimization uses 1 credit. Each cover letter generation uses 1 credit. Cover letter variations use 0.5 credits each. ATS score analysis is free for optimized resumes. You start with 2 free credits."
+      answer: "Resume optimization uses 2 credits. Cover letter generation uses 1 credit. Interview prep uses 3 credits. LinkedIn optimization uses 2 credits. AI Resume Builder uses 10 credits. ATS score analysis is free for optimized resumes. You start with 2 free credits."
     },
     {
       question: "Which AI models power RezumFit?",

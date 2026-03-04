@@ -4,7 +4,6 @@ class ResumeOptimizerService < AiService
   attribute :industry, :string
   attribute :experience_level, :string
 
-  validates :job_description, presence: true, length: { minimum: 50 }
   validates :target_role, presence: true, length: { minimum: 2 }
 
   def optimize
@@ -125,37 +124,68 @@ class ResumeOptimizerService < AiService
   end
 
   def build_user_prompt
-    <<~PROMPT
-      ORIGINAL RESUME:
-      #{content}
+    if job_description.present?
+      <<~PROMPT
+        ORIGINAL RESUME:
+        #{content}
 
-      TARGET JOB DESCRIPTION:
-      #{job_description}
+        TARGET JOB DESCRIPTION:
+        #{job_description}
 
-      TARGET ROLE: #{target_role}
-      INDUSTRY: #{industry.presence || 'Not specified'}
-      EXPERIENCE LEVEL: #{experience_level.presence || 'Not specified'}
-      CANDIDATE MARKET: #{user_country.presence || 'US'}
+        TARGET ROLE: #{target_role}
+        INDUSTRY: #{industry.presence || 'Not specified'}
+        EXPERIENCE LEVEL: #{experience_level.presence || 'Not specified'}
+        CANDIDATE MARKET: #{user_country.presence || 'US'}
 
-      OPTIMIZATION TASK:
-      Optimize this resume for the specific job posting above. Follow this process:
+        OPTIMIZATION TASK:
+        Optimize this resume for the specific job posting above. Follow this process:
 
-      1. KEYWORD ANALYSIS: Identify the top 15-20 critical keywords from the job description (hard skills, tools, technologies, certifications, domain terms). Ensure each appears naturally in the optimized resume — in Skills AND/OR within experience bullets.
+        1. KEYWORD ANALYSIS: Identify the top 15-20 critical keywords from the job description (hard skills, tools, technologies, certifications, domain terms). Ensure each appears naturally in the optimized resume — in Skills AND/OR within experience bullets.
 
-      2. PROFESSIONAL SUMMARY: Rewrite to directly target this specific role. Lead with the candidate's strongest credential relevant to this job. Include 3-5 keywords from the posting.
+        2. PROFESSIONAL SUMMARY: Rewrite to directly target this specific role. Lead with the candidate's strongest credential relevant to this job. Include 3-5 keywords from the posting.
 
-      3. SKILLS REORDERING: Reorganize skills by relevance to this specific job — most relevant first. Add any skills from the job description that the candidate demonstrably has (evidenced in their experience section). Remove outdated or irrelevant skills.
+        3. SKILLS REORDERING: Reorganize skills by relevance to this specific job — most relevant first. Add any skills from the job description that the candidate demonstrably has (evidenced in their experience section). Remove outdated or irrelevant skills.
 
-      4. EXPERIENCE OPTIMIZATION: For each role:
-         - Rewrite bullets using XYZ/CAR/PAR formulas with strong unique action verbs
-         - Front-load the most relevant achievements for this target role
-         - Preserve all quantified metrics from the original; add reasonable quantification ONLY where the original clearly implies it
-         - Ensure at least 80% of bullets contain a measurable result
+        4. EXPERIENCE OPTIMIZATION: For each role:
+           - Rewrite bullets using XYZ/CAR/PAR formulas with strong unique action verbs
+           - Front-load the most relevant achievements for this target role
+           - Preserve all quantified metrics from the original; add reasonable quantification ONLY where the original clearly implies it
+           - Ensure at least 80% of bullets contain a measurable result
 
-      5. EDUCATION & CERTIFICATIONS: Highlight coursework, certifications, or achievements relevant to the target role.
+        5. EDUCATION & CERTIFICATIONS: Highlight coursework, certifications, or achievements relevant to the target role.
 
-      Output ONLY the final optimized resume. No commentary.
-    PROMPT
+        Output ONLY the final optimized resume. No commentary.
+      PROMPT
+    else
+      <<~PROMPT
+        ORIGINAL RESUME:
+        #{content}
+
+        TARGET ROLE: #{target_role}
+        INDUSTRY: #{industry.presence || 'Not specified'}
+        EXPERIENCE LEVEL: #{experience_level.presence || 'Not specified'}
+        CANDIDATE MARKET: #{user_country.presence || 'US'}
+
+        GENERAL OPTIMIZATION TASK:
+        No specific job description was provided. Optimize this resume for general ATS compatibility and professional excellence for the target role above.
+
+        1. PROFESSIONAL SUMMARY: Write a compelling 2-3 sentence summary highlighting the candidate's strongest credentials for their target role.
+
+        2. SKILLS SECTION: Organize skills by relevance to the target role. Include industry-standard terminology and tools common for this role.
+
+        3. EXPERIENCE OPTIMIZATION: For each role:
+           - Rewrite bullets using XYZ/CAR/PAR formulas with strong unique action verbs
+           - Front-load the most impressive achievements
+           - Preserve all quantified metrics from the original; add reasonable quantification ONLY where the original clearly implies it
+           - Ensure at least 80% of bullets contain a measurable result
+
+        4. ATS OPTIMIZATION: Use standard section headers, consistent formatting, and industry keywords that ATS systems commonly scan for in #{target_role} roles.
+
+        5. EDUCATION & CERTIFICATIONS: Highlight relevant coursework, certifications, or achievements.
+
+        Output ONLY the final optimized resume. No commentary.
+      PROMPT
+    end
   end
 
   def industry_context

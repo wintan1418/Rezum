@@ -90,8 +90,8 @@ class ResumesController < ApplicationController
       return
     end
 
-    if @resume.job_description.blank? || @resume.job_description.length < 50
-      redirect_to edit_resume_path(@resume), alert: "Please add a job description (at least 50 characters) before optimizing."
+    if @resume.original_content.blank?
+      redirect_to edit_resume_path(@resume), alert: "Your resume has no content to optimize."
       return
     end
 

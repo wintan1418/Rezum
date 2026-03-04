@@ -96,10 +96,10 @@
                   <% end %>
                 </div>
 
-                <%# Tier 2 — Best Value %>
+                <%# Tier 2 — Most Popular %>
                 <div class="border-2 border-green-300 rounded-xl p-5 relative bg-green-50 text-center">
                   <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                    <span class="px-2.5 py-0.5 text-xs font-bold bg-green-600 text-white rounded-full">Best Value</span>
+                    <span class="px-2.5 py-0.5 text-xs font-bold bg-green-600 text-white rounded-full">Most Popular</span>
                   </div>
                   <p class="text-2xl font-bold text-gray-900"><%= tiers[1][:credits] %></p>
                   <p class="text-sm text-gray-500 mb-1">Credits</p>
@@ -111,8 +111,11 @@
                   <% end %>
                 </div>
 
-                <%# Tier 3 — Pro %>
-                <div class="border border-gray-200 rounded-xl p-5 hover:border-purple-300 transition-colors text-center">
+                <%# Tier 3 — Best Savings %>
+                <div class="border border-gray-200 rounded-xl p-5 hover:border-purple-300 transition-colors text-center relative">
+                  <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                    <span class="px-2.5 py-0.5 text-xs font-bold bg-purple-600 text-white rounded-full">Best Savings</span>
+                  </div>
                   <p class="text-2xl font-bold text-gray-900"><%= tiers[2][:credits] %></p>
                   <p class="text-sm text-gray-500 mb-1">Credits</p>
                   <p class="text-lg font-semibold text-purple-600"><%= sym %><%= tiers[2][:display] %></p>
