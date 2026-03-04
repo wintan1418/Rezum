@@ -173,6 +173,11 @@ class ResumesController < ApplicationController
   end
 
   def import_linkedin
+    unless current_user.can_generate?
+      redirect_to new_resume_path, alert: "Insufficient credits. Please upgrade your plan to import from LinkedIn."
+      return
+    end
+
     linkedin_text = nil
 
     # Option 1: PDF file upload (primary method)
@@ -205,8 +210,11 @@ class ResumesController < ApplicationController
     parser = LinkedinProfileParserService.new(linkedin_text)
     result = parser.parse
 
+    # Build clean original_content from parsed sections (not raw noisy text)
+    clean_content = build_clean_resume_text(result)
+
     @resume = current_user.resumes.create!(
-      original_content: result[:raw_text],
+      original_content: clean_content,
       target_role: result[:headline].presence || "Professional",
       status: "draft",
       template: "professional"
@@ -221,6 +229,12 @@ class ResumesController < ApplicationController
       )
     end
 
+    # Deduct credit for non-subscribers
+    unless current_user.has_active_subscription?
+      current_user.decrement!(:credits_remaining)
+    end
+
+    ahoy.track "linkedin_import", resume_id: @resume.id
     redirect_to edit_resume_builder_path(@resume), notice: "LinkedIn profile imported! Review and edit your sections, then download."
   end
 
@@ -235,6 +249,45 @@ class ResumesController < ApplicationController
       :original_content, :job_description, :target_role,
       :industry, :experience_level, :provider, :file
     )
+  end
+
+  def build_clean_resume_text(result)
+    parts = []
+    parts << result[:name] if result[:name].present?
+    parts << result[:headline] if result[:headline].present?
+    parts << ""
+
+    result[:sections].each do |section|
+      case section[:section_type]
+      when "summary"
+        parts << "SUMMARY"
+        parts << section[:content]["text"]
+      when "experience"
+        parts << "EXPERIENCE"
+        section[:content]["entries"].each do |entry|
+          parts << "#{entry['title']} | #{entry['company']} | #{entry['dates']}"
+          Array(entry["bullets"]).each { |b| parts << "- #{b}" }
+        end
+      when "education"
+        parts << "EDUCATION"
+        section[:content]["entries"].each do |entry|
+          parts << "#{entry['degree']} | #{entry['school']} | #{entry['dates']}"
+          parts << entry["details"] if entry["details"].present?
+        end
+      when "skills"
+        parts << "SKILLS"
+        parts << section[:content]["items"].join(", ")
+      when "certifications"
+        parts << "CERTIFICATIONS"
+        section[:content]["items"].each { |item| parts << "- #{item}" }
+      when "languages"
+        parts << "LANGUAGES"
+        section[:content]["items"].each { |item| parts << "- #{item}" }
+      end
+      parts << ""
+    end
+
+    parts.join("\n").strip
   end
 
   def extract_target_role_from_content(content)
