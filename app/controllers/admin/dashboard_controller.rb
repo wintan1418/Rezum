@@ -89,13 +89,9 @@ module Admin
     end
 
     def report
-      respond_to do |format|
-        format.csv do
-          report_type = params[:type] || "revenue"
-          csv_data = generate_report(report_type)
-          send_data csv_data, filename: "rezumfit_#{report_type}_#{Date.current}.csv", type: "text/csv"
-        end
-      end
+      report_type = params[:type] || "revenue"
+      csv_data = generate_report(report_type)
+      send_data csv_data, filename: "rezumfit_#{report_type}_#{Date.current}.csv", type: "text/csv", disposition: "attachment"
     end
 
     private
@@ -116,7 +112,7 @@ module Admin
     def revenue_report
       payments = Payment.successful.includes(:user).order(created_at: :desc)
 
-      CSV.generate(headers: true) do |csv|
+      ::CSV.generate(headers: true) do |csv|
         csv << ["Date", "User", "Email", "Country", "Description", "Amount (NGN)", "Amount (USD est.)", "Credits", "Status"]
         payments.each do |p|
           csv << [
@@ -137,7 +133,7 @@ module Admin
     def users_report
       users = User.includes(:payments, :resumes, :subscriptions).order(created_at: :desc)
 
-      CSV.generate(headers: true) do |csv|
+      ::CSV.generate(headers: true) do |csv|
         csv << ["Name", "Email", "Country", "Currency", "Credits", "Resumes", "Total Spent (NGN)", "Subscriber", "Joined"]
         users.each do |u|
           csv << [
@@ -158,7 +154,7 @@ module Admin
     def subscriptions_report
       subs = Subscription.includes(:user).order(created_at: :desc)
 
-      CSV.generate(headers: true) do |csv|
+      ::CSV.generate(headers: true) do |csv|
         csv << ["User", "Email", "Plan", "Status", "Started", "Period End", "Cancel at End"]
         subs.each do |s|
           csv << [

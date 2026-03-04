@@ -90,3 +90,6 @@ application.register("hire-modal", HireModalController)
 
 import ToggleController from "./toggle_controller"
 application.register("toggle", ToggleController)
+
+import CurrencyToggleController from "./currency_toggle_controller"
+application.register("currency-toggle", CurrencyToggleController)
