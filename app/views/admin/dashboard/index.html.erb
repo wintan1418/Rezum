@@ -24,12 +24,12 @@
       <p class="text-2xl font-bold text-gray-900 mt-1"><%= number_with_delimiter(@total_cover_letters) %></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</p>
-      <p class="text-2xl font-bold text-gray-900 mt-1"><%= number_to_currency(@total_revenue, unit: "₦") %></p>
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Revenue</p>
+      <p class="text-2xl font-bold text-gray-900 mt-1"><%= number_to_currency(@total_revenue, unit: "₦", delimiter: ",", precision: 0) %></p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">New This Week</p>
-      <p class="text-2xl font-bold text-gray-900 mt-1"><%= @new_users_this_week %></p>
+      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue This Month</p>
+      <p class="text-2xl font-bold text-green-600 mt-1"><%= number_to_currency(@revenue_this_month, unit: "₦", delimiter: ",", precision: 0) %></p>
     </div>
   </div>
 
@@ -84,5 +84,40 @@
         </tbody>
       </table>
     </div>
+  </div>
+
+  <!-- Recent Payments -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-6">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-gray-900">Recent Payments</h3>
+    </div>
+    <% if @recent_payments.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @recent_payments.each do |payment| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= link_to payment.user.full_name, admin_user_path(payment.user), class: "text-sm font-medium text-gray-900 hover:text-blue-600" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= payment.description_display %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600"><%= payment.amount_display %></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= time_ago_in_words(payment.created_at) %> ago</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="px-6 py-8 text-center text-sm text-gray-500">No payments yet</div>
+    <% end %>
   </div>
 </div>

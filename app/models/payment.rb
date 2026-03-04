@@ -34,7 +34,9 @@ class Payment < ApplicationRecord
   end
 
   def amount_display
-    "#{currency_symbol}#{amount_cents / 100.0}"
+    naira_amount = amount_cents / 100.0
+    formatted = ActiveSupport::NumberHelper.number_to_delimited(naira_amount.to_i)
+    "#{currency_symbol}#{formatted}"
   end
 
   def currency_symbol

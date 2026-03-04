@@ -146,10 +146,19 @@
             <% @payments.each do |payment| %>
               <div class="px-6 py-3 flex items-center justify-between">
                 <div>
-                  <p class="text-sm font-medium text-gray-900"><%= payment.description.presence || payment.payment_type %></p>
+                  <p class="text-sm font-medium text-gray-900"><%= payment.description_display %></p>
                   <p class="text-xs text-gray-500"><%= payment.created_at.strftime("%b %d, %Y") %></p>
                 </div>
-                <span class="text-sm font-medium text-gray-900"><%= number_to_currency(payment.amount_cents / 100.0) %></span>
+                <div class="text-right">
+                  <span class="text-sm font-medium text-gray-900"><%= payment.amount_display %></span>
+                  <% if payment.successful? %>
+                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Paid</span>
+                  <% elsif payment.pending? %>
+                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Pending</span>
+                  <% else %>
+                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500"><%= payment.status.humanize %></span>
+                  <% end %>
+                </div>
               </div>
             <% end %>
           </div>

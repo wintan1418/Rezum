@@ -16,7 +16,7 @@ class BillingController < ApplicationController
 
   def index
     @subscription = current_user.current_subscription
-    @payments = current_user.payments.recent.limit(10)
+    @payments = current_user.payments.where(status: %w[success pending]).recent.limit(10)
     @total_spent = current_user.total_spent
     @credits_remaining = current_user.credits_remaining
     @pricing = pricing_for_user(current_user)
