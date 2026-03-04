@@ -73,6 +73,13 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: subject)
   end
 
+  def admin_purchase_notification(user, payment)
+    @user = user
+    @payment = payment
+    admin_emails = User::ADMIN_EMAILS
+    mail(to: admin_emails, subject: "New purchase: #{payment.description_display} by #{user.full_name} (#{payment.amount_display})")
+  end
+
   def hire_message_notification(hire_message)
     @hire_message = hire_message
     mail(to: ENV.fetch("MAILER_FROM", "wintan1418@gmail.com"), subject: "New Hire Message from #{hire_message.name}")

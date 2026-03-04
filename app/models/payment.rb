@@ -85,9 +85,12 @@ class Payment < ApplicationRecord
 
     # Only add credits if this is the first time we see success
     # (webhook may have already processed it)
-    if successful? && !already_successful && credits_purchased.present?
-      user.add_credits(credits_purchased)
+    if successful? && !already_successful
+      if credits_purchased.present?
+        user.add_credits(credits_purchased)
+      end
       UserMailer.payment_confirmation(user, self).deliver_later
+      UserMailer.admin_purchase_notification(user, self).deliver_later
     end
   end
 

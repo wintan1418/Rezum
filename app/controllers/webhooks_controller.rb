@@ -59,6 +59,7 @@ class WebhooksController < ApplicationController
     end
 
     UserMailer.payment_confirmation(payment.user, payment).deliver_later
+    UserMailer.admin_purchase_notification(payment.user, payment).deliver_later
   end
 
   def handle_subscription_create(data)

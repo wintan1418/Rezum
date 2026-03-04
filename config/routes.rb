@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   # Admin panel
   namespace :admin do
     root to: "dashboard#index"
+    get "report", to: "dashboard#report", as: :report
     post "send_bulk_email", to: "marketing#send_campaign", as: :send_bulk_email # deprecated, use marketing
     resources :users, only: [ :index, :show ] do
       member do
