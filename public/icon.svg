@@ -1,67 +1,20 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="0%" stop-color="#4f46e5"/>
       <stop offset="100%" stop-color="#7c3aed"/>
-    </linearGradient>
-    <linearGradient id="left" x1="0" y1="0" x2="300" y2="400" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#e0e7ff"/>
-    </linearGradient>
-    <linearGradient id="right" x1="200" y1="0" x2="512" y2="400" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#e0e7ff"/>
-      <stop offset="100%" stop-color="#c7d2fe"/>
     </linearGradient>
   </defs>
 
   <!-- Background -->
   <rect width="512" height="512" rx="108" fill="url(#bg)"/>
 
-  <!-- Left puzzle piece (has tab on right, indent on bottom) -->
-  <path d="
-    M 88 88
-    H 244
-    V 168
-    C 244 168, 252 152, 268 152
-    C 284 152, 292 168, 292 184
-    C 292 200, 284 216, 268 216
-    C 252 216, 244 200, 244 200
-    V 340
-    C 244 340, 228 348, 228 364
-    C 228 380, 244 388, 260 388
-    C 276 388, 292 380, 292 364
-    C 292 348, 276 340, 276 340
-    H 88
-    Z
-  " fill="url(#left)" opacity="0.95"/>
+  <!-- Left card -->
+  <rect x="80" y="100" width="220" height="320" rx="16" fill="white" opacity="0.2"/>
 
-  <!-- Right puzzle piece (has indent on left, tab on top) -->
-  <path d="
-    M 276 340
-    C 276 340, 292 348, 292 364
-    C 292 380, 276 388, 260 388
-    C 244 388, 228 380, 228 364
-    C 228 348, 244 340, 244 340
-    V 200
-    C 244 200, 252 216, 268 216
-    C 284 216, 292 200, 292 184
-    C 292 168, 284 152, 268 152
-    C 252 152, 244 168, 244 168
-    V 88
-    H 340
-    V 56
-    C 340 56, 348 40, 364 40
-    C 380 40, 388 56, 388 72
-    C 388 88, 380 104, 364 104
-    C 348 104, 340 88, 340 88
-    V 340
-    H 276
-    Z
-  " fill="url(#right)" opacity="0.9"/>
+  <!-- Right card -->
+  <rect x="180" y="70" width="240" height="320" rx="16" fill="white" opacity="0.35"/>
 
-  <!-- R letter on left piece -->
-  <text x="155" y="270" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="140" fill="#4338ca" text-anchor="middle">R</text>
-
-  <!-- F letter on right piece -->
-  <text x="320" y="270" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="140" fill="#4338ca" text-anchor="middle">F</text>
+  <!-- RF text -->
+  <text x="256" y="300" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="180" fill="white" text-anchor="middle">RF</text>
 </svg>
