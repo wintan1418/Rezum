@@ -312,25 +312,47 @@
             </div>
             <div>
               <h3 class="text-lg font-semibold text-gray-900">Import from LinkedIn</h3>
-              <p class="text-sm text-gray-500">Copy your LinkedIn profile text and paste it below</p>
+              <p class="text-sm text-gray-500">Upload your LinkedIn PDF to auto-build your resume</p>
             </div>
           </div>
 
+          <!-- PDF Upload (Primary) -->
           <div class="bg-gray-50 rounded-xl p-4 mb-4">
-            <p class="text-xs font-medium text-gray-700 mb-2">How to export your LinkedIn profile:</p>
+            <p class="text-xs font-medium text-gray-700 mb-2">How to download your LinkedIn PDF:</p>
             <ol class="text-xs text-gray-500 space-y-1 list-decimal list-inside">
-              <li>Go to your LinkedIn profile page</li>
-              <li>Select all text on the page (Ctrl+A / Cmd+A)</li>
-              <li>Copy it (Ctrl+C / Cmd+C)</li>
-              <li>Paste it in the box below</li>
+              <li>Go to your LinkedIn profile</li>
+              <li>Click <span class="font-semibold text-gray-700">More</span> button (next to "Open to")</li>
+              <li>Select <span class="font-semibold text-gray-700">Save to PDF</span></li>
+              <li>Upload the downloaded PDF below</li>
             </ol>
           </div>
 
-          <%= form_with url: import_linkedin_resumes_path, method: :post, local: true do |f| %>
-            <%= f.text_area :linkedin_text,
-                rows: 8,
-                class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
-                placeholder: "Paste your full LinkedIn profile text here...\n\nExample:\nJohn Doe\nSenior Software Engineer at Google\n\nAbout\nPassionate engineer with 8+ years...\n\nExperience\nSenior Software Engineer\nGoogle · Full-time\nJan 2020 - Present · 4 yrs\n• Led migration of core services to Kubernetes...\n\nEducation\nMIT\nB.S. Computer Science\n2012 - 2016\n\nSkills\nPython\nJavaScript\nReact..." %>
+          <%= form_with url: import_linkedin_resumes_path, method: :post, local: true, multipart: true do |f| %>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Upload LinkedIn PDF</label>
+              <div class="flex items-center gap-3">
+                <%= f.file_field :linkedin_pdf,
+                    accept: ".pdf",
+                    class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer" %>
+              </div>
+            </div>
+
+            <!-- Paste text fallback -->
+            <div data-controller="toggle">
+              <button type="button" data-action="click->toggle#toggle" class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-2">
+                <span>Don't have the PDF? Paste text instead</span>
+                <svg class="w-3.5 h-3.5 transition-transform" data-toggle-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div class="hidden" data-toggle-target="content">
+                <%= f.text_area :linkedin_text,
+                    rows: 6,
+                    class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300 text-xs",
+                    placeholder: "Go to your LinkedIn profile → Select all (Ctrl+A) → Copy (Ctrl+C) → Paste here..." %>
+              </div>
+            </div>
+
             <div class="mt-3 flex justify-end">
               <%= f.submit "Import LinkedIn Profile",
                   class: "inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-blue-700 transition-all cursor-pointer",

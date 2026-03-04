@@ -173,9 +173,32 @@ class ResumesController < ApplicationController
   end
 
   def import_linkedin
-    linkedin_text = params[:linkedin_text].to_s.strip
+    linkedin_text = nil
+
+    # Option 1: PDF file upload (primary method)
+    if params[:linkedin_pdf].present?
+      begin
+        file = params[:linkedin_pdf]
+        unless file.content_type == "application/pdf"
+          redirect_to new_resume_path, alert: "Please upload a PDF file."
+          return
+        end
+
+        processor = ResumeFileProcessorService.new(file: file, user_id: current_user.id)
+        extraction = processor.process
+        linkedin_text = extraction[:text]
+      rescue => e
+        Rails.logger.error "LinkedIn PDF processing failed: #{e.message}"
+        redirect_to new_resume_path, alert: "Failed to process PDF. Please try pasting your profile text instead."
+        return
+      end
+    # Option 2: Paste text (fallback)
+    elsif params[:linkedin_text].present?
+      linkedin_text = params[:linkedin_text].to_s.strip
+    end
+
     if linkedin_text.blank?
-      redirect_to new_resume_path, alert: "Please paste your LinkedIn profile text."
+      redirect_to new_resume_path, alert: "Please upload your LinkedIn PDF or paste your profile text."
       return
     end
 
