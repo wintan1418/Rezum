@@ -98,8 +98,18 @@ class BillingController < ApplicationController
 
   private
 
+  def detected_currency
+    @detected_currency ||= CountryDetectionService.new(request, current_user).detect_currency
+  end
+
+  def ngn_user?(user)
+    NGN_COUNTRIES.include?(user.country_code&.upcase) ||
+      user.currency == "NGN" ||
+      detected_currency == "NGN"
+  end
+
   def pricing_for_user(user)
-    if NGN_COUNTRIES.include?(user.country_code&.upcase) || user.currency == "NGN"
+    if ngn_user?(user)
       # Nigerian pricing in NGN
       {
         currency: "NGN",
