@@ -1,3 +1,5 @@
+require "csv"
+
 module Admin
   class DashboardController < BaseController
     # NGN to USD approximate rate for display toggle
@@ -50,7 +52,7 @@ module Admin
 
       # === User Acquisition Sources (top 10 referring domains) ===
       @traffic_sources = Rails.cache.fetch("admin:traffic_sources", expires_in: 30.minutes) {
-        Ahoy::Visit.where.not(referring_domain: [nil, ""])
+        Ahoy::Visit.where.not(referring_domain: [ nil, "" ])
           .where("started_at >= ?", 30.days.ago)
           .group(:referring_domain)
           .count
@@ -113,7 +115,7 @@ module Admin
       payments = Payment.successful.includes(:user).order(created_at: :desc)
 
       ::CSV.generate(headers: true) do |csv|
-        csv << ["Date", "User", "Email", "Country", "Description", "Amount (NGN)", "Amount (USD est.)", "Credits", "Status"]
+        csv << [ "Date", "User", "Email", "Country", "Description", "Amount (NGN)", "Amount (USD est.)", "Credits", "Status" ]
         payments.each do |p|
           csv << [
             p.created_at.strftime("%Y-%m-%d %H:%M"),
@@ -134,7 +136,7 @@ module Admin
       users = User.includes(:payments, :resumes, :subscriptions).order(created_at: :desc)
 
       ::CSV.generate(headers: true) do |csv|
-        csv << ["Name", "Email", "Country", "Currency", "Credits", "Resumes", "Total Spent (NGN)", "Subscriber", "Joined"]
+        csv << [ "Name", "Email", "Country", "Currency", "Credits", "Resumes", "Total Spent (NGN)", "Subscriber", "Joined" ]
         users.each do |u|
           csv << [
             u.full_name,
@@ -155,7 +157,7 @@ module Admin
       subs = Subscription.includes(:user).order(created_at: :desc)
 
       ::CSV.generate(headers: true) do |csv|
-        csv << ["User", "Email", "Plan", "Status", "Started", "Period End", "Cancel at End"]
+        csv << [ "User", "Email", "Plan", "Status", "Started", "Period End", "Cancel at End" ]
         subs.each do |s|
           csv << [
             s.user.full_name,
