@@ -10,11 +10,13 @@ class ResumeOptimizerService < AiService
 
   def optimize
     messages = build_optimization_messages
+    # Higher temperature for re-optimization to ensure meaningfully different output
+    temp = previous_ats_score.present? ? 0.7 : 0.5
     generate_completion(
       messages: messages,
       model: GPT_4_MODEL,
       max_tokens: 4000,
-      temperature: 0.5
+      temperature: temp
     )
   end
 

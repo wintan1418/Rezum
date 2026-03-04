@@ -3,9 +3,17 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Your Resume is Ready!</h1>
+        <h1 class="text-2xl font-bold text-gray-900">
+          <% if @resume.processing? %>
+            Generating Your Resume...
+          <% else %>
+            Your Resume is Ready!
+          <% end %>
+        </h1>
         <p class="mt-1 text-sm text-gray-500">
-          <% if @unlocked %>
+          <% if @resume.processing? %>
+            Please wait while we optimize your resume for <strong><%= @resume.target_role %></strong>
+          <% elsif @unlocked %>
             Your AI-generated resume for <strong><%= @resume.target_role %></strong>
           <% else %>
             Preview your AI-generated resume below
@@ -32,7 +40,26 @@
 
     <!-- Resume Preview -->
     <div class="relative">
-      <% if @unlocked %>
+      <% if @resume.processing? %>
+        <!-- Processing State — Auto-refresh until optimization completes -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-12 text-center"
+             data-controller="auto-refresh"
+             data-auto-refresh-url-value="<%= preview_resume_wizard_path(@resume) %>"
+             data-auto-refresh-interval-value="3000">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-5">
+            <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 mb-2">Optimizing Your Resume...</h2>
+          <p class="text-sm text-gray-500 mb-4">Our AI is analyzing and enhancing your content. This usually takes 30-60 seconds.</p>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full text-xs font-medium text-blue-700">
+            <svg class="animate-pulse w-2.5 h-2.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+            Auto-updating when ready
+          </div>
+        </div>
+      <% elsif @unlocked %>
         <!-- Full Preview — Unlocked -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10">
           <%= raw @preview_html %>

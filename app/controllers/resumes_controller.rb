@@ -184,10 +184,6 @@ class ResumesController < ApplicationController
   end
 
   def import_linkedin
-    unless current_user.can_generate?
-      redirect_to new_resume_path, alert: "Insufficient credits. Please upgrade your plan to import from LinkedIn."
-      return
-    end
 
     linkedin_text = nil
 
@@ -229,7 +225,8 @@ class ResumesController < ApplicationController
       target_role: result[:headline].presence || "Professional",
       status: "processing",
       template: "professional",
-      provider: "openai"
+      provider: "openai",
+      expires_at: current_user.has_premium_subscription? ? nil : 3.days.from_now
     )
 
     result[:sections].each do |section_data|
@@ -241,11 +238,11 @@ class ResumesController < ApplicationController
       )
     end
 
-    # Auto-optimize the imported resume (OptimizeResumeJob handles credit deduction)
+    # Auto-optimize (no credit charge here — charged on unlock, same as chat builder)
     OptimizeResumeJob.perform_later(@resume.id, current_user.id)
 
     ahoy.track "linkedin_import", resume_id: @resume.id
-    redirect_to @resume, notice: "LinkedIn profile imported and optimization started! This will take 30-60 seconds."
+    redirect_to preview_resume_wizard_path(@resume), notice: "LinkedIn profile imported! Optimizing now — this takes 30-60 seconds."
   end
 
   private

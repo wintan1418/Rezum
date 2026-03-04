@@ -11,9 +11,10 @@ class OptimizeResumeJob < ApplicationJob
     return unless resume.processing?
 
     begin
-      # For re-optimization, use the previously optimized content as the base
-      # and feed in the ATS analysis so the AI knows what to fix
-      is_reoptimization = resume.ats_score.present? && resume.ats_analysis.present? && resume.optimized_content.present?
+      # For re-optimization: use previously optimized content as base
+      # and feed ATS analysis (if available) so the AI knows what to fix
+      has_ats_feedback = resume.ats_score.present? && resume.respond_to?(:ats_analysis) && resume.ats_analysis.present?
+      is_reoptimization = resume.optimized_content.present?
       base_content = is_reoptimization ? resume.optimized_content : resume.original_content
 
       service = ResumeOptimizerService.new(
@@ -25,8 +26,8 @@ class OptimizeResumeJob < ApplicationJob
         user_id: user.id,
         user_country: user.country_code,
         provider: resume.provider,
-        previous_ats_score: is_reoptimization ? resume.ats_score : nil,
-        previous_ats_analysis: is_reoptimization ? resume.ats_analysis : nil
+        previous_ats_score: has_ats_feedback ? resume.ats_score : nil,
+        previous_ats_analysis: has_ats_feedback ? resume.ats_analysis : nil
       )
 
       # Generate optimized resume
@@ -38,30 +39,30 @@ class OptimizeResumeJob < ApplicationJob
       # Extract keywords
       keywords = service.extract_keywords
 
-      # Update resume with results
-      resume.update!(
+      # Update resume with results (clear old ATS score so user re-analyzes the new version)
+      update_attrs = {
         optimized_content: optimized_content,
         keywords: keywords,
-        status: "optimized"
-      )
+        status: "optimized",
+        ats_score: nil
+      }
+      update_attrs[:ats_analysis] = nil if resume.respond_to?(:ats_analysis)
+      resume.update!(update_attrs)
 
       # Auto-parse optimized content into structured sections for template rendering
       rebuild_sections_from_content(resume)
 
       # Deduct 2 credits for resume optimization
-      if user.free? && user.credits_remaining > 0
+      # Skip if resume is locked (LinkedIn/wizard) — credits charged on unlock instead
+      if resume.expires_at.nil? && user.free? && user.credits_remaining > 0
         credits_to_deduct = [ 2, user.credits_remaining ].min
         user.decrement!(:credits_remaining, credits_to_deduct)
       end
-
-      # Broadcast update to any connected browsers
-      broadcast_resume_update(resume, "optimized")
 
       Rails.logger.info "Resume #{resume.id} optimized successfully for user #{user.id}"
 
     rescue StandardError => e
       resume.update!(status: "failed")
-      broadcast_resume_update(resume, "failed")
       Rails.logger.error "Resume optimization failed for #{resume.id}: #{e.message}"
       raise e
     end
@@ -108,18 +109,5 @@ class OptimizeResumeJob < ApplicationJob
     end
   rescue => e
     Rails.logger.warn "Auto-parsing sections after optimization failed: #{e.message}"
-  end
-
-  def broadcast_resume_update(resume, status)
-    # Broadcast to the specific resume channel
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "resume_#{resume.id}",
-      target: "resume_content",
-      partial: "resumes/content",
-      locals: { resume: resume }
-    )
-  rescue => e
-    Rails.logger.error "Failed to broadcast resume update: #{e.message}"
-    # Don't raise, as this is not critical to the job success
   end
 end
