@@ -227,8 +227,9 @@ class ResumesController < ApplicationController
     @resume = current_user.resumes.create!(
       original_content: clean_content,
       target_role: result[:headline].presence || "Professional",
-      status: "draft",
-      template: "professional"
+      status: "processing",
+      template: "professional",
+      provider: "openai"
     )
 
     result[:sections].each do |section_data|
@@ -240,13 +241,11 @@ class ResumesController < ApplicationController
       )
     end
 
-    # Deduct credit for non-subscribers
-    unless current_user.has_active_subscription?
-      current_user.decrement!(:credits_remaining)
-    end
+    # Auto-optimize the imported resume (OptimizeResumeJob handles credit deduction)
+    OptimizeResumeJob.perform_later(@resume.id, current_user.id)
 
     ahoy.track "linkedin_import", resume_id: @resume.id
-    redirect_to edit_resume_builder_path(@resume), notice: "LinkedIn profile imported! Review and edit your sections, then download."
+    redirect_to @resume, notice: "LinkedIn profile imported and optimization started! This will take 30-60 seconds."
   end
 
   private
