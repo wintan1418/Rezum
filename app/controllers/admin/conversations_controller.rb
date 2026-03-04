@@ -23,6 +23,7 @@ module Admin
       @message = @conversation.messages.build(user: current_user, body: params[:body])
 
       if @message.save
+        @message.broadcast_to_conversation(viewing_user: current_user)
         respond_to do |format|
           format.turbo_stream
           format.html { redirect_to admin_conversation_path(@conversation) }

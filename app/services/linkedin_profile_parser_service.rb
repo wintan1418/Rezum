@@ -55,7 +55,7 @@ class LinkedinProfileParserService
     /\AJobs\z/i,
     /\AMessaging\z/i,
     /\ANotifications\z/i,
-    /\AHome\z/i,
+    /\AHome\z/i
   ].freeze
 
   # Known LinkedIn PDF section headers
@@ -70,7 +70,7 @@ class LinkedinProfileParserService
     "projects" => /\AProjects?\z/i,
     "volunteer" => /\A(Volunteer\s*Experience|Volunteer)\z/i,
     "publications" => /\APublications?\z/i,
-    "courses" => /\ACourses?\z/i,
+    "courses" => /\ACourses?\z/i
   }.freeze
 
   def initialize(text)
@@ -184,7 +184,7 @@ class LinkedinProfileParserService
 
     # Name is usually the first line, skip if it looks like a section header
     candidate = first_lines.first
-    return candidate unless is_section_header?(candidate)
+    return candidate unless section_header?(candidate)
     first_lines[1]
   end
 
@@ -195,13 +195,13 @@ class LinkedinProfileParserService
 
     candidate = non_blank[1]
     # Skip if it's a section header or looks like contact info
-    return nil if is_section_header?(candidate)
+    return nil if section_header?(candidate)
     return nil if candidate.match?(/\A[\w.+-]+@[\w.-]+\z/) # email
     candidate
   end
 
   def split_into_sections(cleaned)
-    lines = cleaned.lines.map { |l| l.strip }
+    lines = cleaned.lines.map(&:strip)
     blocks = {}
     current_section = nil
     current_lines = []
@@ -239,7 +239,7 @@ class LinkedinProfileParserService
     nil
   end
 
-  def is_section_header?(line)
+  def section_header?(line)
     PDF_SECTION_HEADERS.values.any? { |pat| line.match?(pat) }
   end
 
@@ -322,7 +322,7 @@ class LinkedinProfileParserService
         elsif current["degree"].blank? && line.length > 2
           current["degree"] = line.split("·").first&.strip || line
         elsif line.length > 2
-          current["details"] = [current["details"], line].reject(&:blank?).join(". ")
+          current["details"] = [ current["details"], line ].reject(&:blank?).join(". ")
         end
       end
     end

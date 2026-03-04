@@ -22,7 +22,8 @@ class ChatController < ApplicationController
     if @conversation.save
       # Create the first message if body provided
       if params[:body].present?
-        @conversation.messages.create!(user: current_user, body: params[:body])
+        msg = @conversation.messages.create!(user: current_user, body: params[:body])
+        msg.broadcast_to_conversation(viewing_user: current_user)
       end
       redirect_to chat_path(@conversation)
     else
@@ -34,6 +35,7 @@ class ChatController < ApplicationController
     @message = @conversation.messages.build(user: current_user, body: params[:body])
 
     if @message.save
+      @message.broadcast_to_conversation(viewing_user: current_user)
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to chat_path(@conversation) }

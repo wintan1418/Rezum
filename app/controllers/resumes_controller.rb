@@ -156,14 +156,25 @@ class ResumesController < ApplicationController
       return
     end
 
-    filename = "#{@resume.target_role.parameterize}-resume"
+    filename = "#{@resume.target_role.parameterize}-resume-#{@resume.template || 'professional'}"
+    has_sections = @resume.resume_sections.visible.any?
 
     case format
     when "pdf"
-      pdf_data = generate_pdf(content)
+      if has_sections
+        # Use template service for formatted PDF with sections
+        service = ResumeTemplateService.new(resume: @resume)
+        pdf_data = service.render_pdf
+      else
+        pdf_data = generate_pdf(content)
+      end
       send_data pdf_data, filename: "#{filename}.pdf", type: "application/pdf", disposition: "attachment"
     when "docx"
-      docx_data = generate_docx(content)
+      if has_sections
+        docx_data = generate_docx_from_sections
+      else
+        docx_data = generate_docx(content)
+      end
       send_data docx_data, filename: "#{filename}.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", disposition: "attachment"
     when "txt"
       send_data content, filename: "#{filename}.txt", type: "text/plain", disposition: "attachment"
@@ -192,7 +203,7 @@ class ResumesController < ApplicationController
         processor = ResumeFileProcessorService.new(file: file, user_id: current_user.id)
         extraction = processor.process
         linkedin_text = extraction[:text]
-      rescue => e
+      rescue StandardError => e
         Rails.logger.error "LinkedIn PDF processing failed: #{e.message}"
         redirect_to new_resume_path, alert: "Failed to process PDF. Please try pasting your profile text instead."
         return
@@ -306,6 +317,118 @@ class ResumesController < ApplicationController
     end || "Professional" # Default fallback
   end
 
+  def generate_docx_from_sections
+    require "zip"
+
+    sections = @resume.resume_sections.visible.ordered
+    paragraphs = []
+
+    # Header: Name and role
+    name = @resume.optimized_content&.lines&.first&.strip.presence || @resume.target_role
+    paragraphs << docx_heading(name, 28, center: true)
+    paragraphs << docx_subtitle(@resume.target_role, center: true)
+    contact = [ current_user.email, current_user.try(:formatted_phone) ].compact.join(" | ")
+    paragraphs << docx_small_text(contact, center: true) if contact.present?
+    paragraphs << docx_spacer
+
+    sections.each do |section|
+      data = section.content_data
+      paragraphs << docx_heading(section.section_label.upcase, 24)
+
+      case section.section_type
+      when "summary"
+        paragraphs << docx_body_text(data["text"].to_s)
+      when "experience"
+        Array(data["entries"]).each do |entry|
+          title_line = [ entry["title"], entry["dates"] ].reject(&:blank?).join("  |  ")
+          paragraphs << docx_bold_text(title_line)
+          paragraphs << docx_italic_text(entry["company"].to_s) if entry["company"].present?
+          Array(entry["bullets"]).each { |b| paragraphs << docx_bullet(b) }
+          paragraphs << docx_spacer
+        end
+      when "education"
+        Array(data["entries"]).each do |entry|
+          degree_line = [ entry["degree"], entry["dates"] ].reject(&:blank?).join("  |  ")
+          paragraphs << docx_bold_text(degree_line)
+          paragraphs << docx_italic_text(entry["school"].to_s) if entry["school"].present?
+          paragraphs << docx_body_text(entry["details"].to_s) if entry["details"].present?
+          paragraphs << docx_spacer
+        end
+      when "skills"
+        paragraphs << docx_body_text(Array(data["items"]).join(", "))
+      when "certifications", "awards", "languages"
+        Array(data["items"]).each { |item| paragraphs << docx_bullet(item) }
+      when "projects"
+        Array(data["entries"]).each do |entry|
+          paragraphs << docx_bold_text(entry["name"].to_s)
+          paragraphs << docx_body_text(entry["description"].to_s)
+          paragraphs << docx_spacer
+        end
+      end
+      paragraphs << docx_spacer
+    end
+
+    xml_body = paragraphs.join
+
+    buffer = Zip::OutputStream.write_buffer do |zip|
+      zip.put_next_entry("[Content_Types].xml")
+      zip.write docx_content_types
+      zip.put_next_entry("_rels/.rels")
+      zip.write docx_rels
+      zip.put_next_entry("word/_rels/document.xml.rels")
+      zip.write docx_document_rels
+      zip.put_next_entry("word/document.xml")
+      zip.write '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' \
+                "<w:body>#{xml_body}</w:body></w:document>"
+      zip.put_next_entry("word/styles.xml")
+      zip.write docx_styles
+    end
+    buffer.string
+  end
+
+  def docx_heading(text, size, center: false)
+    escaped = text.to_s.encode(xml: :text)
+    align = center ? '<w:jc w:val="center"/>' : ""
+    "<w:p><w:pPr><w:spacing w:after=\"80\"/>#{align}</w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"#{size}\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_subtitle(text, center: false)
+    escaped = text.to_s.encode(xml: :text)
+    align = center ? '<w:jc w:val="center"/>' : ""
+    "<w:p><w:pPr><w:spacing w:after=\"40\"/>#{align}</w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/><w:color w:val=\"666666\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_small_text(text, center: false)
+    escaped = text.to_s.encode(xml: :text)
+    align = center ? '<w:jc w:val="center"/>' : ""
+    "<w:p><w:pPr><w:spacing w:after=\"40\"/>#{align}</w:pPr><w:r><w:rPr><w:sz w:val=\"18\"/><w:color w:val=\"999999\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_bold_text(text)
+    escaped = text.to_s.encode(xml: :text)
+    "<w:p><w:pPr><w:spacing w:after=\"20\"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_italic_text(text)
+    escaped = text.to_s.encode(xml: :text)
+    "<w:p><w:pPr><w:spacing w:after=\"20\"/></w:pPr><w:r><w:rPr><w:i/><w:sz w:val=\"22\"/><w:color w:val=\"444444\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_body_text(text)
+    escaped = text.to_s.encode(xml: :text)
+    "<w:p><w:pPr><w:spacing w:after=\"40\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_bullet(text)
+    escaped = text.to_s.encode(xml: :text)
+    "<w:p><w:pPr><w:spacing w:after=\"20\"/><w:ind w:left=\"360\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">\u2022 #{escaped}</w:t></w:r></w:p>"
+  end
+
+  def docx_spacer
+    '<w:p><w:pPr><w:spacing w:after="60"/></w:pPr></w:p>'
+  end
+
   def generate_pdf(content)
     require "prawn"
 
@@ -314,7 +437,7 @@ class ResumesController < ApplicationController
       pdf.font_size 11
       pdf.text content, align: :left, leading: 2
     end.render
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "PDF generation failed: #{e.message}"
     raise "PDF generation failed: #{e.message}"
   end
@@ -340,7 +463,7 @@ class ResumesController < ApplicationController
     end
 
     buffer.string
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "DOCX generation failed: #{e.message}"
     raise "DOCX generation failed: #{e.message}"
   end

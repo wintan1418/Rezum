@@ -7,7 +7,7 @@ class CoverLettersController < ApplicationController
     @cover_letters = current_user.cover_letters.recent.includes(:resume)
     @sent_count = @cover_letters.where(status: "sent").count
     @response_rate = calculate_response_rate
-    @companies_count = @cover_letters.where.not(company_name: [nil, ""]).distinct.count(:company_name)
+    @companies_count = @cover_letters.where.not(company_name: [ nil, "" ]).distinct.count(:company_name)
   end
 
   def show

@@ -94,9 +94,16 @@ class ResumesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/credits/i, flash[:alert])
   end
 
-  test "optimize redirects when no job description" do
-    post optimize_resume_path(@resume)
-    assert_redirected_to edit_resume_path(@resume)
-    assert_match(/job description/i, flash[:alert])
+  test "optimize redirects when no content" do
+    # Create valid resume then clear content to simulate edge case
+    empty_resume = @user.resumes.create!(
+      original_content: "X" * 150,
+      target_role: "Developer",
+      status: "draft"
+    )
+    empty_resume.update_column(:original_content, "")
+    post optimize_resume_path(empty_resume)
+    assert_redirected_to edit_resume_path(empty_resume)
+    assert_match(/no content/i, flash[:alert])
   end
 end
