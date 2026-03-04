@@ -184,7 +184,6 @@ class ResumesController < ApplicationController
   end
 
   def import_linkedin
-
     linkedin_text = nil
 
     # Option 1: PDF file upload (primary method)

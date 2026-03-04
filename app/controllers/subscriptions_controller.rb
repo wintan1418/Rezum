@@ -178,7 +178,7 @@ class SubscriptionsController < ApplicationController
         price_label: @is_ngn ? "#{@symbol}290,000" : "#{@symbol}290",
         interval: "year",
         tier: "pro",
-        features: pro_features + ["2 months free"]
+        features: pro_features + [ "2 months free" ]
       },
       {
         id: "price_monthly_premium",
@@ -194,7 +194,7 @@ class SubscriptionsController < ApplicationController
         price_label: @is_ngn ? "#{@symbol}590,000" : "#{@symbol}590",
         interval: "year",
         tier: "premium",
-        features: premium_features + ["2 months free"]
+        features: premium_features + [ "2 months free" ]
       }
     ]
   end

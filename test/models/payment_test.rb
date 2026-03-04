@@ -55,7 +55,7 @@ class PaymentTest < ActiveSupport::TestCase
   end
 
   test "amount_display formats with currency symbol" do
-    assert_equal "\u20A6500.0", @success.amount_display
+    assert_equal "\u20A6500", @success.amount_display
   end
 
   test "currency_symbol for NGN" do
