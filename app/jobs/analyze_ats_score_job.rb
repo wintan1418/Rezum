@@ -27,9 +27,10 @@ class AnalyzeAtsScoreJob < ApplicationJob
       # Parse the score from the analysis (assuming it returns structured data)
       score = extract_score_from_analysis(ats_analysis)
 
-      # Update resume with ATS score
+      # Update resume with ATS score and full analysis
       resume.update!(
         ats_score: score,
+        ats_analysis: ats_analysis,
         status: "optimized" # Return to optimized status
       )
 

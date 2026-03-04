@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_03_135940) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_04_141441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -297,6 +297,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_03_135940) do
     t.datetime "updated_at", null: false
     t.string "template", default: "professional"
     t.datetime "expires_at"
+    t.text "ats_analysis"
     t.index ["user_id", "status"], name: "index_resumes_on_user_id_and_status"
     t.index ["user_id"], name: "index_resumes_on_user_id"
   end

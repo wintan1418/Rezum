@@ -11,15 +11,22 @@ class OptimizeResumeJob < ApplicationJob
     return unless resume.processing?
 
     begin
+      # For re-optimization, use the previously optimized content as the base
+      # and feed in the ATS analysis so the AI knows what to fix
+      is_reoptimization = resume.ats_score.present? && resume.ats_analysis.present? && resume.optimized_content.present?
+      base_content = is_reoptimization ? resume.optimized_content : resume.original_content
+
       service = ResumeOptimizerService.new(
-        content: resume.original_content,
+        content: base_content,
         job_description: resume.job_description,
         target_role: resume.target_role,
         industry: resume.industry,
         experience_level: resume.experience_level,
         user_id: user.id,
         user_country: user.country_code,
-        provider: resume.provider
+        provider: resume.provider,
+        previous_ats_score: is_reoptimization ? resume.ats_score : nil,
+        previous_ats_analysis: is_reoptimization ? resume.ats_analysis : nil
       )
 
       # Generate optimized resume

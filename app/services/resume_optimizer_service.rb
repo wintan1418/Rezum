@@ -3,6 +3,8 @@ class ResumeOptimizerService < AiService
   attribute :target_role, :string
   attribute :industry, :string
   attribute :experience_level, :string
+  attribute :previous_ats_score, :integer
+  attribute :previous_ats_analysis, :string
 
   validates :target_role, presence: true, length: { minimum: 2 }
 
@@ -124,7 +126,7 @@ class ResumeOptimizerService < AiService
   end
 
   def build_user_prompt
-    if job_description.present?
+    base_prompt = if job_description.present?
       <<~PROMPT
         ORIGINAL RESUME:
         #{content}
@@ -185,6 +187,26 @@ class ResumeOptimizerService < AiService
 
         Output ONLY the final optimized resume. No commentary.
       PROMPT
+    end
+
+    # Append ATS feedback for re-optimization
+    if previous_ats_score.present? && previous_ats_analysis.present?
+      base_prompt + <<~ATS_FEEDBACK
+
+        CRITICAL — PREVIOUS ATS ANALYSIS (Score: #{previous_ats_score}/100):
+        #{previous_ats_analysis}
+
+        RE-OPTIMIZATION INSTRUCTIONS:
+        This resume was previously optimized and scored #{previous_ats_score}/100. The analysis above shows exactly what's weak.
+        Your goal is to push the score to 85+ by SPECIFICALLY addressing every issue in the analysis:
+        - Add ALL missing keywords identified above naturally into the content
+        - Fix every structural issue mentioned
+        - Strengthen every weak area called out
+        - Do NOT lose any existing strengths — only improve
+        The output must be a meaningfully improved version, not a minor tweak.
+      ATS_FEEDBACK
+    else
+      base_prompt
     end
   end
 
