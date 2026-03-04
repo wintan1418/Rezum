@@ -2,84 +2,14 @@ class SubscriptionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_subscription, only: [ :show, :cancel, :reactivate, :destroy ]
 
+  # Countries that pay in NGN
+  NGN_COUNTRIES = %w[NG].freeze
+
   def new
     @subscription = current_user.subscriptions.build
-    @plans = [
-      {
-        id: "price_monthly_pro",
-        name: "Monthly Pro",
-        price: 29,
-        price_label: "\u20A629,000",
-        interval: "month",
-        tier: "pro",
-        features: [
-          "Unlimited resume optimizations",
-          "Unlimited cover letters",
-          "ATS scoring & keyword extraction",
-          "AI Resume Builder (from scratch)",
-          "5 professional templates",
-          "PDF & DOCX downloads",
-          "Job Application Tracker",
-          "Priority support"
-        ]
-      },
-      {
-        id: "price_annual_pro",
-        name: "Annual Pro",
-        price: 290,
-        price_label: "\u20A6290,000",
-        interval: "year",
-        tier: "pro",
-        features: [
-          "Unlimited resume optimizations",
-          "Unlimited cover letters",
-          "ATS scoring & keyword extraction",
-          "AI Resume Builder (from scratch)",
-          "5 professional templates",
-          "PDF & DOCX downloads",
-          "Job Application Tracker",
-          "Priority support",
-          "2 months free"
-        ]
-      },
-      {
-        id: "price_monthly_premium",
-        name: "Monthly Premium",
-        price: 59,
-        price_label: "\u20A659,000",
-        interval: "month",
-        tier: "premium",
-        features: [
-          "Everything in Pro, plus:",
-          "Unlimited AI Resume Builder",
-          "AI Interview Prep (STAR method)",
-          "LinkedIn Profile Optimization",
-          "Automated Job Scraper",
-          "AI job matching & scoring",
-          "Priority AI models (GPT-4, Claude)",
-          "Early access to new features"
-        ]
-      },
-      {
-        id: "price_annual_premium",
-        name: "Annual Premium",
-        price: 590,
-        price_label: "\u20A6590,000",
-        interval: "year",
-        tier: "premium",
-        features: [
-          "Everything in Pro, plus:",
-          "Unlimited AI Resume Builder",
-          "AI Interview Prep (STAR method)",
-          "LinkedIn Profile Optimization",
-          "Automated Job Scraper",
-          "AI job matching & scoring",
-          "Priority AI models (GPT-4, Claude)",
-          "Early access to new features",
-          "2 months free"
-        ]
-      }
-    ]
+    @is_ngn = ngn_user?(current_user)
+    @symbol = @is_ngn ? "\u20A6" : "$"
+    @plans = plans_for_user
   end
 
   def create
@@ -198,6 +128,69 @@ class SubscriptionsController < ApplicationController
 
   def set_subscription
     @subscription = current_user.subscriptions.find(params[:id])
+  end
+
+  def ngn_user?(user)
+    NGN_COUNTRIES.include?(user.country_code&.upcase) || user.currency == "NGN"
+  end
+
+  def plans_for_user
+    pro_features = [
+      "Unlimited resume optimizations",
+      "Unlimited cover letters",
+      "ATS scoring & keyword extraction",
+      "AI Resume Builder (from scratch)",
+      "5 professional templates",
+      "PDF & DOCX downloads",
+      "Job Application Tracker",
+      "Priority support"
+    ]
+
+    premium_features = [
+      "Everything in Pro, plus:",
+      "Unlimited AI Resume Builder",
+      "AI Interview Prep (STAR method)",
+      "LinkedIn Profile Optimization",
+      "Automated Job Scraper",
+      "AI job matching & scoring",
+      "Priority AI models (GPT-4, Claude)",
+      "Early access to new features"
+    ]
+
+    [
+      {
+        id: "price_monthly_pro",
+        name: "Monthly Pro",
+        price_label: @is_ngn ? "#{@symbol}29,000" : "#{@symbol}22",
+        interval: "month",
+        tier: "pro",
+        features: pro_features
+      },
+      {
+        id: "price_annual_pro",
+        name: "Annual Pro",
+        price_label: @is_ngn ? "#{@symbol}290,000" : "#{@symbol}220",
+        interval: "year",
+        tier: "pro",
+        features: pro_features + ["2 months free"]
+      },
+      {
+        id: "price_monthly_premium",
+        name: "Monthly Premium",
+        price_label: @is_ngn ? "#{@symbol}59,000" : "#{@symbol}36",
+        interval: "month",
+        tier: "premium",
+        features: premium_features
+      },
+      {
+        id: "price_annual_premium",
+        name: "Annual Premium",
+        price_label: @is_ngn ? "#{@symbol}590,000" : "#{@symbol}360",
+        interval: "year",
+        tier: "premium",
+        features: premium_features + ["2 months free"]
+      }
+    ]
   end
 
   def plan_details(plan_id)

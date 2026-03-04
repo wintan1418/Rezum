@@ -28,6 +28,7 @@ class BillingController < ApplicationController
   def history
     @payments = current_user.payments.recent.includes(:user)
     @payments = @payments.page(params[:page]).per(20) if defined?(Kaminari)
+    @pricing = pricing_for_user(current_user)
   end
 
   def purchase_credits
@@ -111,16 +112,16 @@ class BillingController < ApplicationController
         per_credit_kobo: 500_00
       }
     else
-      # International pricing — still charged in NGN via Paystack
+      # International pricing — displayed in USD, charged in NGN via Paystack
       # (Paystack handles card currency conversion automatically)
-      # Prices are NGN equivalent of USD with 20% markup
       {
         currency: "NGN",
         symbol: "$",
+        display_currency: "USD",
         tiers: [
-          { credits: 10,  amount_kobo: 8_000_00,  display: "5",   per_credit: "0.50" },
-          { credits: 50,  amount_kobo: 28_800_00,  display: "18",  per_credit: "0.36" },
-          { credits: 100, amount_kobo: 48_000_00,  display: "30",  per_credit: "0.30" }
+          { credits: 10,  amount_kobo: 8_000_00,  display: "5",    per_credit: "0.50" },
+          { credits: 50,  amount_kobo: 28_800_00,  display: "18",   per_credit: "0.36" },
+          { credits: 100, amount_kobo: 48_000_00,  display: "30",   per_credit: "0.30" }
         ],
         per_credit_kobo: 800_00
       }

@@ -30,7 +30,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <h4 class="text-xl font-bold text-gray-900"><%= @subscription.plan_name %></h4>
-                  <p class="text-gray-500 text-sm">&#8358;<%= (@subscription.plan_price * 1000).to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse %> per <%= @subscription.billing_cycle %></p>
+                  <p class="text-gray-500 text-sm"><%= @pricing[:symbol] %><%= @pricing[:currency] == "NGN" && !@pricing[:display_currency] ? (@subscription.plan_price * 1000).to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse : (@subscription.plan_price * 1000 / 1_600.0).round %> per <%= @subscription.billing_cycle %></p>
                   <div class="mt-2 flex items-center gap-3">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                       <%= @subscription.status.humanize %>
@@ -289,7 +289,7 @@
           <div class="space-y-4">
             <div>
               <p class="text-sm text-gray-500">Total Spent</p>
-              <p class="text-2xl font-bold text-gray-900">&#8358;<%= @total_spent %></p>
+              <p class="text-2xl font-bold text-gray-900"><%= @pricing[:symbol] %><%= @pricing[:display_currency] ? (@total_spent / 1_600.0).round : number_with_delimiter(@total_spent.to_i) %></p>
             </div>
             <div>
               <p class="text-sm text-gray-500">Credits Remaining</p>
