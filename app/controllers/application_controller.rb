@@ -28,6 +28,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def require_premium!
+    return if current_user.has_premium_subscription?
+
+    redirect_to new_subscription_path, alert: "This feature is available for Premium subscribers only."
+  end
+
+  def require_paid_subscription!
+    return if current_user.has_active_subscription?
+
+    redirect_to new_subscription_path, alert: "This feature requires an active subscription."
+  end
+
   def configure_permitted_parameters
     # Permit additional parameters for registration
     devise_parameter_sanitizer.permit(:sign_up, keys: [

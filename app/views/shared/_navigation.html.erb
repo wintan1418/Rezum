@@ -175,56 +175,56 @@
   <!-- Mobile Menu -->
   <div data-mobile-menu-target="menu" class="hidden md:hidden border-t border-gray-200 bg-white">
     <div class="px-4 py-3 space-y-1">
-      <%= link_to dashboard_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'dashboard' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to dashboard_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('dashboard')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
         </svg>
         Dashboard
       <% end %>
 
-      <%= link_to resumes_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'resumes' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to resumes_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('resumes')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
         Resumes
       <% end %>
 
-      <%= link_to cover_letters_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'cover_letters' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to cover_letters_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('cover_letters')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
         Cover Letters
       <% end %>
 
-      <%= link_to job_applications_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'job_applications' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to job_applications_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('job_applications')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
         Applications
       <% end %>
 
-      <%= link_to interview_preps_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'interview_preps' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to interview_preps_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('interview_preps')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
         </svg>
         Interview Prep
       <% end %>
 
-      <%= link_to linkedin_optimizations_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'linkedin_optimizations' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to linkedin_optimizations_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('linkedin_optimizations')}" do %>
         <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
           <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
         </svg>
         LinkedIn
       <% end %>
 
-      <%= link_to ats_checker_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'ats_checker' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to ats_checker_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('ats_checker')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         ATS Score Checker
       <% end %>
 
-      <%= link_to scraped_jobs_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'scraped_jobs' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to scraped_jobs_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('scraped_jobs')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
@@ -232,14 +232,14 @@
         <span class="ml-auto text-xs font-medium text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">Premium</span>
       <% end %>
 
-      <%= link_to billing_index_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'billing' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to billing_index_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('billing')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
         </svg>
         Billing
       <% end %>
 
-      <%= link_to articles_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'articles' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}" do %>
+      <%= link_to articles_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium #{mobile_nav_active?('articles')}" do %>
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
         </svg>

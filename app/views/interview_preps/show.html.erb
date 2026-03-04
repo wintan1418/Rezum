@@ -22,7 +22,7 @@
     </div>
 
     <% if @interview_prep.generating? %>
-      <div class="p-8 text-center" data-controller="auto-refresh" data-auto-refresh-interval-value="5000">
+      <div class="p-8 text-center" data-controller="auto-refresh" data-auto-refresh-url-value="<%= interview_prep_path(@interview_prep) %>" data-auto-refresh-interval-value="5000">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Generating your interview prep...</h3>
         <p class="text-sm text-gray-500">This usually takes 30-60 seconds. The page will auto-refresh.</p>
@@ -66,7 +66,7 @@
               <button type="button"
                       class="w-full flex items-start justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
                       data-action="click->accordion#toggle"
-                      data-accordion-target="trigger">
+                      data-index="<%= i %>"
                 <div class="flex items-start gap-3 pr-4">
                   <span class="flex-shrink-0 w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-xs font-bold text-gray-600 mt-0.5"><%= i + 1 %></span>
                   <div>

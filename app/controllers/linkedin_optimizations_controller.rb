@@ -1,5 +1,6 @@
 class LinkedinOptimizationsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_paid_subscription!
   before_action :set_linkedin_optimization, only: [ :show, :destroy ]
 
   def index

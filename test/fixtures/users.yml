@@ -9,6 +9,7 @@ taylor:
   currency: USD
   referral_code: TAYL1234
   onboarding_completed: true
+  confirmed_at: <%= 30.days.ago %>
   created_at: <%= 30.days.ago %>
   updated_at: <%= Time.current %>
 
@@ -23,6 +24,7 @@ pro_user:
   currency: NGN
   referral_code: PROU5678
   onboarding_completed: true
+  confirmed_at: <%= 60.days.ago %>
   created_at: <%= 60.days.ago %>
   updated_at: <%= Time.current %>
 
@@ -37,5 +39,6 @@ broke_user:
   currency: NGN
   referral_code: BROK9999
   onboarding_completed: false
+  confirmed_at: <%= 7.days.ago %>
   created_at: <%= 7.days.ago %>
   updated_at: <%= Time.current %>

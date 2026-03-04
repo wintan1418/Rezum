@@ -22,6 +22,28 @@ module DashboardHelper
   end
 
   def nav_active?(controller)
-    controller_name == controller ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"
+    active_for?(controller) ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-600 hover:text-gray-900"
+  end
+
+  def mobile_nav_active?(controller)
+    active_for?(controller) ? "bg-blue-50 text-blue-700 font-semibold" : "text-gray-700 hover:bg-gray-50"
+  end
+
+  private
+
+  def active_for?(controller)
+    return true if controller_name == controller
+
+    # Group related controllers under their parent nav item
+    case controller
+    when "resumes"
+      controller_name.in?(%w[resumes resume_wizard resume_builder])
+    when "interview_preps"
+      controller_name == "interview_preps"
+    when "linkedin_optimizations"
+      controller_name == "linkedin_optimizations"
+    else
+      false
+    end
   end
 end

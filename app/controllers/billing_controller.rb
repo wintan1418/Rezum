@@ -111,16 +111,18 @@ class BillingController < ApplicationController
         per_credit_kobo: 500_00
       }
     else
-      # International pricing in USD (20% higher than NGN equivalent)
+      # International pricing — still charged in NGN via Paystack
+      # (Paystack handles card currency conversion automatically)
+      # Prices are NGN equivalent of USD with 20% markup
       {
-        currency: "USD",
+        currency: "NGN",
         symbol: "$",
         tiers: [
-          { credits: 10,  amount_kobo: 5_00,   display: "5",   per_credit: "0.50" },
-          { credits: 50,  amount_kobo: 18_00,  display: "18",  per_credit: "0.36" },
-          { credits: 100, amount_kobo: 30_00,  display: "30",  per_credit: "0.30" }
+          { credits: 10,  amount_kobo: 8_000_00,  display: "5",   per_credit: "0.50" },
+          { credits: 50,  amount_kobo: 28_800_00,  display: "18",  per_credit: "0.36" },
+          { credits: 100, amount_kobo: 48_000_00,  display: "30",  per_credit: "0.30" }
         ],
-        per_credit_kobo: 50
+        per_credit_kobo: 800_00
       }
     end
   end

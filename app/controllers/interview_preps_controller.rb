@@ -1,5 +1,6 @@
 class InterviewPrepsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_premium!
   before_action :set_interview_prep, only: [ :show, :destroy ]
 
   def index
@@ -15,8 +16,8 @@ class InterviewPrepsController < ApplicationController
   def create
     @interview_prep = current_user.interview_preps.build(interview_prep_params)
 
-    unless current_user.can_generate?
-      redirect_to new_interview_prep_path, alert: "Insufficient credits. Please upgrade your plan."
+    unless current_user.has_active_subscription? || current_user.credits_remaining >= 3
+      redirect_to new_interview_prep_path, alert: "You need at least 3 credits for Interview Prep. You have #{current_user.credits_remaining}."
       return
     end
 
