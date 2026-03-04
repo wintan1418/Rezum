@@ -3,26 +3,26 @@
     border: 2px dashed #d1d5db;
     transition: all 0.3s ease;
   }
-  
+
   .file-drop-zone.dragover {
     border-color: #3b82f6;
     background-color: #eff6ff;
     transform: scale(1.02);
   }
-  
+
   .fade-in {
     animation: fadeIn 0.5s ease-out;
   }
-  
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   .pulse-animation {
     animation: pulse 2s infinite;
   }
-  
+
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -62,13 +62,78 @@
         </div>
       </div>
 
-      <%= form_with model: @resume, local: true, 
-          html: { 
-            multipart: true, 
+      <!-- LinkedIn Import (SEPARATE form - must be outside main resume form) -->
+      <div class="space-y-8 mb-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.05s;">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">Import from LinkedIn</h3>
+              <p class="text-sm text-gray-500">Upload your LinkedIn PDF to auto-build your resume</p>
+            </div>
+          </div>
+
+          <!-- PDF Upload (Primary) -->
+          <div class="bg-gray-50 rounded-xl p-4 mb-4">
+            <p class="text-xs font-medium text-gray-700 mb-2">How to download your LinkedIn PDF:</p>
+            <ol class="text-xs text-gray-500 space-y-1 list-decimal list-inside">
+              <li>Go to your LinkedIn profile</li>
+              <li>Click <span class="font-semibold text-gray-700">More</span> button (next to "Open to")</li>
+              <li>Select <span class="font-semibold text-gray-700">Save to PDF</span></li>
+              <li>Upload the downloaded PDF below</li>
+            </ol>
+          </div>
+
+          <%= form_with url: import_linkedin_resumes_path, method: :post, local: true, multipart: true do |f| %>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Upload LinkedIn PDF</label>
+              <div class="flex items-center gap-3">
+                <%= f.file_field :linkedin_pdf,
+                    accept: ".pdf",
+                    class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer" %>
+              </div>
+            </div>
+
+            <!-- Paste text fallback -->
+            <div data-controller="toggle">
+              <button type="button" data-action="click->toggle#toggle" class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-2">
+                <span>Don't have the PDF? Paste text instead</span>
+                <svg class="w-3.5 h-3.5 transition-transform" data-toggle-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div class="hidden" data-toggle-target="content">
+                <%= f.text_area :linkedin_text,
+                    rows: 6,
+                    class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300 text-xs",
+                    placeholder: "Go to your LinkedIn profile → Select all (Ctrl+A) → Copy (Ctrl+C) → Paste here..." %>
+              </div>
+            </div>
+
+            <div class="mt-3 flex justify-end">
+              <%= f.submit "Import LinkedIn Profile",
+                  class: "inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-blue-700 transition-all cursor-pointer",
+                  data: { disable_with: "Importing..." } %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Divider between LinkedIn and manual upload -->
+      <div class="relative mb-8 fade-in" style="animation-delay: 0.08s;">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+        <div class="relative flex justify-center"><span class="px-3 bg-gray-50 text-sm text-gray-400">OR upload your own resume</span></div>
+      </div>
+
+      <%= form_with model: @resume, local: true,
+          html: {
+            multipart: true,
             class: "space-y-8",
             data: { controller: "file-upload" }
           } do |f| %>
-        
+
         <!-- Display errors -->
         <% if @resume.errors.any? %>
           <div class="bg-red-50 border border-red-200 rounded-lg p-4 fade-in">
@@ -90,34 +155,34 @@
 
         <!-- File Upload Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.1s;">
-          <div class="file-drop-zone rounded-lg p-8 text-center cursor-pointer" 
+          <div class="file-drop-zone rounded-lg p-8 text-center cursor-pointer"
                data-file-upload-target="dropzone"
                data-action="dragover->file-upload#handleDragOver dragenter->file-upload#handleDragEnter dragleave->file-upload#handleDragLeave drop->file-upload#handleDrop click->file-upload#openFileDialog">
-            
+
             <svg class="mx-auto h-16 w-16 text-gray-400 pulse-animation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
             </svg>
-            
+
             <div class="mt-4">
               <span class="text-lg font-medium text-gray-900">Drop your resume here</span>
-              <p class="text-gray-500 mt-1">or 
+              <p class="text-gray-500 mt-1">or
                 <span class="font-medium text-blue-600 hover:text-blue-500">click to browse</span>
               </p>
-              
-              <%= f.file_field :file, 
+
+              <%= f.file_field :file,
                   id: "resume_file",
                   accept: ".pdf,.docx,.doc,.txt",
                   class: "hidden",
-                  data: { 
+                  data: {
                     file_upload_target: "fileInput",
                     action: "change->file-upload#handleFileSelect"
                   } %>
             </div>
-            
+
             <p class="text-xs text-gray-400 mt-4">
               Supports PDF, DOCX, DOC, and TXT files up to 10MB
             </p>
-            
+
             <!-- File Preview -->
             <div class="hidden mt-6 p-4 bg-blue-50 rounded-lg" data-file-upload-target="filePreview">
               <div class="flex items-center justify-between">
@@ -130,7 +195,7 @@
                     <p class="text-xs text-gray-500" data-file-upload-target="fileSize"></p>
                   </div>
                 </div>
-                <button type="button" 
+                <button type="button"
                         class="text-gray-400 hover:text-gray-600"
                         data-action="click->file-upload#removeFile">
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -145,12 +210,12 @@
         <!-- Resume Details Form -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.2s;">
           <h3 class="text-lg font-semibold text-gray-900 mb-6">Resume Details</h3>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Target Role -->
             <div>
               <%= f.label :target_role, "Target Job Title", class: "block text-sm font-medium text-gray-700 mb-2" %>
-              <%= f.text_field :target_role, 
+              <%= f.text_field :target_role,
                   class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
                   placeholder: "e.g., Software Engineer, Product Manager" %>
               <p class="mt-1 text-xs text-gray-500">The job title you're targeting (we'll auto-detect if not provided)</p>
@@ -212,7 +277,7 @@
           <p class="text-sm text-gray-600 mb-6">
             Add a job description to optimize your resume for specific roles. Our AI will analyze requirements and tailor your resume accordingly.
           </p>
-          
+
           <!-- Job URL Input -->
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">Option 1: Job Posting URL</label>
@@ -225,7 +290,7 @@
                        data-job-url-fetcher-target="urlInput">
                 <p class="mt-1 text-xs text-gray-500">Paste a job posting URL from LinkedIn, Indeed, company websites, etc.</p>
               </div>
-              <button type="button" 
+              <button type="button"
                       id="fetch-job-btn"
                       class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-blue-800 transition-all cursor-pointer"
                       data-action="click->job-url-fetcher#fetchJob"
@@ -239,7 +304,7 @@
                 <span data-job-url-fetcher-target="buttonText">Fetch</span>
               </button>
             </div>
-            
+
             <!-- URL Fetch Results -->
             <div class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg" data-job-url-fetcher-target="successMessage">
               <div class="flex items-center">
@@ -252,7 +317,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg" data-job-url-fetcher-target="errorMessage">
               <div class="flex items-center">
                 <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -265,7 +330,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Divider -->
           <div class="relative mb-6">
             <div class="absolute inset-0 flex items-center">
@@ -275,7 +340,7 @@
               <span class="px-2 bg-white text-gray-500">OR</span>
             </div>
           </div>
-          
+
           <!-- Manual Job Description Input -->
           <div>
             <label for="resume_job_description" class="block text-sm font-medium text-gray-700 mb-2">Option 2: Paste Job Description</label>
@@ -283,10 +348,10 @@
                 rows: 12,
                 class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
                 placeholder: "Paste the full job description here...\n\nExample:\nSenior Software Engineer at TechCorp\n\nWe are looking for an experienced Senior Software Engineer to join our growing team...\n\nResponsibilities:\n• Design and develop scalable web applications\n• Collaborate with product and design teams\n• Mentor junior developers\n• Write clean, maintainable code\n\nRequirements:\n• 5+ years of software development experience\n• Proficiency in JavaScript, React, and Node.js\n• Experience with cloud platforms (AWS/Azure/GCP)\n• Strong problem-solving skills\n• Bachelor's degree in Computer Science or related field\n\nPreferred Qualifications:\n• Experience with microservices architecture\n• Knowledge of DevOps practices\n• Previous startup experience\n\nBenefits:\n• Competitive salary and equity\n• Health, dental, and vision insurance\n• Flexible work arrangements\n• $2,000 annual learning stipend",
-                data: { 
+                data: {
                   job_url_fetcher_target: "jobDescription"
                 } %>
-            
+
             <div class="mt-4 flex items-start space-x-4 text-sm text-gray-600">
               <div class="flex items-center space-x-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,76 +369,13 @@
           </div>
         </div>
 
-        <!-- LinkedIn Import -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.35s;">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900">Import from LinkedIn</h3>
-              <p class="text-sm text-gray-500">Upload your LinkedIn PDF to auto-build your resume</p>
-            </div>
-          </div>
-
-          <!-- PDF Upload (Primary) -->
-          <div class="bg-gray-50 rounded-xl p-4 mb-4">
-            <p class="text-xs font-medium text-gray-700 mb-2">How to download your LinkedIn PDF:</p>
-            <ol class="text-xs text-gray-500 space-y-1 list-decimal list-inside">
-              <li>Go to your LinkedIn profile</li>
-              <li>Click <span class="font-semibold text-gray-700">More</span> button (next to "Open to")</li>
-              <li>Select <span class="font-semibold text-gray-700">Save to PDF</span></li>
-              <li>Upload the downloaded PDF below</li>
-            </ol>
-          </div>
-
-          <%= form_with url: import_linkedin_resumes_path, method: :post, local: true, multipart: true do |f| %>
-            <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Upload LinkedIn PDF</label>
-              <div class="flex items-center gap-3">
-                <%= f.file_field :linkedin_pdf,
-                    accept: ".pdf",
-                    class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer" %>
-              </div>
-            </div>
-
-            <!-- Paste text fallback -->
-            <div data-controller="toggle">
-              <button type="button" data-action="click->toggle#toggle" class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 mb-2">
-                <span>Don't have the PDF? Paste text instead</span>
-                <svg class="w-3.5 h-3.5 transition-transform" data-toggle-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </button>
-              <div class="hidden" data-toggle-target="content">
-                <%= f.text_area :linkedin_text,
-                    rows: 6,
-                    class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300 text-xs",
-                    placeholder: "Go to your LinkedIn profile → Select all (Ctrl+A) → Copy (Ctrl+C) → Paste here..." %>
-              </div>
-            </div>
-
-            <div class="mt-3 flex justify-end">
-              <%= f.submit "Import LinkedIn Profile",
-                  class: "inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-blue-700 transition-all cursor-pointer",
-                  data: { disable_with: "Importing..." } %>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Divider -->
-        <div class="relative fade-in" style="animation-delay: 0.35s;">
-          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
-          <div class="relative flex justify-center"><span class="px-3 bg-gray-50 text-sm text-gray-400">OR</span></div>
-        </div>
-
         <!-- Manual Text Input (Alternative) -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in" style="animation-delay: 0.4s;">
           <h3 class="text-lg font-semibold text-gray-900 mb-6">
             Or Paste Resume Text
             <span class="text-sm font-normal text-gray-500">(if you don't have a file to upload)</span>
           </h3>
-          
+
           <%= f.text_area :original_content,
               rows: 12,
               class: "w-full rounded-xl border border-gray-200 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none text-sm py-2.5 px-3.5 transition-all hover:border-gray-300",
@@ -385,7 +387,7 @@
 
         <!-- Submit Button -->
         <div class="flex justify-center fade-in" style="animation-delay: 0.5s;">
-          <%= f.submit "Upload & Process Resume", 
+          <%= f.submit "Upload & Process Resume",
               class: "px-8 py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-sm hover:from-blue-700 hover:to-purple-700 hover:shadow transition-all cursor-pointer",
               data: { disable_with: "Processing..." } %>
         </div>
@@ -402,4 +404,3 @@
       <% end %>
     </main>
 </div>
-
