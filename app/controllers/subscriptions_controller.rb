@@ -167,7 +167,7 @@ class SubscriptionsController < ApplicationController
       {
         id: "price_monthly_pro",
         name: "Monthly Pro",
-        price_label: @is_ngn ? "#{@symbol}29,000" : "#{@symbol}22",
+        price_label: @is_ngn ? "#{@symbol}29,000" : "#{@symbol}29",
         interval: "month",
         tier: "pro",
         features: pro_features
@@ -175,7 +175,7 @@ class SubscriptionsController < ApplicationController
       {
         id: "price_annual_pro",
         name: "Annual Pro",
-        price_label: @is_ngn ? "#{@symbol}290,000" : "#{@symbol}220",
+        price_label: @is_ngn ? "#{@symbol}290,000" : "#{@symbol}290",
         interval: "year",
         tier: "pro",
         features: pro_features + ["2 months free"]
@@ -183,7 +183,7 @@ class SubscriptionsController < ApplicationController
       {
         id: "price_monthly_premium",
         name: "Monthly Premium",
-        price_label: @is_ngn ? "#{@symbol}59,000" : "#{@symbol}36",
+        price_label: @is_ngn ? "#{@symbol}59,000" : "#{@symbol}59",
         interval: "month",
         tier: "premium",
         features: premium_features
@@ -191,7 +191,7 @@ class SubscriptionsController < ApplicationController
       {
         id: "price_annual_premium",
         name: "Annual Premium",
-        price_label: @is_ngn ? "#{@symbol}590,000" : "#{@symbol}360",
+        price_label: @is_ngn ? "#{@symbol}590,000" : "#{@symbol}590",
         interval: "year",
         tier: "premium",
         features: premium_features + ["2 months free"]

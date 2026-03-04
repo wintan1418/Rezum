@@ -11,11 +11,8 @@ class BillingController < ApplicationController
   # Countries that pay in NGN
   NGN_COUNTRIES = %w[NG].freeze
 
-  # Exchange rate: 1 USD ~ 1,600 NGN (approximate)
-  NGN_TO_USD_RATE = 1_600
-
-  # International markup (20%)
-  INTERNATIONAL_MARKUP = 1.2
+  # International markup (10%)
+  INTERNATIONAL_MARKUP = 1.1
 
   def index
     @subscription = current_user.current_subscription
@@ -123,17 +120,17 @@ class BillingController < ApplicationController
       }
     else
       # International pricing — displayed in USD, charged in NGN via Paystack
-      # (Paystack handles card currency conversion automatically)
+      # 10% markup over Nigerian prices, displayed as ₦/1000 in USD
       {
         currency: "NGN",
         symbol: "$",
         display_currency: "USD",
         tiers: [
-          { credits: 10,  amount_kobo: 8_000_00,  display: "5",    per_credit: "0.50" },
-          { credits: 50,  amount_kobo: 28_800_00,  display: "18",   per_credit: "0.36" },
-          { credits: 100, amount_kobo: 48_000_00,  display: "30",   per_credit: "0.30" }
+          { credits: 10,  amount_kobo: 5_500_00,  display: "5",   per_credit: "0.50" },
+          { credits: 50,  amount_kobo: 22_000_00, display: "20",  per_credit: "0.40" },
+          { credits: 100, amount_kobo: 38_500_00, display: "35",  per_credit: "0.35" }
         ],
-        per_credit_kobo: 800_00
+        per_credit_kobo: 550_00
       }
     end
   end

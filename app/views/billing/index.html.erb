@@ -63,7 +63,7 @@
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-sm font-semibold text-gray-900">Upgrade to Pro</p>
-                    <p class="text-xs text-gray-500 mt-0.5">Unlimited generations starting at <%= @pricing[:symbol] %><%= @pricing[:currency] == "NGN" ? "29,000" : "22" %>/mo</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Unlimited generations starting at <%= @pricing[:symbol] %><%= @pricing[:display_currency] ? "29" : "29,000" %>/mo</p>
                   </div>
                   <%= link_to new_subscription_path, class: "inline-flex items-center px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg shadow-sm transition-all" do %>
                     Upgrade
