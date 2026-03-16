@@ -35,6 +35,45 @@
   <!-- Campaign Cards -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
+    <!-- PITCH DECK LAUNCH — Pre-filled Feature Announcement -->
+    <div class="bg-gradient-to-br from-purple-900 to-pink-900 rounded-xl overflow-hidden lg:col-span-2 relative">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-5 left-10 w-32 h-32 bg-pink-400 rounded-full filter blur-2xl"></div>
+        <div class="absolute bottom-5 right-10 w-40 h-40 bg-purple-400 rounded-full filter blur-2xl"></div>
+      </div>
+      <div class="p-6 relative z-10">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-500/30 text-pink-200 border border-pink-500/30">NEW FEATURE</span>
+          </div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white"><%= @segments[:all] %> users</span>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1">AI Pitch Deck Generator Launch</h3>
+        <p class="text-sm text-purple-200 mb-4">Announce the new AI Pitch Deck feature to all users. Pre-filled with a catchy subject and compelling copy — just click send.</p>
+      </div>
+      <div class="px-6 py-4 bg-black/20 border-t border-white/10 relative z-10">
+        <%= form_with url: send_campaign_admin_marketing_index_path, method: :post, local: true, class: "space-y-3" do |f| %>
+          <%= f.hidden_field :campaign, value: "feature_announcement" %>
+          <div>
+            <label class="block text-xs font-medium text-purple-200 mb-1">Subject</label>
+            <%= f.text_field :announcement_subject,
+              value: "New: AI Pitch Decks are here — create investor-ready decks in 60 seconds",
+              class: "w-full rounded-lg border border-white/20 bg-white/10 text-white placeholder-purple-300 px-3 py-2 text-sm focus:ring-2 focus:ring-pink-400 focus:border-pink-400" %>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-purple-200 mb-1">Message</label>
+            <%= f.text_area :announcement_body, rows: 6,
+              value: "Big news — RezumFit now generates AI-powered investor pitch decks!\n\nJust answer a few questions about your business and our AI creates a professional 12-slide deck in under 60 seconds. It follows the same frameworks used by Y Combinator and Sequoia-backed startups.\n\nWhat you get:\n- 12 investor-ready slides (Problem, Solution, Market Size, Financials, and more)\n- Powered by GPT-4o for world-class content\n- Export to PowerPoint (PPTX) instantly\n- Regenerate any slide you don't love\n\nPremium subscribers get unlimited pitch decks. Everyone else can generate one for 30 credits.\n\nReady to impress investors? Log in and try it now:\nhttps://rezumfit.com/pitch_decks/new\n\n— The RezumFit Team",
+              class: "w-full rounded-lg border border-white/20 bg-white/10 text-white placeholder-purple-300 px-3 py-2 text-sm focus:ring-2 focus:ring-pink-400 focus:border-pink-400" %>
+          </div>
+          <%= f.submit "Send Pitch Deck Announcement to #{@segments[:all]} Users", class: "w-full px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm font-semibold rounded-xl transition-colors cursor-pointer shadow-lg", data: { turbo_confirm: "Send pitch deck announcement to #{@segments[:all]} users? This will email everyone." } %>
+        <% end %>
+      </div>
+    </div>
+
     <!-- 1. Upgrade to Pro -->
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div class="p-6">
