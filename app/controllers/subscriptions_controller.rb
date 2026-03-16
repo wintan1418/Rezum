@@ -148,6 +148,7 @@ class SubscriptionsController < ApplicationController
       "AI Resume Builder (from scratch)",
       "5 professional templates",
       "PDF & DOCX downloads",
+      "AI Pitch Decks (30 credits each)",
       "Job Application Tracker",
       "Priority support"
     ]
