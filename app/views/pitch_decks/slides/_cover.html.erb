@@ -1,0 +1,12 @@
+<div class="text-center py-8">
+  <h1 class="text-3xl font-bold text-gray-900"><%= slide.pitch_deck.company_name %></h1>
+  <% if slide.content["subtitle"].present? %>
+    <p class="text-xl text-gray-600 mt-3"><%= slide.content["subtitle"] %></p>
+  <% end %>
+  <% if slide.content["tagline"].present? %>
+    <p class="text-lg text-purple-600 font-medium mt-2"><%= slide.content["tagline"] %></p>
+  <% end %>
+  <% if slide.content["one_liner"].present? %>
+    <p class="text-sm text-gray-500 mt-4 max-w-lg mx-auto"><%= slide.content["one_liner"] %></p>
+  <% end %>
+</div>

@@ -42,6 +42,8 @@ module DashboardHelper
       controller_name == "interview_preps"
     when "linkedin_optimizations"
       controller_name == "linkedin_optimizations"
+    when "pitch_decks"
+      controller_name == "pitch_decks"
     else
       false
     end

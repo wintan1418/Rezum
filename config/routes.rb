@@ -64,6 +64,14 @@ Rails.application.routes.draw do
       end
     end
 
+    # Pitch Decks
+    resources :pitch_decks do
+      member do
+        post :regenerate_slide
+        get :download
+      end
+    end
+
     resources :resumes do
       collection do
         post :import_linkedin

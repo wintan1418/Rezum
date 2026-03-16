@@ -1,0 +1,30 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["key_benefits"].is_a?(Array) %>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+      <% slide.content["key_benefits"].each do |benefit| %>
+        <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+          <h4 class="text-sm font-bold text-green-900"><%= benefit["title"] %></h4>
+          <p class="text-xs text-green-700 mt-1"><%= benefit["description"] %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["before_after"].is_a?(Hash) %>
+    <div class="grid grid-cols-2 gap-4 mt-4">
+      <div class="bg-red-50 rounded-xl p-4 border border-red-100">
+        <h4 class="text-xs font-bold text-red-700 uppercase mb-1">Before</h4>
+        <p class="text-sm text-red-900"><%= slide.content["before_after"]["before"] %></p>
+      </div>
+      <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+        <h4 class="text-xs font-bold text-green-700 uppercase mb-1">After</h4>
+        <p class="text-sm text-green-900"><%= slide.content["before_after"]["after"] %></p>
+      </div>
+    </div>
+  <% end %>
+  <% if slide.content["value_proposition"].present? %>
+    <p class="text-sm font-semibold text-purple-700 mt-4 bg-purple-50 p-3 rounded-xl"><%= slide.content["value_proposition"] %></p>
+  <% end %>
+</div>

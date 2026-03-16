@@ -154,6 +154,7 @@ class SubscriptionsController < ApplicationController
 
     premium_features = [
       "Everything in Pro, plus:",
+      "Unlimited AI Pitch Decks",
       "Unlimited AI Resume Builder",
       "AI Interview Prep (STAR method)",
       "LinkedIn Profile Optimization",

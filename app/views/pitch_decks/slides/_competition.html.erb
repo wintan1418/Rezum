@@ -1,0 +1,37 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["competitors"].is_a?(Array) %>
+    <div class="overflow-x-auto mt-4">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="text-left py-2 px-3 font-semibold text-gray-600 text-xs">Competitor</th>
+            <th class="text-left py-2 px-3 font-semibold text-green-600 text-xs">Strengths</th>
+            <th class="text-left py-2 px-3 font-semibold text-red-600 text-xs">Weaknesses</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <% slide.content["competitors"].each do |comp| %>
+            <tr>
+              <td class="py-2 px-3 font-medium text-gray-900"><%= comp["name"] %></td>
+              <td class="py-2 px-3 text-xs text-green-700"><%= comp["strengths"] %></td>
+              <td class="py-2 px-3 text-xs text-red-700"><%= comp["weaknesses"] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+  <% if slide.content["differentiators"].is_a?(Array) %>
+    <div class="mt-4">
+      <h4 class="text-sm font-semibold text-gray-700 mb-2">Our Differentiators</h4>
+      <div class="flex flex-wrap gap-2">
+        <% slide.content["differentiators"].each do |diff| %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800"><%= diff %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

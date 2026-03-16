@@ -1,0 +1,24 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["pain_points"].is_a?(Array) %>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+      <% slide.content["pain_points"].each do |point| %>
+        <div class="bg-red-50 rounded-xl p-4 border border-red-100">
+          <h4 class="text-sm font-bold text-red-900"><%= point["title"] %></h4>
+          <p class="text-xs text-red-700 mt-1"><%= point["detail"] %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["data_point"].is_a?(Hash) %>
+    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 mt-4">
+      <p class="text-2xl font-bold text-gray-900"><%= slide.content["data_point"]["stat"] %></p>
+      <p class="text-xs text-gray-500 mt-1">Source: <%= slide.content["data_point"]["source"] %></p>
+    </div>
+  <% end %>
+  <% if slide.content["who_suffers"].present? %>
+    <p class="text-sm text-gray-500"><strong>Who suffers:</strong> <%= slide.content["who_suffers"] %></p>
+  <% end %>
+</div>

@@ -24,6 +24,13 @@
             Resumes
           <% end %>
 
+          <%= link_to pitch_decks_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium transition-colors #{nav_active?('pitch_decks')}" do %>
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+            </svg>
+            Pitch Decks
+          <% end %>
+
           <%= link_to cover_letters_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium transition-colors #{nav_active?('cover_letters')}" do %>
             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>

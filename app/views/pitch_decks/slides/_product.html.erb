@@ -1,0 +1,35 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["features"].is_a?(Array) %>
+    <div class="grid grid-cols-2 gap-3 mt-4">
+      <% slide.content["features"].each do |feature| %>
+        <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+          <h4 class="text-sm font-bold text-indigo-900"><%= feature["title"] %></h4>
+          <p class="text-xs text-indigo-700 mt-1"><%= feature["description"] %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["how_it_works"].is_a?(Array) %>
+    <div class="mt-4">
+      <h4 class="text-sm font-semibold text-gray-700 mb-3">How It Works</h4>
+      <div class="flex items-start space-x-4">
+        <% slide.content["how_it_works"].each_with_index do |step_data, i| %>
+          <div class="flex-1 text-center">
+            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center mx-auto text-sm font-bold"><%= i + 1 %></div>
+            <h5 class="text-xs font-bold text-gray-900 mt-2"><%= step_data["title"] %></h5>
+            <p class="text-xs text-gray-500 mt-1"><%= step_data["description"] %></p>
+          </div>
+          <% if i < slide.content["how_it_works"].length - 1 %>
+            <div class="flex-shrink-0 mt-3 text-gray-300">&rarr;</div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <% if slide.content["unique_advantage"].present? %>
+    <p class="text-sm font-semibold text-indigo-700 bg-indigo-50 p-3 rounded-xl mt-4"><%= slide.content["unique_advantage"] %></p>
+  <% end %>
+</div>

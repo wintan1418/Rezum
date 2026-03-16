@@ -1,0 +1,71 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["projections"].is_a?(Array) %>
+    <div class="overflow-x-auto mt-4">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="text-left py-2 px-3 font-semibold text-gray-600 text-xs"></th>
+            <% slide.content["projections"].each do |proj| %>
+              <th class="text-right py-2 px-3 font-semibold text-gray-600 text-xs"><%= proj["year"] %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr>
+            <td class="py-2 px-3 font-medium text-gray-700">Revenue</td>
+            <% slide.content["projections"].each do |proj| %>
+              <td class="py-2 px-3 text-right text-green-700 font-semibold"><%= proj["revenue"] %></td>
+            <% end %>
+          </tr>
+          <tr>
+            <td class="py-2 px-3 font-medium text-gray-700">Expenses</td>
+            <% slide.content["projections"].each do |proj| %>
+              <td class="py-2 px-3 text-right text-red-600"><%= proj["expenses"] %></td>
+            <% end %>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="py-2 px-3 font-bold text-gray-900">Net Income</td>
+            <% slide.content["projections"].each do |proj| %>
+              <td class="py-2 px-3 text-right font-bold text-gray-900"><%= proj["net_income"] %></td>
+            <% end %>
+          </tr>
+          <tr>
+            <td class="py-2 px-3 font-medium text-gray-700">Customers</td>
+            <% slide.content["projections"].each do |proj| %>
+              <td class="py-2 px-3 text-right text-gray-600"><%= proj["customers"] %></td>
+            <% end %>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+  <div class="grid grid-cols-2 gap-4 mt-4">
+    <% if slide.content["gross_margin"].present? %>
+      <div class="bg-green-50 rounded-xl p-3 border border-green-100 text-center">
+        <p class="text-xs text-green-600">Gross Margin</p>
+        <p class="text-xl font-bold text-green-900"><%= slide.content["gross_margin"] %></p>
+      </div>
+    <% end %>
+    <% if slide.content["break_even"].present? %>
+      <div class="bg-blue-50 rounded-xl p-3 border border-blue-100 text-center">
+        <p class="text-xs text-blue-600">Break Even</p>
+        <p class="text-xl font-bold text-blue-900"><%= slide.content["break_even"] %></p>
+      </div>
+    <% end %>
+  </div>
+  <% if slide.content["key_assumptions"].is_a?(Array) %>
+    <div class="mt-4">
+      <h4 class="text-xs font-semibold text-gray-500 uppercase mb-2">Key Assumptions</h4>
+      <ul class="space-y-1">
+        <% slide.content["key_assumptions"].each do |assumption| %>
+          <li class="text-xs text-gray-600 flex items-start">
+            <span class="text-gray-300 mr-2">•</span><%= assumption %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

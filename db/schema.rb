@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_04_171359) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_16_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -269,6 +269,41 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_04_171359) do
     t.index ["user_id"], name: "index_payments_on_user_id"
   end
 
+  create_table "pitch_deck_slides", force: :cascade do |t|
+    t.bigint "pitch_deck_id", null: false
+    t.string "slide_type", null: false
+    t.integer "position", null: false
+    t.string "title"
+    t.jsonb "content", default: {}, null: false
+    t.text "speaker_notes"
+    t.boolean "visible", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pitch_deck_id", "position"], name: "index_pitch_deck_slides_on_pitch_deck_id_and_position"
+    t.index ["pitch_deck_id", "slide_type"], name: "index_pitch_deck_slides_on_pitch_deck_id_and_slide_type"
+    t.index ["pitch_deck_id"], name: "index_pitch_deck_slides_on_pitch_deck_id"
+  end
+
+  create_table "pitch_decks", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "company_name", null: false
+    t.string "tagline"
+    t.string "industry"
+    t.string "stage"
+    t.string "funding_ask"
+    t.string "status", default: "draft", null: false
+    t.string "template", default: "sequoia", null: false
+    t.string "color_scheme", default: "professional", null: false
+    t.jsonb "inputs", default: {}, null: false
+    t.text "error_message"
+    t.integer "credits_charged", default: 0
+    t.datetime "generated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "status"], name: "index_pitch_decks_on_user_id_and_status"
+    t.index ["user_id"], name: "index_pitch_decks_on_user_id"
+  end
+
   create_table "resume_sections", force: :cascade do |t|
     t.bigint "resume_id", null: false
     t.string "section_type", null: false
@@ -421,6 +456,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_04_171359) do
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
   add_foreign_key "payments", "users"
+  add_foreign_key "pitch_deck_slides", "pitch_decks"
+  add_foreign_key "pitch_decks", "users"
   add_foreign_key "resume_sections", "resumes"
   add_foreign_key "resumes", "users"
   add_foreign_key "scraped_jobs", "users"

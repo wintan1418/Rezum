@@ -1,0 +1,81 @@
+<%= turbo_stream_from "pitch_deck_#{@pitch_deck.id}" %>
+
+<div class="min-h-full">
+  <main class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <div class="flex items-center space-x-3">
+          <%= link_to pitch_decks_path, class: "text-gray-400 hover:text-gray-600" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          <% end %>
+          <h1 class="text-2xl font-bold text-gray-900"><%= @pitch_deck.company_name %></h1>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
+            <%= case @pitch_deck.status
+                when 'completed' then 'bg-green-100 text-green-800'
+                when 'generating' then 'bg-amber-100 text-amber-800'
+                when 'failed' then 'bg-red-100 text-red-800'
+                else 'bg-gray-100 text-gray-700'
+                end %>">
+            <%= @pitch_deck.status.capitalize %>
+          </span>
+        </div>
+        <% if @pitch_deck.tagline.present? %>
+          <p class="mt-1 text-sm text-gray-500"><%= @pitch_deck.tagline %></p>
+        <% end %>
+      </div>
+
+      <% if @pitch_deck.completed? %>
+        <div class="flex items-center space-x-3">
+          <%= link_to download_pitch_deck_path(@pitch_deck, format_type: "pptx"), class: "inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-sm" do %>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Download PPTX
+          <% end %>
+          <%= link_to "Delete", @pitch_deck, data: { turbo_method: :delete, turbo_confirm: "Delete this pitch deck?" }, class: "text-sm text-gray-400 hover:text-red-500 transition-colors" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Status area (for Turbo Stream updates) -->
+    <div id="pitch_deck_status">
+      <%= render "pitch_decks/status", pitch_deck: @pitch_deck, status: @pitch_deck.status %>
+    </div>
+
+    <!-- Slides -->
+    <% if @slides.any? %>
+      <div class="space-y-6" data-controller="slide-viewer">
+        <% @slides.each_with_index do |slide, index| %>
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" id="slide_<%= slide.slide_type %>">
+            <div class="flex items-center justify-between px-6 py-3 bg-gray-50 border-b border-gray-100">
+              <div class="flex items-center space-x-3">
+                <span class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold"><%= index + 1 %></span>
+                <h3 class="text-sm font-semibold text-gray-700"><%= slide.type_label %></h3>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= button_to regenerate_slide_pitch_deck_path(@pitch_deck, slide_type: slide.slide_type), method: :post, class: "text-xs text-gray-400 hover:text-purple-600 transition-colors", data: { turbo_confirm: "Regenerate this slide?" } do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+            <div class="p-6">
+              <%= render "pitch_decks/slides/#{slide.slide_type}", slide: slide %>
+            </div>
+            <% if slide.speaker_notes.present? %>
+              <div class="px-6 py-3 bg-amber-50 border-t border-amber-100">
+                <p class="text-xs text-amber-700"><span class="font-semibold">Speaker notes:</span> <%= slide.speaker_notes %></p>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+  </main>
+</div>

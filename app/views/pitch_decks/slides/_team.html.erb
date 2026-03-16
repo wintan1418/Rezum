@@ -1,0 +1,36 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["members"].is_a?(Array) %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+      <% slide.content["members"].each do |member| %>
+        <div class="flex items-start space-x-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+            <%= member["name"]&.first&.upcase %>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-gray-900"><%= member["name"] %></h4>
+            <p class="text-xs font-medium text-purple-600"><%= member["role"] %></p>
+            <p class="text-xs text-gray-500 mt-1"><%= member["bio"] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["advisors"].is_a?(Array) && slide.content["advisors"].any? %>
+    <div class="mt-4">
+      <h4 class="text-sm font-semibold text-gray-700 mb-2">Advisors</h4>
+      <div class="flex flex-wrap gap-2">
+        <% slide.content["advisors"].each do |advisor| %>
+          <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs bg-gray-100 text-gray-700">
+            <strong><%= advisor["name"] %></strong>&nbsp;— <%= advisor["expertise"] %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <% if slide.content["team_strength"].present? %>
+    <p class="text-sm font-semibold text-purple-700 bg-purple-50 p-3 rounded-xl mt-4"><%= slide.content["team_strength"] %></p>
+  <% end %>
+</div>

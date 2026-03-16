@@ -1,0 +1,27 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["trends"].is_a?(Array) %>
+    <div class="space-y-3 mt-4">
+      <% slide.content["trends"].each_with_index do |trend, i| %>
+        <div class="flex items-start space-x-3 bg-blue-50 rounded-xl p-4 border border-blue-100">
+          <span class="w-7 h-7 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center text-xs font-bold flex-shrink-0"><%= i + 1 %></span>
+          <div>
+            <h4 class="text-sm font-bold text-blue-900"><%= trend["trend"] %></h4>
+            <p class="text-xs text-blue-700 mt-0.5"><%= trend["detail"] %></p>
+            <% if trend["impact"].present? %>
+              <p class="text-xs text-blue-600 mt-1 font-medium">Impact: <%= trend["impact"] %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["catalyst"].present? %>
+    <div class="bg-amber-50 rounded-xl p-4 border border-amber-200 mt-4">
+      <h4 class="text-xs font-bold text-amber-700 uppercase mb-1">Key Catalyst</h4>
+      <p class="text-sm text-amber-900"><%= slide.content["catalyst"] %></p>
+    </div>
+  <% end %>
+</div>

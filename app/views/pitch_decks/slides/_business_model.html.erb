@@ -1,0 +1,42 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <% if slide.content["revenue_streams"].is_a?(Array) %>
+    <div class="space-y-2 mt-4">
+      <% slide.content["revenue_streams"].each do |stream| %>
+        <div class="flex items-center justify-between bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+          <div>
+            <h4 class="text-sm font-bold text-emerald-900"><%= stream["stream"] %></h4>
+            <p class="text-xs text-emerald-700"><%= stream["description"] %></p>
+          </div>
+          <span class="text-lg font-bold text-emerald-700"><%= stream["percentage"] %>%</span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["unit_economics"].is_a?(Hash) %>
+    <div class="grid grid-cols-4 gap-3 mt-4">
+      <% ue = slide.content["unit_economics"] %>
+      <div class="text-center bg-gray-50 rounded-xl p-3 border border-gray-200">
+        <p class="text-xs text-gray-500">CAC</p>
+        <p class="text-lg font-bold text-gray-900"><%= ue["cac"] %></p>
+      </div>
+      <div class="text-center bg-gray-50 rounded-xl p-3 border border-gray-200">
+        <p class="text-xs text-gray-500">LTV</p>
+        <p class="text-lg font-bold text-gray-900"><%= ue["ltv"] %></p>
+      </div>
+      <div class="text-center bg-green-50 rounded-xl p-3 border border-green-200">
+        <p class="text-xs text-green-600">LTV/CAC</p>
+        <p class="text-lg font-bold text-green-900"><%= ue["ltv_cac_ratio"] %></p>
+      </div>
+      <div class="text-center bg-gray-50 rounded-xl p-3 border border-gray-200">
+        <p class="text-xs text-gray-500">Payback</p>
+        <p class="text-lg font-bold text-gray-900"><%= ue["payback_months"] %> mo</p>
+      </div>
+    </div>
+  <% end %>
+  <% if slide.content["pricing_model"].present? %>
+    <p class="text-sm text-gray-600 mt-2"><strong>Pricing:</strong> <%= slide.content["pricing_model"] %></p>
+  <% end %>
+</div>

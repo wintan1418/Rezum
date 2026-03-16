@@ -19,6 +19,7 @@ class User < ApplicationRecord
   belongs_to :referred_by, class_name: "User", optional: true
   has_many :referrals, class_name: "User", foreign_key: "referred_by_id"
   has_many :resumes, dependent: :destroy
+  has_many :pitch_decks, dependent: :destroy
   has_many :cover_letters, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :payments, dependent: :destroy

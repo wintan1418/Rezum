@@ -1,0 +1,41 @@
+<div class="space-y-4">
+  <% if slide.content["amount"].present? %>
+    <div class="text-center py-4">
+      <p class="text-4xl font-bold text-purple-700"><%= slide.content["amount"] %></p>
+      <% if slide.content["description"].present? %>
+        <p class="text-gray-600 mt-2"><%= slide.content["description"] %></p>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["use_of_funds"].is_a?(Array) %>
+    <div class="space-y-2 mt-4">
+      <h4 class="text-sm font-semibold text-gray-700">Use of Funds</h4>
+      <% slide.content["use_of_funds"].each do |fund| %>
+        <div class="flex items-center space-x-3">
+          <div class="w-full bg-gray-100 rounded-full h-6 flex-1 overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full flex items-center px-3" style="width: <%= fund["percentage"] %>%">
+              <span class="text-xs font-bold text-white truncate"><%= fund["category"] %></span>
+            </div>
+          </div>
+          <span class="text-sm font-bold text-gray-700 w-12 text-right"><%= fund["percentage"] %>%</span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if slide.content["milestones"].is_a?(Array) %>
+    <div class="mt-4">
+      <h4 class="text-sm font-semibold text-gray-700 mb-2">Milestones This Funding Unlocks</h4>
+      <div class="space-y-2">
+        <% slide.content["milestones"].each do |m| %>
+          <div class="flex items-center space-x-3 bg-green-50 rounded-xl p-3 border border-green-100">
+            <span class="text-xs font-bold text-green-600 w-24 flex-shrink-0"><%= m["timeframe"] %></span>
+            <span class="text-sm text-green-900"><%= m["milestone"] %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <% if slide.content["runway"].present? %>
+    <p class="text-sm text-gray-600 mt-2 text-center"><strong>Runway:</strong> <%= slide.content["runway"] %></p>
+  <% end %>
+</div>

@@ -1,0 +1,33 @@
+<% case status %>
+<% when "generating" %>
+  <div class="mb-6 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-6 text-center">
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 mb-3">
+      <svg class="w-6 h-6 text-amber-600 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-amber-900">Generating your pitch deck...</h3>
+    <p class="text-sm text-amber-700 mt-1">Our AI is crafting 12 professional slides. This takes about 60 seconds.</p>
+    <div class="mt-4 h-2 bg-amber-100 rounded-full max-w-xs mx-auto overflow-hidden">
+      <div class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full animate-pulse" style="width: 60%"></div>
+    </div>
+  </div>
+<% when "failed" %>
+  <div class="mb-6 rounded-2xl bg-red-50 border border-red-200 p-6">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-red-900">Generation failed</h3>
+        <p class="text-sm text-red-700"><%= pitch_deck.error_message || "An unexpected error occurred." %></p>
+        <% if pitch_deck.credits_charged == 0 %>
+          <p class="text-xs text-red-600 mt-1">Your credits have been refunded.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

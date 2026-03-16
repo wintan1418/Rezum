@@ -1,0 +1,223 @@
+<div class="min-h-full">
+  <main class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Create Pitch Deck</h1>
+      <p class="mt-1 text-gray-500">Fill in your business details and our AI will generate a professional investor pitch deck.</p>
+    </div>
+
+    <!-- Credit Cost Banner -->
+    <% unless current_user.has_premium_subscription? %>
+      <div class="mb-6 rounded-xl bg-purple-50 border border-purple-200 p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-purple-900">This will cost <%= PitchDeck::CREDITS_COST %> credits</p>
+            <p class="text-xs text-purple-700">You have <%= current_user.credits_remaining %> credits remaining</p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @pitch_deck, url: pitch_decks_path, method: :post, data: { controller: "pitch-deck-wizard", action: "submit->pitch-deck-wizard#submit" } do |f| %>
+
+      <!-- Progress Bar -->
+      <div class="mb-8" data-pitch-deck-wizard-target="progress">
+        <div class="flex items-center justify-between mb-2">
+          <% ["Basics", "Problem & Solution", "Market & Model", "Traction & Team", "Financials & Ask"].each_with_index do |label, i| %>
+            <button type="button" data-action="click->pitch-deck-wizard#goToStep" data-step="<%= i %>"
+              class="flex items-center text-xs font-medium transition-colors
+                     <%= i == 0 ? 'text-purple-600' : 'text-gray-400' %>"
+              data-pitch-deck-wizard-target="stepLabel">
+              <span class="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-1.5 text-xs font-bold
+                    <%= i == 0 ? 'border-purple-600 bg-purple-600 text-white' : 'border-gray-300' %>"
+                    data-pitch-deck-wizard-target="stepDot"><%= i + 1 %></span>
+              <span class="hidden sm:inline"><%= label %></span>
+            </button>
+          <% end %>
+        </div>
+        <div class="h-1.5 bg-gray-100 rounded-full">
+          <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-300" style="width: 20%" data-pitch-deck-wizard-target="progressBar"></div>
+        </div>
+      </div>
+
+      <!-- Step 1: Basics -->
+      <div data-pitch-deck-wizard-target="step" data-step="0">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <h2 class="text-lg font-bold text-gray-900">Company Basics</h2>
+
+          <div>
+            <%= f.label :company_name, "Company Name *", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.text_field :company_name, required: true, class: "w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm", placeholder: "e.g. Acme Technologies" %>
+          </div>
+
+          <div>
+            <%= f.label :tagline, "Tagline", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.text_field :tagline, class: "w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm", placeholder: "e.g. Making data accessible for everyone" %>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <%= f.label :industry, "Industry", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.text_field :industry, class: "w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm", placeholder: "e.g. FinTech, HealthTech" %>
+            </div>
+            <div>
+              <%= f.label :stage, "Stage", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.select :stage, options_for_select([["Pre-Seed", "pre-seed"], ["Seed", "seed"], ["Series A", "series-a"], ["Series B", "series-b"], ["Growth", "growth"]], "seed"), { include_blank: "Select stage..." }, class: "w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <%= f.label :funding_ask, "Funding Amount", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.text_field :funding_ask, class: "w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm", placeholder: "e.g. $500K, ₦200M" %>
+            </div>
+            <div>
+              <%= f.label :template, "Template", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.select :template, options_for_select([["Sequoia (Comprehensive)", "sequoia"], ["Y Combinator (Concise)", "yc"], ["Kawasaki (10 Slides)", "kawasaki"]], "sequoia"), {}, class: "w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Problem & Solution -->
+      <div data-pitch-deck-wizard-target="step" data-step="1" class="hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <h2 class="text-lg font-bold text-gray-900">Problem & Solution</h2>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">What problem are you solving? *</label>
+            <textarea name="pitch_deck[problem_description]" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="Describe the pain point your target customers face. Be specific about who suffers and how badly."></textarea>
+            <p class="mt-1 text-xs text-gray-400">Tip: Lead with data. "40% of small businesses fail because..."</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">How does your product solve it? *</label>
+            <textarea name="pitch_deck[solution_description]" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="Explain your product and how it directly addresses the problem above."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Why is now the right time?</label>
+            <textarea name="pitch_deck[why_now]" rows="2" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="What recent trends, technologies, or changes make this the perfect moment?"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Market & Model -->
+      <div data-pitch-deck-wizard-target="step" data-step="2" class="hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <h2 class="text-lg font-bold text-gray-900">Market & Business Model</h2>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Target Market</label>
+            <textarea name="pitch_deck[target_market]" rows="2" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="Who are your ideal customers? SMBs, enterprises, consumers?"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Market Size Estimate</label>
+            <input type="text" name="pitch_deck[market_size_estimate]" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="e.g. $10B globally, 500K businesses in Nigeria">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Revenue Model</label>
+            <textarea name="pitch_deck[revenue_model]" rows="2" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="How do you make money? Subscriptions, transactions, licensing, etc."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Pricing</label>
+            <input type="text" name="pitch_deck[pricing]" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="e.g. $29/mo for Pro, $99/mo for Enterprise">
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Traction & Team -->
+      <div data-pitch-deck-wizard-target="step" data-step="3" class="hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <h2 class="text-lg font-bold text-gray-900">Traction & Team</h2>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Current Traction</label>
+            <textarea name="pitch_deck[traction]" rows="3" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="Users, revenue, growth rate, partnerships, LOIs, waitlist size, press coverage..."></textarea>
+            <p class="mt-1 text-xs text-gray-400">Pre-revenue? Focus on user growth, waitlist, partnerships, or LOIs.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Key Metrics</label>
+            <input type="text" name="pitch_deck[key_metrics]" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="e.g. 5K users, $10K MRR, 25% MoM growth, 90% retention">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Key Milestones</label>
+            <textarea name="pitch_deck[milestones]" rows="2" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="Major achievements: product launch, first 1000 users, revenue milestone, key hire..."></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Team Members</label>
+            <textarea name="pitch_deck[team_members]" rows="3" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="List founders and key team members with roles and relevant experience.&#10;e.g. John Doe (CEO) - 10yr fintech, ex-Goldman Sachs"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Competitors</label>
+              <textarea name="pitch_deck[competitors]" rows="2" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="Name your top 3-4 competitors"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Your Differentiators</label>
+              <textarea name="pitch_deck[differentiators]" rows="2" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="What makes you different/better?"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Financials & Ask -->
+      <div data-pitch-deck-wizard-target="step" data-step="4" class="hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+          <h2 class="text-lg font-bold text-gray-900">Financials & The Ask</h2>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Current Revenue</label>
+              <input type="text" name="pitch_deck[current_revenue]" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="e.g. $5K MRR, pre-revenue">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Projected Revenue (3yr)</label>
+              <input type="text" name="pitch_deck[projected_revenue]" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="e.g. $2M ARR by Year 3">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">How will you use the funds?</label>
+            <textarea name="pitch_deck[use_of_funds]" rows="3" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm" placeholder="e.g. 40% Engineering, 30% Sales & Marketing, 20% Operations, 10% Legal/Compliance"></textarea>
+          </div>
+
+          <!-- Summary -->
+          <div class="mt-6 p-4 bg-purple-50 rounded-xl border border-purple-200">
+            <h3 class="text-sm font-bold text-purple-900 mb-2">Ready to generate?</h3>
+            <p class="text-xs text-purple-700">Our AI will create a professional 12-slide investor pitch deck based on your inputs. Generation takes about 60 seconds.</p>
+            <% unless current_user.has_premium_subscription? %>
+              <p class="text-xs text-purple-700 mt-1 font-semibold"><%= PitchDeck::CREDITS_COST %> credits will be deducted from your account.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex items-center justify-between mt-6">
+        <button type="button" data-action="click->pitch-deck-wizard#prevStep" data-pitch-deck-wizard-target="prevBtn" class="hidden px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+          Back
+        </button>
+        <div></div>
+        <div class="flex items-center space-x-3">
+          <button type="button" data-action="click->pitch-deck-wizard#nextStep" data-pitch-deck-wizard-target="nextBtn" class="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl shadow-sm transition-all">
+            Next
+          </button>
+          <%= f.submit "Generate Pitch Deck", data: { pitch_deck_wizard_target: "submitBtn" }, class: "hidden px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl shadow-sm transition-all cursor-pointer" %>
+        </div>
+      </div>
+
+    <% end %>
+  </main>
+</div>

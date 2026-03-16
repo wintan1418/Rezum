@@ -1,0 +1,20 @@
+<div class="space-y-4">
+  <% if slide.content["description"].present? %>
+    <p class="text-gray-700"><%= slide.content["description"] %></p>
+  <% end %>
+  <div class="grid grid-cols-3 gap-4 mt-4">
+    <% [["tam", "TAM", "purple"], ["sam", "SAM", "blue"], ["som", "SOM", "green"]].each do |key, label, color| %>
+      <% data = slide.content[key] %>
+      <% if data.is_a?(Hash) %>
+        <div class="bg-<%= color %>-50 rounded-xl p-4 border border-<%= color %>-100 text-center">
+          <p class="text-xs font-bold text-<%= color %>-600 uppercase"><%= label %></p>
+          <p class="text-2xl font-bold text-<%= color %>-900 mt-1"><%= data["value"] %></p>
+          <p class="text-xs text-<%= color %>-700 mt-1"><%= data["description"] %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <% if slide.content["growth_rate"].present? %>
+    <p class="text-sm text-gray-600 mt-2"><strong>Market Growth:</strong> <%= slide.content["growth_rate"] %></p>
+  <% end %>
+</div>
