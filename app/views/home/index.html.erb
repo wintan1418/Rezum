@@ -434,6 +434,124 @@
 
 
   <!-- ============================================ -->
+  <!-- WHY NOT JUST USE CHATGPT?                    -->
+  <!-- ============================================ -->
+  <section class="py-20 sm:py-28 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">The Real Question</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">"Can't I just use ChatGPT for this?"</h2>
+        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">You could. But here's what that actually looks like.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <!-- ChatGPT Way -->
+        <div class="bg-gray-50 rounded-2xl border-2 border-gray-200 p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-gray-200 flex items-center justify-center">
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">The ChatGPT Way</h3>
+              <p class="text-xs text-gray-500">Manual, fragmented, time-consuming</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <% [
+              ["Write a detailed prompt", "15 min crafting the right instructions"],
+              ["Copy-paste your resume", "Format gets destroyed in the process"],
+              ["Copy-paste the job description", "Hope ChatGPT understands the context"],
+              ["Ask for keyword analysis", "Separate prompt, separate conversation"],
+              ["Ask for a cover letter", "Another prompt, more copy-pasting"],
+              ["Format everything yourself", "Back to Word/Docs to rebuild layout"],
+              ["No ATS score", "You have zero idea if it'll pass screening"],
+              ["Repeat for every job", "Start from scratch each time"],
+            ].each do |step, detail| %>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-medium text-gray-700"><%= step %></p>
+                  <p class="text-xs text-gray-500"><%= detail %></p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="mt-6 pt-5 border-t border-gray-200 flex items-center justify-between">
+            <span class="text-sm text-gray-500">Total time per application</span>
+            <span class="text-lg font-bold text-red-600">45+ minutes</span>
+          </div>
+        </div>
+
+        <!-- RezumFit Way -->
+        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-8 relative">
+          <div class="absolute -top-3 right-6">
+            <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Recommended</span>
+          </div>
+
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">The RezumFit Way</h3>
+              <p class="text-xs text-blue-600 font-medium">Automated, instant, professional</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <% [
+              ["Upload your resume", "PDF, DOCX, or paste text — we parse it"],
+              ["Paste the job description", "AI extracts every keyword automatically"],
+              ["Get your ATS score instantly", "See exactly where you stand: 34% → 89%"],
+              ["One-click optimization", "AI rewrites for maximum ATS compatibility"],
+              ["Cover letter included", "Tailored to the job, ready to send"],
+              ["Download DOCX & PDF", "Professional formatting preserved"],
+              ["AI Pitch Deck generator", "12 investor slides in 60 seconds"],
+              ["Track all applications", "Dashboard with status, follow-ups, scores"],
+            ].each do |step, detail| %>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-medium text-gray-900"><%= step %></p>
+                  <p class="text-xs text-gray-600"><%= detail %></p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="mt-6 pt-5 border-t border-blue-200 flex items-center justify-between">
+            <span class="text-sm text-gray-600">Total time per application</span>
+            <span class="text-lg font-bold text-green-600">Under 30 seconds</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom line -->
+      <div class="text-center mt-12">
+        <p class="text-gray-600 max-w-2xl mx-auto mb-6">
+          ChatGPT is a blank canvas — you write the prompts, format the output, and manage everything manually.
+          <span class="font-semibold text-gray-900">RezumFit is the finished product.</span>
+        </p>
+        <%= link_to new_user_registration_path, class: "inline-flex items-center px-7 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all" do %>
+          Try It Free — No Prompt Engineering Required
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================ -->
   <!-- MID-PAGE CTA                                 -->
   <!-- ============================================ -->
   <section class="py-14 sm:py-16 bg-gradient-to-r from-blue-50 via-purple-50 to-blue-50 border-y border-blue-100/50" data-controller="scroll-reveal">
