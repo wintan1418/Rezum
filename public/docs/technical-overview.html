@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RezumFit — Technical Overview</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; color: #1f2937; line-height: 1.6; padding: 48px; max-width: 900px; margin: 0 auto; }
+    @media print { body { padding: 24px; } }
+
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 16px; }
+    .logo-text { font-size: 22px; font-weight: 800; }
+    .doc-type { font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; }
+    .doc-date { font-size: 12px; color: #9ca3af; }
+
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { font-size: 16px; color: #6b7280; margin-bottom: 36px; }
+    h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; margin-top: 32px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
+
+    .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .arch-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+    .arch-card h3 { font-size: 14px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+    .arch-card .tech { font-size: 12px; font-weight: 600; color: #3b82f6; margin-bottom: 6px; }
+    .arch-card p { font-size: 12px; color: #6b7280; }
+
+    .stack-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .stack-table th { text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+    .stack-table td { padding: 10px 16px; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+    .stack-table tr:last-child td { border-bottom: none; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-purple { background: #f3e8ff; color: #6b21a8; }
+    .badge-green { background: #dcfce7; color: #166534; }
+
+    .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .flow-step { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: #4b5563; }
+    .flow-arrow { color: #d1d5db; font-size: 18px; }
+
+    .highlight-box { background: linear-gradient(135deg, #eff6ff, #f5f3ff); border: 1px solid #ddd6fe; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .highlight-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .highlight-box p, .highlight-box li { font-size: 13px; color: #4b5563; }
+    .highlight-box ul { margin-left: 16px; margin-top: 8px; }
+    .highlight-box li { margin-bottom: 4px; }
+
+    .security-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .sec-item { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; text-align: center; }
+    .sec-item .icon { font-size: 20px; margin-bottom: 6px; }
+    .sec-item .label { font-size: 12px; font-weight: 600; color: #166534; }
+    .sec-item .desc { font-size: 10px; color: #4ade80; margin-top: 2px; }
+
+    .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">R</div>
+      <span class="logo-text">RezumFit</span>
+    </div>
+    <div style="text-align: right;">
+      <div class="doc-type">Technical Overview</div>
+      <div class="doc-date">March 2026 — Confidential</div>
+    </div>
+  </div>
+
+  <h1>Technical Overview</h1>
+  <p class="subtitle">Production-grade AI platform built for reliability, scalability, and developer velocity.</p>
+
+  <!-- Architecture -->
+  <h2>System Architecture</h2>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h3>Web Application</h3>
+      <div class="tech">Ruby on Rails 7.2 + Hotwire</div>
+      <p>Server-rendered views with Turbo Streams for real-time updates. Stimulus controllers for interactive UI. No SPA complexity — fast page loads, great SEO.</p>
+    </div>
+    <div class="arch-card">
+      <h3>AI Orchestration Layer</h3>
+      <div class="tech">Multi-Provider LLM Integration</div>
+      <p>Unified interface to OpenAI GPT-4o, Anthropic Claude 3.5 Sonnet, and Google Gemini. Automatic model selection per task. Streaming responses via Turbo.</p>
+    </div>
+    <div class="arch-card">
+      <h3>Background Processing</h3>
+      <div class="tech">Sidekiq + Redis</div>
+      <p>AI generation, document parsing, email campaigns, and PPTX exports run asynchronously. Job retries, dead letter queue, and cron scheduling built in.</p>
+    </div>
+    <div class="arch-card">
+      <h3>Document Engine</h3>
+      <div class="tech">Rubyzip XML Generation</div>
+      <p>DOCX and PPTX generation via direct Open XML manipulation. No external dependencies. Professional formatting preserved across all exports.</p>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <h2>Technology Stack</h2>
+  <table class="stack-table">
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Technology</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-blue">Backend</span></td>
+        <td><strong>Ruby on Rails 7.2</strong></td>
+        <td>Full-stack web framework, API, and business logic</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">Frontend</span></td>
+        <td><strong>Hotwire (Turbo + Stimulus)</strong></td>
+        <td>Real-time streaming UI without JavaScript framework overhead</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">Styling</span></td>
+        <td><strong>Tailwind CSS v4</strong></td>
+        <td>Utility-first CSS, responsive design, dark mode support</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">AI</span></td>
+        <td><strong>OpenAI GPT-4o</strong></td>
+        <td>Primary model for resume optimization, cover letters, pitch decks</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">AI</span></td>
+        <td><strong>Anthropic Claude 3.5 Sonnet</strong></td>
+        <td>Long-context tasks, nuanced writing, interview prep</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">AI</span></td>
+        <td><strong>Google Gemini</strong></td>
+        <td>Cost-efficient tasks, summarization, keyword extraction</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Database</span></td>
+        <td><strong>PostgreSQL</strong></td>
+        <td>Primary data store with JSONB for flexible AI outputs</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Cache/Queue</span></td>
+        <td><strong>Redis + Sidekiq</strong></td>
+        <td>Background jobs, caching, rate limiting, session store</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Payments</span></td>
+        <td><strong>Paystack</strong></td>
+        <td>Payment processing (NGN + international cards), subscriptions, webhooks</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Auth</span></td>
+        <td><strong>Devise + Google OAuth 2.0</strong></td>
+        <td>Email/password + social sign-in, confirmable, recoverable</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Hosting</span></td>
+        <td><strong>Hatchbox (Hetzner Cloud)</strong></td>
+        <td>Managed Rails deployment, auto SSL, zero-downtime deploys</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- AI Pipeline -->
+  <h2>AI Processing Pipeline</h2>
+  <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">How a resume goes from upload to optimized output:</p>
+
+  <div class="flow">
+    <div class="flow-step">Upload PDF/DOCX</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step">Parse & Extract Text</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step">Keyword Analysis</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step">AI Optimization</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step">ATS Scoring</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-step">DOCX/PDF Export</div>
+  </div>
+
+  <div class="highlight-box">
+    <h3>AI Model Selection Strategy</h3>
+    <p>Different tasks route to different AI providers for optimal quality and cost:</p>
+    <ul>
+      <li><strong>GPT-4o:</strong> Resume rewriting, pitch deck generation, complex content (highest quality)</li>
+      <li><strong>Claude 3.5 Sonnet:</strong> Cover letters, interview prep, long-form analysis (best for nuance)</li>
+      <li><strong>Gemini:</strong> Keyword extraction, ATS scoring, summarization (cost-efficient at scale)</li>
+    </ul>
+    <p style="margin-top: 8px;">Average AI cost per optimization: <strong>$0.02 — $0.08</strong>. At current pricing, gross margin is <strong>85%+</strong>.</p>
+  </div>
+
+  <!-- Security -->
+  <h2>Security & Compliance</h2>
+  <div class="security-grid">
+    <div class="sec-item">
+      <div class="icon">🔒</div>
+      <div class="label">SSL/TLS Everywhere</div>
+      <div class="desc">Auto-provisioned via Let's Encrypt</div>
+    </div>
+    <div class="sec-item">
+      <div class="icon">🛡️</div>
+      <div class="label">Data Encryption</div>
+      <div class="desc">At rest (AES-256) + in transit</div>
+    </div>
+    <div class="sec-item">
+      <div class="icon">🔑</div>
+      <div class="label">Credentials Vault</div>
+      <div class="desc">Rails encrypted credentials</div>
+    </div>
+    <div class="sec-item">
+      <div class="icon">🧹</div>
+      <div class="label">Data Deletion</div>
+      <div class="desc">Users can delete all data anytime</div>
+    </div>
+    <div class="sec-item">
+      <div class="icon">🔐</div>
+      <div class="label">CSRF + XSS Protection</div>
+      <div class="desc">Rails built-in security headers</div>
+    </div>
+    <div class="sec-item">
+      <div class="icon">📋</div>
+      <div class="label">Webhook Verification</div>
+      <div class="desc">HMAC-SHA512 for all payment events</div>
+    </div>
+  </div>
+
+  <!-- Scalability -->
+  <h2>Scalability & Performance</h2>
+  <div class="highlight-box">
+    <h3>Current Architecture Supports:</h3>
+    <ul>
+      <li><strong>10,000+ concurrent users</strong> — Puma multi-threaded server, database connection pooling</li>
+      <li><strong>100,000+ AI requests/month</strong> — Sidekiq background jobs prevent request blocking</li>
+      <li><strong>Sub-second page loads</strong> — Server-rendered HTML, no client-side framework overhead</li>
+      <li><strong>Horizontal scaling</strong> — Stateless application servers, can add workers on demand</li>
+      <li><strong>99.9% uptime target</strong> — Health checks, auto-restart, zero-downtime deploys</li>
+    </ul>
+    <p style="margin-top: 12px;">Infrastructure cost at current scale: <strong>~$20/month</strong> (Hetzner Cloud). Scales to 50K users at ~$150/month.</p>
+  </div>
+
+  <!-- Deployment -->
+  <h2>Deployment & DevOps</h2>
+  <table class="stack-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Tool</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Hosting</td>
+        <td>Hetzner Cloud (Finland)</td>
+        <td>EU-compliant, low-latency to Africa/Europe</td>
+      </tr>
+      <tr>
+        <td>Deployment</td>
+        <td>Hatchbox</td>
+        <td>Git push → auto build → zero-downtime deploy</td>
+      </tr>
+      <tr>
+        <td>CI/CD</td>
+        <td>GitHub Actions</td>
+        <td>Automated tests, Rubocop lint, Brakeman security scan</td>
+      </tr>
+      <tr>
+        <td>Monitoring</td>
+        <td>Rails logs + Sidekiq Web</td>
+        <td>Background job monitoring, error tracking</td>
+      </tr>
+      <tr>
+        <td>Analytics</td>
+        <td>Ahoy (self-hosted)</td>
+        <td>Privacy-friendly user analytics, no third-party tracking</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>RezumFit &copy; 2026 — Confidential</span>
+    <span>rezumfit.com | wintan1418@gmail.com</span>
+  </div>
+</body>
+</html>

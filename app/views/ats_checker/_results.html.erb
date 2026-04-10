@@ -91,23 +91,50 @@
 
   <!-- CTA -->
   <div class="border-t border-gray-100 pt-6 mt-6">
-    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-5 text-center">
-      <h4 class="text-base font-semibold text-gray-900 mb-1">Want to boost your score to 80+?</h4>
+    <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-center text-white">
+      <% issue_count = results[:issues]&.length || 0 %>
+      <% improvement_count = results[:improvements]&.length || 0 %>
 
-      <% if user_signed_in? %>
-        <p class="text-sm text-gray-600 mb-4">Upload this resume and let our AI optimize it for any job posting.</p>
-        <%= link_to new_resume_path, class: "inline-flex items-center px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-md hover:shadow-lg transition-all" do %>
-          Optimize My Resume
-          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-        <% end %>
+      <% if results[:overall_score] < 75 %>
+        <p class="text-3xl font-extrabold mb-2"><%= issue_count + improvement_count %> issues found</p>
+        <p class="text-blue-100 mb-5">Our AI can fix all of them with one click — and boost your score above 80%.</p>
       <% else %>
-        <p class="text-sm text-gray-600 mb-4">Create a free account and let our AI optimize your resume for any job posting.</p>
-        <%= link_to new_user_registration_path, class: "inline-flex items-center px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-md hover:shadow-lg transition-all" do %>
-          Sign Up Free &mdash; Optimize Now
-          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        <p class="text-xl font-bold mb-2">Good score! Let's make it even better.</p>
+        <p class="text-blue-100 mb-5">Optimize for a specific job posting and hit 95%+ ATS compatibility.</p>
+      <% end %>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+        <% if user_signed_in? %>
+          <%= link_to new_resume_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
+            Fix My Resume Now
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          <% end %>
+        <% else %>
+          <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
+            Fix All Issues — Free Account
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          <% end %>
         <% end %>
-        <p class="mt-2 text-xs text-gray-500">
-          Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-blue-600 hover:underline font-medium" %>
+      </div>
+
+      <div class="flex items-center justify-center gap-4 text-xs text-blue-200">
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          2 free credits
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          No credit card
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          30 seconds
+        </span>
+      </div>
+
+      <% unless user_signed_in? %>
+        <p class="mt-3 text-xs text-blue-200">
+          Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-white underline font-medium" %>
         </p>
       <% end %>
     </div>
