@@ -1,5 +1,12 @@
 <div class="min-h-full">
   <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Upsell -->
+    <% unless current_user.has_active_subscription? %>
+      <% if current_user.credits_remaining == 0 %>
+        <%= render "shared/upsell_banner", heading: "Out of credits!", message: "Purchase credits or upgrade to Pro for unlimited resume optimizations and cover letters." %>
+      <% end %>
+    <% end %>
+
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
       <div>

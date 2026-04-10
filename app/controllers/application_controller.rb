@@ -31,13 +31,39 @@ class ApplicationController < ActionController::Base
   def require_premium!
     return if current_user.has_premium_subscription?
 
-    redirect_to new_subscription_path, alert: "This feature is available for Premium subscribers only."
+    render_feature_locked(
+      title: "Premium Feature",
+      description: "This feature is available exclusively for Premium subscribers. Upgrade to unlock it and supercharge your job search.",
+      benefits: [
+        "AI Interview Prep with STAR-method answers",
+        "LinkedIn Profile Optimization",
+        "Automated Job Scraper",
+        "Unlimited AI Pitch Decks",
+        "Priority AI models (GPT-4, Claude)",
+        "Everything in Pro, plus early access to new features"
+      ]
+    )
   end
 
   def require_paid_subscription!
     return if current_user.has_active_subscription?
 
-    redirect_to new_subscription_path, alert: "This feature requires an active subscription."
+    render_feature_locked(
+      title: "Pro Feature",
+      description: "Upgrade to Pro to unlock unlimited resume optimizations, cover letters, and powerful career tools.",
+      benefits: [
+        "Unlimited resume optimizations",
+        "Unlimited AI cover letters",
+        "Job Application Tracker",
+        "5 professional templates",
+        "Priority support",
+        "AI Pitch Decks (30 credits each)"
+      ]
+    )
+  end
+
+  def render_feature_locked(title:, description:, benefits: [])
+    render partial: "shared/feature_locked", locals: { title: title, description: description, benefits: benefits }, layout: "application" and return
   end
 
   def configure_permitted_parameters

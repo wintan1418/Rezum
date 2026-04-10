@@ -1,0 +1,51 @@
+<div class="min-h-full">
+  <main class="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+    <div class="text-center">
+      <!-- Lock Icon -->
+      <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+      </div>
+
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-3"><%= local_assigns[:title] || "Premium Feature" %></h1>
+      <p class="text-gray-600 max-w-lg mx-auto mb-8"><%= local_assigns[:description] || "Upgrade your plan to unlock this feature." %></p>
+
+      <!-- What You Get -->
+      <% if local_assigns[:benefits] %>
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-8 text-left max-w-md mx-auto">
+          <h3 class="text-sm font-semibold text-gray-900 mb-4">What you'll unlock:</h3>
+          <div class="space-y-3">
+            <% benefits.each do |benefit| %>
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-sm text-gray-700"><%= benefit %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Pricing CTA -->
+      <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-8 max-w-md mx-auto text-white">
+        <p class="text-lg font-bold mb-2">Unlock with Premium</p>
+        <p class="text-blue-100 text-sm mb-5">Get unlimited access to all features including this one.</p>
+        <div class="flex flex-col gap-3">
+          <%= link_to new_subscription_path, class: "block w-full px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all text-center" do %>
+            View Plans & Upgrade
+          <% end %>
+          <% if !current_user.has_active_subscription? && current_user.credits_remaining > 0 %>
+            <p class="text-xs text-blue-200 text-center">You have <%= current_user.credits_remaining %> credits remaining</p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Back -->
+      <p class="mt-6">
+        <%= link_to "Back to Dashboard", dashboard_path, class: "text-sm text-gray-500 hover:text-gray-700 transition-colors" %>
+      </p>
+    </div>
+  </main>
+</div>
