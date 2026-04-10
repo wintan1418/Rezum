@@ -75,12 +75,6 @@ class ScrapedJobsController < ApplicationController
 
   private
 
-  def require_premium!
-    unless current_user.has_premium_subscription?
-      redirect_to new_subscription_path, alert: "Job scraping is available for Premium subscribers only. Please upgrade your plan."
-    end
-  end
-
   def set_scraped_job
     @scraped_job = current_user.scraped_jobs.find(params[:id])
   end
