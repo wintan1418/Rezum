@@ -35,6 +35,11 @@ Rails.application.routes.draw do
         patch :toggle_publish
       end
     end
+    resources :leads, only: [ :index, :destroy ] do
+      collection do
+        get :export
+      end
+    end
     resources :hire_messages, only: [ :index, :show, :destroy ]
     resources :marketing, only: [ :index ] do
       collection do
