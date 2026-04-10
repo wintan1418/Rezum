@@ -107,28 +107,27 @@ class BillingController < ApplicationController
 
   def pricing_for_user(user)
     if ngn_user?(user)
-      # Nigerian pricing in NGN
       {
         currency: "NGN",
         symbol: "\u20A6",
         tiers: [
-          { credits: 10,  amount_kobo: 5_000_00,  display: "5,000",  per_credit: "500" },
-          { credits: 50,  amount_kobo: 20_000_00, display: "20,000", per_credit: "400" },
-          { credits: 100, amount_kobo: 35_000_00, display: "35,000", per_credit: "350" }
+          { credits: 5,   amount_kobo: 1_500_00,  display: "1,500",  per_credit: "300", label: "Starter", badge: "Try It" },
+          { credits: 10,  amount_kobo: 5_000_00,  display: "5,000",  per_credit: "500", label: "Standard" },
+          { credits: 50,  amount_kobo: 20_000_00, display: "20,000", per_credit: "400", label: "Pro Pack", badge: "Most Popular" },
+          { credits: 100, amount_kobo: 35_000_00, display: "35,000", per_credit: "350", label: "Mega Pack", badge: "Best Value" }
         ],
         per_credit_kobo: 500_00
       }
     else
-      # International pricing — displayed in USD, charged in NGN via Paystack
-      # 10% markup over Nigerian prices, displayed as ₦/1000 in USD
       {
         currency: "NGN",
         symbol: "$",
         display_currency: "USD",
         tiers: [
-          { credits: 10,  amount_kobo: 5_500_00,  display: "5",   per_credit: "0.50" },
-          { credits: 50,  amount_kobo: 22_000_00, display: "20",  per_credit: "0.40" },
-          { credits: 100, amount_kobo: 38_500_00, display: "35",  per_credit: "0.35" }
+          { credits: 5,   amount_kobo: 1_650_00,  display: "3",   per_credit: "0.60", label: "Starter", badge: "Try It" },
+          { credits: 10,  amount_kobo: 5_500_00,  display: "5",   per_credit: "0.50", label: "Standard" },
+          { credits: 50,  amount_kobo: 22_000_00, display: "20",  per_credit: "0.40", label: "Pro Pack", badge: "Most Popular" },
+          { credits: 100, amount_kobo: 38_500_00, display: "35",  per_credit: "0.35", label: "Mega Pack", badge: "Best Value" }
         ],
         per_credit_kobo: 550_00
       }

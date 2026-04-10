@@ -83,48 +83,27 @@
             <div class="p-6">
               <% tiers = @pricing[:tiers] %>
               <% sym = @pricing[:symbol] %>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <%# Tier 1 — Starter %>
-                <div class="border border-gray-200 rounded-xl p-5 hover:border-blue-300 transition-colors text-center">
-                  <p class="text-2xl font-bold text-gray-900"><%= tiers[0][:credits] %></p>
-                  <p class="text-sm text-gray-500 mb-1">Credits</p>
-                  <p class="text-lg font-semibold text-blue-600"><%= sym %><%= tiers[0][:display] %></p>
-                  <p class="text-xs text-gray-400 mb-4"><%= sym %><%= tiers[0][:per_credit] %> per credit</p>
-                  <%= form_with url: purchase_credits_billing_index_path, method: :post, local: true, data: { turbo: false } do |f| %>
-                    <%= hidden_field_tag :credits, tiers[0][:credits] %>
-                    <%= f.submit "Purchase", class: "w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer" %>
-                  <% end %>
-                </div>
-
-                <%# Tier 2 — Most Popular %>
-                <div class="border-2 border-green-300 rounded-xl p-5 relative bg-green-50 text-center">
-                  <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                    <span class="px-2.5 py-0.5 text-xs font-bold bg-green-600 text-white rounded-full">Most Popular</span>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <% tiers.each do |tier| %>
+                  <% has_badge = tier[:badge].present? %>
+                  <% is_popular = tier[:badge] == "Most Popular" %>
+                  <div class="<%= is_popular ? 'border-2 border-blue-300 bg-blue-50/50' : 'border border-gray-200 hover:border-blue-300' %> rounded-2xl p-5 text-center relative transition-all hover:shadow-md">
+                    <% if has_badge %>
+                      <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                        <span class="px-2.5 py-0.5 text-xs font-bold text-white rounded-full shadow-sm <%= is_popular ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gray-700' %>"><%= tier[:badge] %></span>
+                      </div>
+                    <% end %>
+                    <p class="text-sm font-semibold text-gray-500 mb-1 mt-1"><%= tier[:label] || "#{tier[:credits]} Pack" %></p>
+                    <p class="text-3xl font-extrabold text-gray-900"><%= tier[:credits] %></p>
+                    <p class="text-xs text-gray-500 mb-1">credits</p>
+                    <p class="text-lg font-bold text-blue-600 mb-1"><%= sym %><%= tier[:display] %></p>
+                    <p class="text-xs text-gray-500 mb-4"><%= sym %><%= tier[:per_credit] %>/credit</p>
+                    <%= form_with url: purchase_credits_billing_index_path, method: :post, local: true, data: { turbo: false } do |f| %>
+                      <%= hidden_field_tag :credits, tier[:credits] %>
+                      <%= f.submit "Buy Now", class: "w-full px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer" %>
+                    <% end %>
                   </div>
-                  <p class="text-2xl font-bold text-gray-900"><%= tiers[1][:credits] %></p>
-                  <p class="text-sm text-gray-500 mb-1">Credits</p>
-                  <p class="text-lg font-semibold text-green-600"><%= sym %><%= tiers[1][:display] %></p>
-                  <p class="text-xs text-gray-400 mb-4"><%= sym %><%= tiers[1][:per_credit] %> per credit</p>
-                  <%= form_with url: purchase_credits_billing_index_path, method: :post, local: true, data: { turbo: false } do |f| %>
-                    <%= hidden_field_tag :credits, tiers[1][:credits] %>
-                    <%= f.submit "Purchase", class: "w-full px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors cursor-pointer" %>
-                  <% end %>
-                </div>
-
-                <%# Tier 3 — Best Savings %>
-                <div class="border border-gray-200 rounded-xl p-5 hover:border-purple-300 transition-colors text-center relative">
-                  <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                    <span class="px-2.5 py-0.5 text-xs font-bold bg-purple-600 text-white rounded-full">Best Savings</span>
-                  </div>
-                  <p class="text-2xl font-bold text-gray-900"><%= tiers[2][:credits] %></p>
-                  <p class="text-sm text-gray-500 mb-1">Credits</p>
-                  <p class="text-lg font-semibold text-purple-600"><%= sym %><%= tiers[2][:display] %></p>
-                  <p class="text-xs text-gray-400 mb-4"><%= sym %><%= tiers[2][:per_credit] %> per credit</p>
-                  <%= form_with url: purchase_credits_billing_index_path, method: :post, local: true, data: { turbo: false } do |f| %>
-                    <%= hidden_field_tag :credits, tiers[2][:credits] %>
-                    <%= f.submit "Purchase", class: "w-full px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors cursor-pointer" %>
-                  <% end %>
-                </div>
+                <% end %>
               </div>
 
               <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">

@@ -402,6 +402,65 @@
               <% end %>
             </div>
           </div>
+
+          <!-- Post-Optimization Upsell: Next Steps -->
+          <% if @resume.optimized? %>
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border border-blue-100 p-6">
+              <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Your Next Steps</h3>
+              <div class="space-y-3">
+                <!-- Cover Letter -->
+                <%= link_to new_resume_cover_letter_path(@resume), class: "flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all group" do %>
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Write a Cover Letter</p>
+                    <p class="text-xs text-gray-500">AI-tailored to match this resume and job posting</p>
+                  </div>
+                  <svg class="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <% end %>
+
+                <!-- Interview Prep -->
+                <%= link_to interview_preps_path, class: "flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all group" do %>
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Prepare for the Interview</p>
+                    <p class="text-xs text-gray-500">STAR-method answers for your target role</p>
+                  </div>
+                  <% unless current_user.has_premium_subscription? %>
+                    <span class="text-[10px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded-full shrink-0">PREMIUM</span>
+                  <% end %>
+                  <svg class="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <% end %>
+
+                <!-- Pitch Deck -->
+                <%= link_to pitch_decks_path, class: "flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all group" do %>
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Create a Pitch Deck</p>
+                    <p class="text-xs text-gray-500">12-slide investor deck in 60 seconds</p>
+                  </div>
+                  <svg class="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <% end %>
+
+                <!-- Track Application -->
+                <%= link_to new_job_application_path, class: "flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all group" do %>
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Track This Application</p>
+                    <p class="text-xs text-gray-500">Add to your job tracker with reminders</p>
+                  </div>
+                  <svg class="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </main>
