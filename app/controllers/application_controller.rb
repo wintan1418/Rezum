@@ -63,7 +63,9 @@ class ApplicationController < ActionController::Base
   end
 
   def render_feature_locked(title:, description:, benefits: [])
-    render partial: "shared/feature_locked", locals: { title: title, description: description, benefits: benefits }, layout: "application" and return
+    render inline: "<%= render 'shared/feature_locked', title: title, description: description, benefits: benefits %>",
+           locals: { title: title, description: description, benefits: benefits },
+           layout: "application" and return
   end
 
   def configure_permitted_parameters
