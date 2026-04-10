@@ -170,6 +170,7 @@ Rails.application.routes.draw do
   # Free ATS Score Checker (public lead magnet)
   get "ats-checker", to: "ats_checker#show", as: :ats_checker
   post "ats-checker", to: "ats_checker#check", as: :ats_checker_check
+  post "ats-checker/capture-email", to: "ats_checker#capture_email"
 
   # Blog (public)
   resources :articles, only: [ :index, :show ], path: "blog"

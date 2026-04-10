@@ -1,4 +1,4 @@
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fade-up" data-controller="score-gauge">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fade-up" data-controller="score-gauge email-gate">
 
   <!-- Score Gauge -->
   <div class="text-center mb-8">
@@ -29,7 +29,7 @@
     <% end %>
   </div>
 
-  <!-- Sub-scores -->
+  <!-- Sub-scores (always visible) -->
   <div class="grid grid-cols-2 gap-4 mb-6">
     <div class="bg-gray-50 rounded-xl p-4 text-center">
       <p class="text-2xl font-bold text-gray-900"><%= results[:format_score] %></p>
@@ -41,27 +41,12 @@
     </div>
   </div>
 
-  <!-- Strengths -->
-  <% if results[:strengths].present? %>
-    <div class="mb-5">
-      <h4 class="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
-        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-        Strengths
-      </h4>
-      <div class="flex flex-wrap gap-2">
-        <% results[:strengths].each do |s| %>
-          <span class="inline-block px-3 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200 rounded-full"><%= s %></span>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-
-  <!-- Issues -->
+  <!-- Issues Found (always visible — this is the pain) -->
   <% if results[:issues].present? %>
     <div class="mb-5">
       <h4 class="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
         <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-        Issues Found
+        <%= results[:issues].length %> Issues Found
       </h4>
       <div class="flex flex-wrap gap-2">
         <% results[:issues].each do |issue| %>
@@ -71,73 +56,148 @@
     </div>
   <% end %>
 
-  <!-- Improvements -->
-  <% if results[:improvements].present? %>
-    <div class="mb-6">
-      <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
-        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-        Top Improvements
-      </h4>
-      <ol class="space-y-2">
-        <% results[:improvements].each_with_index do |imp, i| %>
-          <li class="flex items-start gap-2.5 text-sm text-gray-700">
-            <span class="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5"><%= i + 1 %></span>
-            <span><%= imp %></span>
-          </li>
-        <% end %>
-      </ol>
+  <!-- ============================================ -->
+  <!-- EMAIL GATE: Detailed report locked behind email -->
+  <!-- ============================================ -->
+  <% unless user_signed_in? %>
+    <!-- Email Gate Overlay -->
+    <div data-email-gate-target="gate" class="relative">
+      <!-- Blurred preview of what's behind -->
+      <div class="relative overflow-hidden rounded-xl" style="max-height: 180px;">
+        <div class="blur-sm opacity-40 pointer-events-none select-none">
+          <% if results[:strengths].present? %>
+            <div class="mb-4">
+              <h4 class="text-sm font-semibold text-gray-900 mb-2">Strengths</h4>
+              <div class="flex flex-wrap gap-2">
+                <% results[:strengths].first(3).each do |s| %>
+                  <span class="inline-block px-3 py-1 text-xs bg-green-50 text-green-700 rounded-full"><%= s %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% if results[:improvements].present? %>
+            <div>
+              <h4 class="text-sm font-semibold text-gray-900 mb-2">How to fix these issues</h4>
+              <ol class="space-y-2">
+                <% results[:improvements].first(3).each_with_index do |imp, i| %>
+                  <li class="text-sm text-gray-700"><%= i+1 %>. <%= imp %></li>
+                <% end %>
+              </ol>
+            </div>
+          <% end %>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-white"></div>
+      </div>
+
+      <!-- Email capture form -->
+      <div class="mt-4 bg-gray-50 rounded-2xl border border-gray-200 p-6 text-center">
+        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h4 class="text-base font-bold text-gray-900 mb-1">Get your full ATS report</h4>
+        <p class="text-sm text-gray-600 mb-4">Enter your email to see your strengths, detailed improvements, and how to fix every issue.</p>
+
+        <div class="flex flex-col sm:flex-row gap-2 max-w-sm mx-auto">
+          <input type="email" data-email-gate-target="email" placeholder="you@email.com"
+            class="flex-1 rounded-xl border border-gray-200 bg-white shadow-sm px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+          <button type="button" data-action="click->email-gate#unlock"
+            class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm transition-all cursor-pointer whitespace-nowrap">
+            Show My Report
+          </button>
+        </div>
+        <p class="mt-2 text-xs text-gray-400">Free. No spam. Unsubscribe anytime.</p>
+      </div>
     </div>
   <% end %>
 
-  <!-- CTA -->
-  <div class="border-t border-gray-100 pt-6 mt-6">
-    <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-center text-white">
-      <% issue_count = results[:issues]&.length || 0 %>
-      <% improvement_count = results[:improvements]&.length || 0 %>
-
-      <% if results[:overall_score] < 75 %>
-        <p class="text-3xl font-extrabold mb-2"><%= issue_count + improvement_count %> issues found</p>
-        <p class="text-blue-100 mb-5">Our AI can fix all of them with one click — and boost your score above 80%.</p>
-      <% else %>
-        <p class="text-xl font-bold mb-2">Good score! Let's make it even better.</p>
-        <p class="text-blue-100 mb-5">Optimize for a specific job posting and hit 95%+ ATS compatibility.</p>
-      <% end %>
-
-      <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
-        <% if user_signed_in? %>
-          <%= link_to new_resume_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
-            Fix My Resume Now
-            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+  <!-- ============================================ -->
+  <!-- FULL REPORT (hidden behind gate for guests, always visible for signed-in) -->
+  <!-- ============================================ -->
+  <div data-email-gate-target="content" class="<%= user_signed_in? ? '' : 'hidden' %>">
+    <!-- Strengths -->
+    <% if results[:strengths].present? %>
+      <div class="mb-5">
+        <h4 class="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Strengths
+        </h4>
+        <div class="flex flex-wrap gap-2">
+          <% results[:strengths].each do |s| %>
+            <span class="inline-block px-3 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200 rounded-full"><%= s %></span>
           <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Improvements -->
+    <% if results[:improvements].present? %>
+      <div class="mb-6">
+        <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+          How To Fix These Issues
+        </h4>
+        <ol class="space-y-2">
+          <% results[:improvements].each_with_index do |imp, i| %>
+            <li class="flex items-start gap-2.5 text-sm text-gray-700">
+              <span class="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5"><%= i + 1 %></span>
+              <span><%= imp %></span>
+            </li>
+          <% end %>
+        </ol>
+      </div>
+    <% end %>
+
+    <!-- CTA -->
+    <div class="border-t border-gray-100 pt-6 mt-6">
+      <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-center text-white">
+        <% issue_count = results[:issues]&.length || 0 %>
+        <% improvement_count = results[:improvements]&.length || 0 %>
+
+        <% if results[:overall_score] < 75 %>
+          <p class="text-3xl font-extrabold mb-2"><%= issue_count + improvement_count %> issues found</p>
+          <p class="text-blue-100 mb-5">Our AI can fix all of them with one click — and boost your score above 80%.</p>
         <% else %>
-          <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
-            Fix All Issues — Free Account
-            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          <p class="text-xl font-bold mb-2">Good score! Let's make it even better.</p>
+          <p class="text-blue-100 mb-5">Optimize for a specific job posting and hit 95%+ ATS compatibility.</p>
+        <% end %>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+          <% if user_signed_in? %>
+            <%= link_to new_resume_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
+              Fix My Resume Now
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            <% end %>
+          <% else %>
+            <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
+              Fix All Issues — Free Account
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            <% end %>
           <% end %>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 text-xs text-blue-200">
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            2 free credits
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            No credit card
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            30 seconds
+          </span>
+        </div>
+
+        <% unless user_signed_in? %>
+          <p class="mt-3 text-xs text-blue-200">
+            Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-white underline font-medium" %>
+          </p>
         <% end %>
       </div>
-
-      <div class="flex items-center justify-center gap-4 text-xs text-blue-200">
-        <span class="flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-          2 free credits
-        </span>
-        <span class="flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-          No credit card
-        </span>
-        <span class="flex items-center gap-1">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-          30 seconds
-        </span>
-      </div>
-
-      <% unless user_signed_in? %>
-        <p class="mt-3 text-xs text-blue-200">
-          Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-white underline font-medium" %>
-        </p>
-      <% end %>
     </div>
   </div>
-
 </div>

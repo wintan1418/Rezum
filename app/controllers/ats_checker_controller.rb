@@ -34,6 +34,19 @@ class AtsCheckerController < ApplicationController
     render turbo_stream: turbo_stream.replace("ats-results", partial: "ats_checker/error", locals: { message: "Something went wrong analyzing your resume. Please try again." })
   end
 
+  def capture_email
+    email = params[:email]&.strip&.downcase
+    if email.present? && email.match?(URI::MailTo::EMAIL_REGEXP)
+      Lead.find_or_create_by(email: email) do |lead|
+        lead.source = "ats_checker"
+        lead.ip_address = request.remote_ip
+      end
+      head :ok
+    else
+      head :unprocessable_entity
+    end
+  end
+
   private
 
   def check_rate_limit
