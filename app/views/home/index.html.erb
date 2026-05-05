@@ -496,7 +496,7 @@
       </div>
     </div>
 
-    <div class="steps" style="grid-template-columns:repeat(3,1fr)">
+    <div class="steps steps-3">
       <% [
         ["Feature 01", "ATS Optimization", "Get a compatibility score and optimize your resume to pass the applicant tracking systems that screen 75% of applications."],
         ["Feature 02", "AI Cover Letters", "Generate personalized cover letters that match the job posting, with customizable tone and length. Get multiple variations instantly."],
@@ -635,7 +635,7 @@
       </div>
     </div>
 
-    <div class="steps" style="grid-template-columns:repeat(2,1fr)">
+    <div class="steps steps-2">
       <% [
         ["Tool 01", "Job Application Tracker", "Track every application on a Kanban board. Set follow-up reminders, link resumes and cover letters, and never lose a thread."],
         ["Tool 02", "AI Interview Prep", "Get role-specific interview questions with STAR-method answer frameworks. Walk in prepared, walk out confident."],
@@ -754,7 +754,7 @@
         </span>
       </div>
 
-      <div class="pricing" style="grid-template-columns:repeat(4,1fr)">
+      <div class="pricing pricing-4">
         <!-- Free -->
         <div class="plan">
           <span class="tag">For trying it</span>
@@ -848,7 +848,7 @@
         </span>
       </div>
 
-      <div class="steps" style="grid-template-columns:repeat(3,1fr)">
+      <div class="steps steps-3">
         <% [
           ["★★★★★", "RezumFit helped me land a senior engineering role at a top tech company. My ATS score went from 31% to 92% and I got 3× more callbacks.", "Sarah K.", "Software Engineer", "SK"],
           ["★★★★☆", "Cover letter generator is great and saves me hours. The only reason it's not 5 stars is I wish there were more template layouts. AI output quality is top notch.", "Marcus R.", "Product Manager", "MR"],
@@ -878,7 +878,7 @@
        ============================================================ -->
   <section data-screen-label="16 Trust">
     <div class="wrap">
-      <div class="stats" style="grid-template-columns:repeat(4,1fr);padding:40px 0">
+      <div class="stats stats-4" style="padding:40px 0">
         <% [
           ["SSL Encrypted", "256-bit encryption · end to end"],
           ["Data Privacy", "Your documents, never trained on"],
@@ -1074,5 +1074,63 @@
       } catch(e){}
     })();
   </script>
+
+  <!-- ============================================================
+       MOBILE FIXES — overrides for inline grids, table, dark sections
+       ============================================================ -->
+  <style>
+    /* 768px and below — collapse inline grids, tighten dark sections */
+    @media (max-width: 768px){
+      .editorial .pd-stats{grid-template-columns:repeat(2,1fr) !important; padding:20px 0 !important}
+      .editorial .pd-cards{grid-template-columns:1fr !important; gap:14px !important}
+      .editorial .vs-grid{grid-template-columns:1fr !important}
+      .editorial .ba-grid{grid-template-columns:1fr !important}
+      .editorial .roi-grid{grid-template-columns:1fr !important; padding:24px 0 !important}
+      .editorial .roi-grid > div{border-left:none !important; border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent); padding:24px 0 !important}
+      .editorial .roi-grid > div:first-child{border-top:none}
+      /* Pitch deck dark block */
+      .editorial section[data-screen-label="09 Pitch Deck"] > .wrap > div{padding:48px 24px !important}
+      /* ROI dark block */
+      .editorial section[data-screen-label="13 ROI"] > .wrap > div{padding:48px 24px !important}
+      /* Comparison table — compress */
+      .editorial table{font-size:12px !important}
+      .editorial table th,
+      .editorial table td{padding:12px 10px !important}
+      .editorial table td:first-child{font-size:13px !important}
+      /* Mid-CTA section */
+      .editorial section[data-screen-label="07 Mid CTA"] > .wrap{padding:40px 0 !important}
+      /* Hero sub grid (lede + actions) */
+      .editorial .hero .sub{grid-template-columns:1fr !important; gap:24px !important}
+      .editorial .hero .sub .actions{align-items:stretch !important}
+      .editorial .hero .sub .actions .pair{flex-direction:column !important; align-items:stretch !important; gap:10px !important}
+      .editorial .hero .sub .actions .pair > *{width:100% !important; justify-content:center !important; text-align:center}
+      /* Pricing tag wrapping */
+      .editorial .plan h5{font-size:24px !important}
+      /* Stat numerals */
+      .editorial .stat .n{font-size:56px !important}
+      /* Section heads */
+      .editorial section[data-screen-label="14 Pricing"] .pricing{margin-top:20px}
+      /* Section paddings */
+      .editorial section{padding-bottom:0 !important}
+      /* Testimonials avatar row */
+      .editorial section[data-screen-label="15 Testimonials"] .wrap{padding-bottom:40px}
+    }
+    /* 480px — tighter still */
+    @media (max-width: 480px){
+      .editorial .pd-stats{grid-template-columns:1fr !important}
+      .editorial .pd-stats > div{padding:12px 0 !important; border-left:none !important; border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent)}
+      .editorial .pd-stats > div:first-child{border-top:none}
+      .editorial table th,
+      .editorial table td{padding:10px 8px !important; font-size:11px !important}
+      .editorial table td:first-child{font-size:12px !important}
+      /* Pitch deck and ROI dark sections — even tighter */
+      .editorial section[data-screen-label="09 Pitch Deck"] > .wrap > div{padding:32px 20px !important; border-radius:6px}
+      .editorial section[data-screen-label="13 ROI"] > .wrap > div{padding:32px 20px !important; border-radius:6px}
+      /* Hero eyebrow */
+      .editorial .hero-eyebrow{font-size:9px !important}
+      /* Closing dark section */
+      .editorial .closing .meta{display:flex; flex-direction:column; gap:18px; padding-top:24px}
+    }
+  </style>
 
 </div>

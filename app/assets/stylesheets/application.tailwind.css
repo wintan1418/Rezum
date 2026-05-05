@@ -252,6 +252,11 @@
 
 /* STEPS */
 .editorial .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent)}
+.editorial .steps-2{grid-template-columns:repeat(2,1fr) !important}
+.editorial .steps-3{grid-template-columns:repeat(3,1fr) !important}
+.editorial .steps-4{grid-template-columns:repeat(4,1fr) !important}
+.editorial .pricing-4{grid-template-columns:repeat(4,1fr) !important}
+.editorial .stats-4{grid-template-columns:repeat(4,1fr) !important}
 .editorial .step{background:var(--paper);padding:48px 36px 56px;display:flex;flex-direction:column;gap:18px;min-height:340px;position:relative;transition:background .3s}
 .editorial .step:hover{background:var(--paper-2)}
 .editorial .step .num{font-family:"Fraunces",serif;font-size:14px;color:var(--accent);font-variation-settings:"opsz" 24}
@@ -354,8 +359,13 @@
 @media (max-width: 1100px){
   .editorial{--pad:32px}
   .editorial .stats,
-  .editorial .pricing{grid-template-columns:repeat(2,1fr)}
-  .editorial .steps{grid-template-columns:repeat(2,1fr)}
+  .editorial .pricing,
+  .editorial .stats-4,
+  .editorial .pricing-4{grid-template-columns:repeat(2,1fr) !important}
+  .editorial .steps,
+  .editorial .steps-3,
+  .editorial .steps-4{grid-template-columns:repeat(2,1fr) !important}
+  .editorial .steps-2{grid-template-columns:repeat(2,1fr) !important}
   .editorial nav.top .links{gap:24px;font-size:13px}
 }
 
@@ -363,24 +373,91 @@
 @media (max-width: 768px){
   .editorial{--pad:20px}
   .editorial .hero{padding:48px 0 32px}
-  .editorial .hero h1 .ampline{padding-left:0}
+  .editorial .hero h1{font-size:clamp(40px, 11vw, 96px) !important;line-height:1 !important}
+  .editorial .hero h1 .ampline{padding-left:0 !important}
   .editorial .hero .sub,
   .editorial .artifact-wrap,
   .editorial .sect-head,
   .editorial .faq,
   .editorial .closing .meta,
-  .editorial footer.edit .row{grid-template-columns:1fr;gap:24px}
+  .editorial footer.edit .row{grid-template-columns:1fr !important;gap:24px !important}
   .editorial .steps,
+  .editorial .steps-2,
+  .editorial .steps-3,
+  .editorial .steps-4,
   .editorial .pricing,
-  .editorial .stats{grid-template-columns:1fr}
-  .editorial .stat{border-left:none;border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent);padding:24px 0}
-  .editorial .stat:first-child{border-top:none}
-  .editorial .artifact{padding:32px 28px}
-  .editorial .artifact-side{position:static}
+  .editorial .pricing-4,
+  .editorial .stats,
+  .editorial .stats-4{grid-template-columns:1fr !important}
+  .editorial .stat{border-left:none !important;border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent);padding:24px 0 !important}
+  .editorial .stat:first-child{border-top:none !important}
+  .editorial .artifact{padding:28px 22px !important;aspect-ratio:auto !important}
+  .editorial .artifact-side{position:static !important}
   .editorial nav.top .links{display:none}
-  .editorial .sect-head{padding:64px 0 32px}
-  .editorial .testimonial{padding:80px 0 60px}
-  .editorial .closing{padding:80px 0 60px}
+  .editorial .sect-head{padding:56px 0 28px !important}
+  .editorial .sect-head h2{font-size:clamp(32px, 8vw, 56px) !important}
+  .editorial .testimonial{padding:64px 0 48px}
+  .editorial .testimonial::before{font-size:140px}
+  .editorial .closing{padding:64px 0 48px;margin-top:48px;border-radius:0}
+  .editorial .closing h2{font-size:clamp(40px, 10vw, 88px) !important}
+  .editorial .marquee{margin-top:48px;padding:14px 0}
+  .editorial .marquee .track span{font-size:16px}
+  .editorial .step{padding:32px 24px 36px;min-height:auto}
+  .editorial .step h4{font-size:26px;max-width:none}
+  .editorial .step p{max-width:none}
+  .editorial .plan{padding:28px 24px;min-height:auto}
+  .editorial .score-card{grid-template-columns:1fr !important;text-align:center;padding:24px}
+  .editorial .score-card .num{text-align:center}
+  .editorial .jd-card{padding:22px}
+  .editorial .jd-card .keywords{gap:4px}
+  .editorial .jd-card .kw{font-size:9px;padding:4px 8px}
+  /* Word-wrap for long content in cards */
+  .editorial p, .editorial li, .editorial h1, .editorial h2, .editorial h3, .editorial h4{overflow-wrap:break-word;word-break:normal;hyphens:auto}
+}
+
+/* RESPONSIVE — small phones (480px and below) */
+@media (max-width: 480px){
+  .editorial{--pad:16px}
+  .editorial .hero{padding:32px 0 24px}
+  .editorial .hero-eyebrow{font-size:10px;padding:6px 12px;margin-bottom:24px}
+  .editorial .hero h1{font-size:clamp(36px, 12vw, 72px) !important}
+  .editorial .hero .lede{font-size:18px !important}
+  .editorial .btn-primary,
+  .editorial .btn-ghost{font-size:14px;padding:14px 20px}
+  .editorial .btn-primary{width:100%;justify-content:center}
+  .editorial .hero .sub .actions .pair{flex-direction:column;align-items:stretch;gap:10px}
+  .editorial .closing h2{font-size:clamp(36px, 11vw, 72px) !important}
+  .editorial .closing .actions{flex-direction:column;align-items:stretch;gap:10px}
+  .editorial .closing .btn-primary,
+  .editorial .closing .btn-ghost{width:100%;justify-content:center;text-align:center}
+  .editorial .sect-head{padding:40px 0 20px !important}
+  .editorial .sect-head h2{font-size:clamp(28px, 9vw, 44px) !important}
+  .editorial .testimonial blockquote{font-size:24px}
+  .editorial .testimonial::before{font-size:96px;top:20px}
+  .editorial .artifact{padding:22px 18px !important}
+  .editorial .artifact .name{font-size:26px}
+  .editorial .artifact .role{font-size:14px}
+  .editorial .artifact .topline{flex-direction:column;align-items:start;gap:10px}
+  .editorial .artifact .topline .right{text-align:left;font-size:9px}
+  .editorial .artifact .entry{grid-template-columns:1fr;gap:6px}
+  .editorial .artifact .entry .when{padding-top:0}
+  .editorial .step{padding:28px 20px}
+  .editorial .step h4{font-size:24px}
+  .editorial .stat{padding:20px 0 !important}
+  .editorial .stat .n{font-size:48px}
+  .editorial .plan{padding:24px 20px}
+  .editorial .plan h5{font-size:22px}
+  .editorial .plan .price{font-size:44px}
+  .editorial .faq{padding:48px 0}
+  .editorial .faq h2{font-size:clamp(28px, 8vw, 44px) !important}
+  .editorial .faq summary{font-size:18px;gap:12px}
+  .editorial .marquee{margin-top:32px}
+  .editorial .marquee .track{gap:32px}
+  .editorial .marquee .track span{font-size:14px}
+  .editorial .pricing{margin-top:24px}
+  .editorial .closing .meta{margin-top:48px;padding-top:24px}
+  .editorial footer.edit{padding:32px 0 24px}
+  .editorial footer.edit .legal{flex-direction:column;align-items:start;gap:8px}
 }
 
 
