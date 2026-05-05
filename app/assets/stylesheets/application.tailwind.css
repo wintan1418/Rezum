@@ -180,6 +180,10 @@
 .editorial nav.top .cta{display:flex;gap:14px;align-items:center;font-size:14px}
 .editorial nav.top .cta .btn{padding:9px 18px;border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:var(--paper);transition:transform .2s}
 .editorial nav.top .cta .btn:hover{transform:translateY(-1px)}
+.editorial nav.top .nav-burger{display:none;background:transparent;border:none;color:var(--ink);cursor:pointer;padding:8px;margin-left:auto}
+.editorial nav.top .nav-burger svg{width:24px;height:24px}
+.editorial .nav-mobile{display:none;background:var(--paper);border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent)}
+.editorial .nav-mobile:not(.hidden){display:block}
 
 /* HERO */
 .editorial .hero{padding:88px 0 56px;position:relative}
@@ -394,6 +398,8 @@
   .editorial .artifact{padding:28px 22px !important;aspect-ratio:auto !important}
   .editorial .artifact-side{position:static !important}
   .editorial nav.top .links{display:none}
+  .editorial nav.top .cta{display:none}
+  .editorial nav.top .nav-burger{display:inline-flex;align-items:center;justify-content:center}
   .editorial .sect-head{padding:56px 0 28px !important}
   .editorial .sect-head h2{font-size:clamp(32px, 8vw, 56px) !important}
   .editorial .testimonial{padding:64px 0 48px}

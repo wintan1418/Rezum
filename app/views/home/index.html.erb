@@ -32,7 +32,7 @@
   <!-- ============================================================
        NAV
        ============================================================ -->
-  <nav class="top">
+  <nav class="top" data-controller="mobile-menu">
     <div class="wrap row">
       <%= link_to root_path, class: "mark", aria: { label: "RezumFit" } do %>
         <span class="glyph"></span>
@@ -54,6 +54,34 @@
           <%= link_to "Sign in", new_user_session_path %>
           <%= link_to "Start free", new_user_registration_path, class: "btn" %>
         <% end %>
+      </div>
+
+      <!-- Hamburger (mobile only) -->
+      <button type="button" class="nav-burger" data-action="click->mobile-menu#toggle" aria-label="Open menu">
+        <svg data-mobile-menu-target="openIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg data-mobile-menu-target="closeIcon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div class="nav-mobile hidden" data-mobile-menu-target="menu">
+      <div class="wrap" style="padding: 12px 24px 24px;">
+        <%= link_to "ATS Checker", ats_checker_path, style: "display: block; padding: 12px 0; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); color: var(--accent); text-decoration: none; font-size: 17px; font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;" %>
+        <a href="#features" style="display: block; padding: 12px 0; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); color: var(--ink); text-decoration: none; font-size: 17px; font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;">Features</a>
+        <a href="#how-it-works" style="display: block; padding: 12px 0; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); color: var(--ink); text-decoration: none; font-size: 17px; font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;">How it works</a>
+        <%= link_to "Blog", articles_path, style: "display: block; padding: 12px 0; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); color: var(--ink); text-decoration: none; font-size: 17px; font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;" %>
+        <a href="#pricing" style="display: block; padding: 12px 0; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); color: var(--ink); text-decoration: none; font-size: 17px; font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;">Pricing</a>
+        <a href="#faq" style="display: block; padding: 12px 0; color: var(--ink); text-decoration: none; font-size: 17px; font-family: 'Fraunces', serif; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;">FAQ</a>
+
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); display: flex; flex-direction: column; gap: 10px;">
+          <% if user_signed_in? %>
+            <%= link_to "Dashboard", dashboard_path, class: "btn-outline", style: "justify-content: center;" %>
+            <%= link_to "New resume", new_resume_path, class: "btn-ink", style: "justify-content: center;" %>
+          <% else %>
+            <%= link_to "Sign in", new_user_session_path, class: "btn-outline", style: "justify-content: center;" %>
+            <%= link_to "Start free", new_user_registration_path, class: "btn-ink", style: "justify-content: center;" %>
+          <% end %>
+        </div>
       </div>
     </div>
   </nav>
