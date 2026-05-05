@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>" class="h-full">
 <head>
-  <title><%= yield(:title).presence || "RezumFit - AI-Powered Resume & Cover Letter Generator" %></title>
+  <title><%= yield(:title).presence || "RezumFit — A resume, tailored." %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="<%= yield(:description).presence || "Generate ATS-optimized resumes and personalized cover letters in 30 seconds." %>">
 
@@ -13,149 +13,131 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" href="/icon.png" type="image/png">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icon.png">
 
   <style>
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-    .auth-panel {
-      background:
-        linear-gradient(135deg, rgba(37, 99, 235, 0.92) 0%, rgba(109, 40, 217, 0.92) 100%),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    body { font-family: 'Inter Tight', system-ui, sans-serif; background: var(--paper); color: var(--ink); }
+    .auth-input{
+      width:100%; padding:14px 16px; background:#FBFBFC;
+      border:1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+      border-radius:6px; font-family:'Inter Tight',system-ui,sans-serif;
+      font-size:16px; color:var(--ink); transition:border-color .15s, box-shadow .15s;
     }
-    .auth-input {
-      transition: all 0.2s ease;
-      background-color: #fff;
-      font-size: 16px; /* Prevents iOS zoom on focus */
+    .auth-input::placeholder{ color: var(--muted); }
+    .auth-input:hover{ border-color: color-mix(in oklab, var(--ink) 28%, transparent); }
+    .auth-input:focus{
+      outline: none; border-color: var(--ink);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
     }
-    .auth-input:hover {
-      border-color: #93c5fd;
-    }
-    .auth-input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-    /* Custom dropdown arrow */
-    select.auth-input {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-      background-position: right 0.75rem center;
+    select.auth-input{
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236A6E78' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+      background-position: right .75rem center;
       background-repeat: no-repeat;
       background-size: 1.25em 1.25em;
       padding-right: 2.5rem;
     }
+    .glyph{ width:24px; height:24px; border:1.5px solid currentColor; border-radius:50%; position:relative; display:inline-block; }
+    .glyph::after{ content:""; position:absolute; inset:5px; background:currentColor; border-radius:50%; clip-path: polygon(0 0,100% 0,100% 60%,40% 60%,40% 100%,0 100%); }
   </style>
 </head>
 
-<body class="h-full bg-gray-50">
+<body class="h-full" style="background: var(--paper);">
   <div class="min-h-screen flex flex-col lg:flex-row">
-    <!-- Left: Branding Panel with background pattern -->
-    <div class="hidden lg:flex lg:w-1/2 lg:fixed lg:inset-y-0 auth-panel relative overflow-hidden">
-      <!-- Decorative circles -->
-      <div class="absolute inset-0">
-        <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-white/[0.07] rounded-full"></div>
-        <div class="absolute bottom-[-15%] left-[-10%] w-[400px] h-[400px] bg-white/[0.05] rounded-full"></div>
-        <div class="absolute top-[40%] right-[20%] w-48 h-48 bg-white/[0.04] rounded-full"></div>
-      </div>
 
-      <div class="relative z-10 flex flex-col justify-center px-12 xl:px-16">
+    <!-- LEFT — branding panel (ink dark) -->
+    <div class="hidden lg:flex lg:w-1/2 lg:fixed lg:inset-y-0 relative overflow-hidden" style="background: var(--ink); color: var(--paper);">
+      <!-- Subtle hairline grid -->
+      <div class="absolute inset-0 pointer-events-none" style="background-image: linear-gradient(color-mix(in oklab, var(--paper) 5%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--paper) 5%, transparent) 1px, transparent 1px); background-size: 64px 64px;"></div>
+
+      <div class="relative z-10 flex flex-col justify-between px-12 xl:px-16 py-14 w-full">
         <!-- Logo -->
-        <div class="flex items-center gap-3 mb-12">
-          <img src="/icon.svg" alt="RezumFit" class="w-12 h-12 rounded-2xl shadow-lg shadow-black/10">
-          <span class="text-2xl font-bold text-white">RezumFit</span>
+        <div>
+          <div class="flex items-center gap-3" style="color: var(--paper);">
+            <span class="glyph"></span>
+            <span style="font-family:'Fraunces',serif; font-weight:500; font-size:22px; letter-spacing:-0.02em; font-variation-settings:'opsz' 24;">RezumFit</span>
+          </div>
+          <span class="font-mono-label mt-12 inline-block" style="color: color-mix(in oklab, var(--paper) 55%, transparent);">A resume, tailored</span>
         </div>
 
-        <h1 class="text-3xl xl:text-4xl font-bold text-white leading-tight mb-4">Land your dream job with AI-powered tools</h1>
-        <p class="text-blue-100 text-lg mb-12 leading-relaxed">Optimize your resume, generate cover letters, and prepare for interviews — all in one place.</p>
+        <!-- Headline + features -->
+        <div>
+          <h1 class="font-display" style="font-size: clamp(44px, 5vw, 72px); line-height: 0.98; color: var(--paper); max-width: 14ch; margin-bottom: 32px;">
+            Land the job <em>worth</em> showing up for.
+          </h1>
+          <p style="font-family:'Fraunces',serif; font-weight:300; font-style:italic; font-size:19px; line-height:1.45; color: color-mix(in oklab, var(--paper) 70%, transparent); max-width: 38ch; margin-bottom: 48px;">
+            Optimize your resume, generate cover letters, and prepare for interviews — all in one quiet place.
+          </p>
 
-        <!-- Feature list -->
-        <div class="space-y-5">
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-              <span class="text-white font-medium text-sm">ATS-optimized resumes</span>
-              <p class="text-blue-200 text-xs mt-0.5">Beat applicant tracking systems in 30 seconds</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            </div>
-            <div>
-              <span class="text-white font-medium text-sm">Personalized cover letters</span>
-              <p class="text-blue-200 text-xs mt-0.5">Tailored for every job you apply to</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-            </div>
-            <div>
-              <span class="text-white font-medium text-sm">Interview preparation</span>
-              <p class="text-blue-200 text-xs mt-0.5">AI-generated questions with STAR answers</p>
-            </div>
-          </div>
+          <ul class="space-y-5" style="list-style: none; padding: 0; margin: 0;">
+            <% [
+              ["ATS-optimized resumes", "Beat applicant tracking in 30 seconds"],
+              ["Personalized cover letters", "Tailored to every job you apply to"],
+              ["Interview preparation", "AI-generated questions, STAR answers"]
+            ].each do |title, body| %>
+              <li class="flex items-start gap-4">
+                <span class="font-mono-label" style="color: var(--accent); padding-top: 4px; min-width: 18px;">✦</span>
+                <div>
+                  <div style="font-family:'Fraunces',serif; font-weight:500; font-size:17px; letter-spacing:-0.01em; color: var(--paper); font-variation-settings:'opsz' 24;"><%= title %></div>
+                  <div style="font-size:13px; color: color-mix(in oklab, var(--paper) 60%, transparent); margin-top: 2px;"><%= body %></div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
         </div>
 
         <!-- Social proof -->
-        <div class="mt-14 pt-8 border-t border-white/15">
-          <p class="text-blue-200 text-xs uppercase tracking-wider mb-3">Trusted by professionals</p>
-          <div class="flex items-center gap-1.5">
-            <% 5.times do %>
-              <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-            <span class="text-white/80 text-sm ml-2">4.9/5 from 500+ users</span>
+        <div style="border-top: 1px solid color-mix(in oklab, var(--paper) 14%, transparent); padding-top: 28px;">
+          <span class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 55%, transparent);">Trusted by professionals</span>
+          <div class="flex items-center gap-2 mt-3">
+            <span style="font-family:'Fraunces',serif; font-size: 32px; font-weight: 400; color: var(--paper); font-variation-settings:'opsz' 60; letter-spacing: -0.02em; line-height: 1;"><em style="color: var(--accent); font-style: italic;">4.9</em></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size: 11px; color: color-mix(in oklab, var(--paper) 55%, transparent); letter-spacing: 0.06em;">/ 5  ·  500+ users</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Right: Form Panel -->
-    <div class="flex-1 flex flex-col justify-center py-8 sm:py-10 px-5 sm:px-8 lg:ml-[50%] lg:px-12 xl:px-16 min-h-screen">
-      <div class="mx-auto w-full max-w-md">
-        <!-- Mobile Logo -->
-        <div class="lg:hidden text-center mb-8">
-          <%= link_to root_path, class: "inline-flex items-center gap-2" do %>
-            <img src="/icon.svg" alt="RezumFit" class="w-9 h-9 rounded-xl">
-            <span class="text-xl font-bold text-gray-900">RezumFit</span>
+    <!-- RIGHT — form panel (paper) -->
+    <div class="flex-1 flex flex-col justify-center py-10 sm:py-14 px-5 sm:px-8 lg:ml-[50%] lg:px-14 xl:px-20 min-h-screen" style="background: var(--paper);">
+      <div class="mx-auto w-full" style="max-width: 440px;">
+
+        <!-- Mobile logo -->
+        <div class="lg:hidden mb-10">
+          <%= link_to root_path, class: "inline-flex items-center gap-2", style: "color: var(--ink); text-decoration: none;" do %>
+            <span class="glyph"></span>
+            <span style="font-family:'Fraunces',serif; font-weight:500; font-size:20px; letter-spacing:-0.02em;">RezumFit</span>
           <% end %>
         </div>
 
-        <!-- Page Title -->
-        <div class="mb-8">
-          <h2 class="text-2xl font-bold text-gray-900"><%= yield(:page_title) %></h2>
+        <!-- Page title -->
+        <div class="mb-10">
+          <span class="font-mono-label">Welcome</span>
+          <h2 class="font-display mt-2" style="font-size: clamp(32px, 4vw, 44px); line-height: 1.05;"><%= yield(:page_title) %></h2>
           <% if content_for?(:page_subtitle) %>
-            <p class="mt-2 text-sm text-gray-500"><%= yield(:page_subtitle) %></p>
+            <p class="mt-3" style="color: var(--muted); font-size: 15px; line-height: 1.55;"><%= yield(:page_subtitle) %></p>
           <% end %>
         </div>
 
-        <!-- Flash Messages -->
+        <!-- Flash messages -->
         <% if notice %>
-          <div class="mb-6 rounded-xl bg-green-50 border border-green-200 p-4" data-controller="alert" data-alert-timeout-value="8000">
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-              <p class="text-sm font-medium text-green-800"><%= notice %></p>
-            </div>
+          <div class="mb-6" data-controller="alert" data-alert-timeout-value="8000" style="padding: 14px 16px; border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent); background: color-mix(in oklab, var(--accent) 6%, var(--paper)); border-radius: 6px; color: var(--ink); font-size: 14px; line-height: 1.5;">
+            <%= notice %>
           </div>
         <% end %>
 
         <% if alert %>
-          <div class="mb-6 rounded-xl bg-red-50 border border-red-200 p-4" data-controller="alert" data-alert-timeout-value="8000">
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-              <p class="text-sm font-medium text-red-800"><%= alert %></p>
-            </div>
+          <div class="mb-6" data-controller="alert" data-alert-timeout-value="8000" style="padding: 14px 16px; border: 1px solid color-mix(in oklab, var(--ink) 30%, transparent); background: color-mix(in oklab, var(--ink) 4%, var(--paper)); border-radius: 6px; color: var(--ink); font-size: 14px; line-height: 1.5;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); display: inline-block; margin-right: 8px;">Note</span><%= alert %>
           </div>
         <% end %>
 
-        <!-- Main Content -->
+        <!-- Main form content -->
         <%= yield %>
 
-        <!-- Footer Links -->
-        <div class="mt-8">
+        <!-- Footer links -->
+        <div class="mt-10 pt-6 hairline">
           <%= yield(:footer_links) %>
         </div>
       </div>

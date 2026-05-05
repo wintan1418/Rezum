@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Rezumfit — A resume, tailored.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14171C;
+    --paper:#EDEEF0;
+    --paper-2:#E2E4E8;
+    --rule:#14171C;
+    --muted:#6A6E78;
+    --accent:#2540FF;
+    --accent-soft:#DCE0FF;
+    --graphite:#3A3F49;
+    --max:1440px;
+    --pad:48px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{font-family:"Inter Tight",system-ui,sans-serif;font-weight:400;font-size:16px;line-height:1.5;overflow-x:hidden}
+  .serif{font-family:"Fraunces",Georgia,serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 0;letter-spacing:-0.02em;line-height:0.92}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:0.04em;text-transform:uppercase}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--ink);color:var(--paper)}
+
+  /* === NAV === */
+  nav.top{position:sticky;top:0;z-index:50;background:color-mix(in oklab, var(--paper) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid color-mix(in oklab, var(--ink) 8%, transparent)}
+  nav.top .row{display:flex;align-items:center;justify-content:space-between;height:64px}
+  nav.top .mark{display:flex;align-items:center;gap:10px}
+  nav.top .mark .glyph{width:22px;height:22px;border:1.5px solid var(--ink);border-radius:50%;position:relative}
+  nav.top .mark .glyph::after{content:"";position:absolute;inset:4px;background:var(--ink);border-radius:50%;clip-path:polygon(0 0,100% 0,100% 60%,40% 60%,40% 100%,0 100%)}
+  nav.top .mark span{font-family:"Fraunces",serif;font-weight:500;font-size:20px;letter-spacing:-0.02em;font-variation-settings:"opsz" 24}
+  nav.top .links{display:flex;gap:36px;font-size:14px}
+  nav.top .links a{color:color-mix(in oklab, var(--ink) 75%, transparent);transition:color .2s}
+  nav.top .links a:hover{color:var(--ink)}
+  nav.top .cta{display:flex;gap:14px;align-items:center;font-size:14px}
+  nav.top .cta .btn{padding:9px 18px;border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:var(--paper);transition:transform .2s}
+  nav.top .cta .btn:hover{transform:translateY(-1px)}
+
+  /* === HERO === */
+  .hero{padding:88px 0 56px;position:relative}
+  .hero .meta{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;color:var(--muted);padding-bottom:56px;border-bottom:1px solid color-mix(in oklab, var(--ink) 12%, transparent)}
+  .hero .meta div span{display:block;color:var(--ink);margin-top:6px;font-family:"Inter Tight";font-size:13px;letter-spacing:0;text-transform:none}
+  .hero h1{font-size:clamp(72px,11vw,196px);margin-top:48px;letter-spacing:-0.045em}
+  .hero h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 100,"WONK" 1}
+  .hero h1 .ampline{display:block;padding-left:18%}
+  .hero .sub{display:grid;grid-template-columns:1fr 1.4fr;gap:40px;align-items:end;margin-top:64px;padding-top:36px;border-top:1px solid color-mix(in oklab, var(--ink) 12%, transparent)}
+  .hero .sub .lede{font-family:"Fraunces",serif;font-size:24px;line-height:1.25;font-weight:300;font-variation-settings:"opsz" 36;text-wrap:balance;max-width:34ch}
+  .hero .sub .actions{display:flex;flex-direction:column;align-items:flex-start;gap:18px}
+  .hero .sub .actions .pair{display:flex;gap:12px;align-items:center}
+  .btn-primary{padding:16px 26px;background:var(--ink);color:var(--paper);border:none;border-radius:999px;font:inherit;font-size:15px;letter-spacing:-0.01em;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:transform .2s, background .2s}
+  .btn-primary:hover{transform:translateY(-1px);background:#000}
+  .btn-primary svg{width:14px;height:14px}
+  .btn-ghost{padding:16px 4px;background:transparent;border:none;font:inherit;font-size:15px;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:10px;border-bottom:1px solid var(--ink)}
+
+  /* === MARQUEE === */
+  .marquee{margin-top:96px;border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding:22px 0;overflow:hidden;white-space:nowrap}
+  .marquee .track{display:inline-flex;gap:64px;animation:slide 60s linear infinite;color:var(--muted)}
+  .marquee .track span{font-family:"Fraunces",serif;font-size:22px;font-style:italic;font-weight:300;font-variation-settings:"opsz" 36}
+  .marquee .track .dot{font-style:normal;color:var(--accent)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* === SECTION HEADER === */
+  .sect-head{display:grid;grid-template-columns:200px 1fr 1fr;gap:32px;align-items:start;padding:120px 0 56px}
+  .sect-head .index{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
+  .sect-head .index b{display:block;color:var(--ink);font-weight:500;margin-top:6px}
+  .sect-head h2{font-family:"Fraunces",serif;font-size:clamp(40px,5.5vw,84px);letter-spacing:-0.035em;line-height:0.95;font-weight:400;font-variation-settings:"opsz" 96}
+  .sect-head h2 em{font-style:italic;color:var(--accent)}
+  .sect-head p{color:var(--muted);font-size:15px;max-width:42ch;line-height:1.55}
+
+  /* === ARTIFACT === */
+  .artifact-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:start;padding-bottom:48px}
+  .artifact{background:#FBFBFC;border:1px solid color-mix(in oklab, var(--ink) 14%, transparent);box-shadow:0 30px 60px -30px rgba(20,23,28,.25), 0 1px 0 rgba(20,23,28,.04);padding:54px 56px;font-family:"Fraunces",serif;color:var(--ink);position:relative;aspect-ratio:8.5/11;overflow:hidden}
+  .artifact .name{font-size:38px;letter-spacing:-0.03em;font-weight:500;font-variation-settings:"opsz" 60}
+  .artifact .name .tag{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--accent);vertical-align:top;margin-left:8px;letter-spacing:.08em}
+  .artifact .role{font-style:italic;color:var(--muted);font-size:16px;margin-top:6px;font-weight:300}
+  .artifact .topline{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--ink);padding-bottom:14px}
+  .artifact .topline .right{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--muted);text-align:right;letter-spacing:.06em;text-transform:uppercase;line-height:1.7}
+  .artifact h3{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;margin:28px 0 12px}
+  .artifact .entry{display:grid;grid-template-columns:90px 1fr;gap:18px;padding:10px 0;border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent)}
+  .artifact .entry:first-of-type{border-top:none}
+  .artifact .entry .when{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--muted);padding-top:4px;letter-spacing:.04em}
+  .artifact .entry .what b{font-size:15px;font-weight:500;letter-spacing:-0.01em;font-variation-settings:"opsz" 24}
+  .artifact .entry .what i{font-style:italic;color:var(--muted);font-weight:300;font-size:14px;display:block}
+  .artifact .entry .what p{font-size:13px;line-height:1.5;color:#393D46;margin-top:6px;font-family:"Inter Tight";font-weight:400}
+  .artifact .highlight{color:inherit;padding:0}
+
+  .artifact-side{position:sticky;top:96px;display:flex;flex-direction:column;gap:24px}
+  .jd-card{background:var(--paper-2);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding:28px;border-radius:6px}
+  .jd-card .label{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+  .jd-card .label .live{display:inline-flex;align-items:center;gap:6px;color:var(--accent)}
+  .jd-card .label .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(37,64,255,.6);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,64,255,.5)}70%{box-shadow:0 0 0 10px rgba(37,64,255,0)}100%{box-shadow:0 0 0 0 rgba(37,64,255,0)}}
+  .jd-card .title{font-family:"Fraunces",serif;font-size:26px;letter-spacing:-0.02em;margin-top:14px;font-weight:500;font-variation-settings:"opsz" 36;line-height:1.05}
+  .jd-card .co{font-style:italic;color:var(--muted);font-family:"Fraunces",serif;font-size:15px;font-weight:300;margin-top:4px}
+  .jd-card .keywords{margin-top:20px;display:flex;flex-wrap:wrap;gap:6px}
+  .jd-card .kw{font-family:"JetBrains Mono",monospace;font-size:10px;padding:5px 10px;background:var(--paper);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:999px;letter-spacing:.04em;color:var(--ink);text-transform:uppercase}
+  .jd-card .kw.matched{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .jd-card .kw.matched::before{content:"✓ ";color:var(--accent)}
+
+  .score-card{background:var(--ink);color:var(--paper);padding:28px;border-radius:6px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+  .score-card .num{font-family:"Fraunces",serif;font-size:84px;line-height:0.85;letter-spacing:-0.04em;font-variation-settings:"opsz" 144}
+  .score-card .num em{font-style:italic;color:var(--accent)}
+  .score-card .num sub{font-size:18px;color:color-mix(in oklab, var(--paper) 60%, transparent);font-style:normal;vertical-align:top;margin-left:2px;font-family:"JetBrains Mono",monospace;letter-spacing:.04em}
+  .score-card .meta b{font-family:"Fraunces",serif;font-weight:500;font-size:18px;letter-spacing:-0.01em;display:block;margin-bottom:4px}
+  .score-card .meta p{font-size:13px;color:color-mix(in oklab, var(--paper) 65%, transparent);line-height:1.45}
+  .score-card .bar{margin-top:14px;height:3px;background:color-mix(in oklab, var(--paper) 14%, transparent);border-radius:2px;overflow:hidden}
+  .score-card .bar i{display:block;height:100%;background:var(--accent);width:0;animation:fill 1.6s .3s ease-out forwards}
+  @keyframes fill{to{width:94%}}
+
+  /* === HOW IT WORKS === */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent)}
+  .step{background:var(--paper);padding:48px 36px 56px;display:flex;flex-direction:column;gap:18px;min-height:340px;position:relative;transition:background .3s}
+  .step:hover{background:var(--paper-2)}
+  .step .num{font-family:"Fraunces",serif;font-size:14px;color:var(--accent);font-variation-settings:"opsz" 24}
+  .step .num::before{content:"";display:inline-block;width:24px;height:1px;background:var(--accent);vertical-align:middle;margin-right:10px}
+  .step h4{font-family:"Fraunces",serif;font-size:34px;letter-spacing:-0.02em;font-weight:400;line-height:1.05;font-variation-settings:"opsz" 48;max-width:14ch}
+  .step h4 em{font-style:italic;color:var(--accent)}
+  .step p{color:var(--muted);font-size:14px;line-height:1.6;max-width:30ch;margin-top:auto}
+  .step .ill{height:120px;display:flex;align-items:center;justify-content:flex-start;margin-top:8px}
+
+  /* tiny diagrams */
+  .diagram{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink);letter-spacing:.05em;line-height:1.7;white-space:pre;opacity:.85}
+  .diagram .acc{color:var(--accent)}
+  .diagram .moss{color:var(--graphite)}
+
+  /* === TESTIMONIAL === */
+  .testimonial{padding:140px 0 100px;text-align:center;position:relative}
+  .testimonial::before{content:"\201C";font-family:"Fraunces",serif;font-size:280px;color:color-mix(in oklab, var(--ink) 8%, transparent);position:absolute;top:60px;left:50%;transform:translateX(-50%);line-height:1;font-style:italic}
+  .testimonial blockquote{font-family:"Fraunces",serif;font-size:clamp(28px,3.4vw,48px);line-height:1.18;letter-spacing:-0.025em;font-weight:300;max-width:22ch;margin:0 auto;position:relative;font-variation-settings:"opsz" 60;text-wrap:balance}
+  .testimonial blockquote em{font-style:italic;color:var(--accent)}
+  .testimonial .attr{margin-top:36px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+  .testimonial .attr b{display:block;font-family:"Fraunces",serif;font-size:18px;color:var(--ink);font-weight:500;letter-spacing:-0.01em;text-transform:none;margin-bottom:4px;font-variation-settings:"opsz" 24}
+
+  /* === STATS === */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding:56px 0}
+  .stat{padding:0 36px;border-left:1px solid color-mix(in oklab, var(--ink) 10%, transparent)}
+  .stat:first-child{border-left:none}
+  .stat .n{font-family:"Fraunces",serif;font-size:72px;letter-spacing:-0.04em;line-height:0.9;font-weight:400;font-variation-settings:"opsz" 144}
+  .stat .n em{font-style:italic;color:var(--accent)}
+  .stat .l{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+  .stat .d{font-family:"Fraunces",serif;font-size:14px;color:var(--ink);font-weight:300;margin-top:8px;line-height:1.4;font-style:italic}
+
+  /* === PRICING === */
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden;margin-top:40px}
+  .plan{background:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:18px;min-height:520px}
+  .plan.featured{background:var(--ink);color:var(--paper)}
+  .plan.featured .price em, .plan.featured h5 em{color:var(--accent)}
+  .plan h5{font-family:"Fraunces",serif;font-size:30px;letter-spacing:-0.02em;font-weight:400;font-variation-settings:"opsz" 36}
+  .plan h5 em{font-style:italic;color:var(--accent)}
+  .plan .tag{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .plan.featured .tag{color:color-mix(in oklab, var(--paper) 60%, transparent)}
+  .plan .tag.featured{color:var(--accent)}
+  .plan .price{font-family:"Fraunces",serif;font-size:64px;letter-spacing:-0.04em;line-height:0.9;font-variation-settings:"opsz" 144;margin-top:4px}
+  .plan .price sub{font-size:14px;color:var(--muted);font-family:"JetBrains Mono",monospace;letter-spacing:.04em;margin-left:6px;font-style:normal;vertical-align:middle}
+  .plan.featured .price sub{color:color-mix(in oklab, var(--paper) 60%, transparent)}
+  .plan ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin:14px 0;padding-top:18px;border-top:1px solid color-mix(in oklab, currentColor 14%, transparent)}
+  .plan li{font-size:14px;display:grid;grid-template-columns:14px 1fr;gap:12px;align-items:start;line-height:1.45}
+  .plan li::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;margin-top:8px}
+  .plan li.dim{color:var(--muted)}
+  .plan.featured li.dim{color:color-mix(in oklab, var(--paper) 50%, transparent)}
+  .plan .pbtn{margin-top:auto;padding:14px;border:1px solid currentColor;background:transparent;color:inherit;border-radius:999px;font:inherit;font-size:14px;cursor:pointer;text-align:center;transition:all .2s}
+  .plan .pbtn:hover{background:var(--ink);color:var(--paper)}
+  .plan.featured .pbtn{background:var(--accent);border-color:var(--accent);color:#fff}
+  .plan.featured .pbtn:hover{background:var(--paper);border-color:var(--paper);color:var(--ink)}
+
+  /* === FAQ === */
+  .faq{display:grid;grid-template-columns:1fr 2fr;gap:48px;padding:80px 0}
+  .faq h2{font-family:"Fraunces",serif;font-size:64px;letter-spacing:-0.035em;line-height:0.95;font-weight:400;font-variation-settings:"opsz" 96}
+  .faq h2 em{font-style:italic;color:var(--accent)}
+  .faq .list{border-top:1px solid color-mix(in oklab, var(--ink) 14%, transparent)}
+  .faq details{border-bottom:1px solid color-mix(in oklab, var(--ink) 14%, transparent);padding:22px 0;cursor:pointer}
+  .faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;font-family:"Fraunces",serif;font-size:22px;font-weight:400;letter-spacing:-0.015em;font-variation-settings:"opsz" 36}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";font-family:"JetBrains Mono",monospace;font-size:18px;color:var(--accent);font-weight:400;transition:transform .25s}
+  .faq details[open] summary::after{content:"–"}
+  .faq details p{margin-top:14px;color:var(--muted);font-size:15px;line-height:1.6;max-width:60ch}
+
+  /* === CLOSING === */
+  .closing{background:var(--ink);color:var(--paper);padding:140px 0 100px;margin-top:80px;border-radius:8px 8px 0 0;position:relative;overflow:hidden}
+  .closing .wrap{position:relative;z-index:2}
+  .closing h2{font-family:"Fraunces",serif;font-size:clamp(64px,9vw,156px);letter-spacing:-0.045em;line-height:0.92;font-weight:400;font-variation-settings:"opsz" 144;text-wrap:balance}
+  .closing h2 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 100,"WONK" 1}
+  .closing .actions{margin-top:48px;display:flex;gap:18px;align-items:center}
+  .closing .btn-primary{background:var(--accent);color:#fff}
+  .closing .btn-primary:hover{background:var(--paper);color:var(--ink)}
+  .closing .btn-ghost{color:var(--paper);border-color:color-mix(in oklab, var(--paper) 40%, transparent)}
+  .closing .meta{margin-top:80px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding-top:36px;border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent)}
+  .closing .meta div{color:color-mix(in oklab, var(--paper) 55%, transparent);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+  .closing .meta div b{display:block;color:var(--paper);font-family:"Fraunces",serif;font-size:18px;letter-spacing:-0.01em;text-transform:none;font-weight:400;margin-top:8px;font-variation-settings:"opsz" 24}
+
+  /* === FOOTER === */
+  footer{background:var(--ink);color:color-mix(in oklab, var(--paper) 70%, transparent);padding:48px 0 36px;font-size:13px}
+  footer .row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;align-items:start}
+  footer h6{font-family:"JetBrains Mono",monospace;font-size:10px;color:color-mix(in oklab, var(--paper) 50%, transparent);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-bottom:16px}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  footer ul a:hover{color:var(--paper)}
+  footer .brand .word{font-family:"Fraunces",serif;font-size:36px;color:var(--paper);letter-spacing:-0.02em;font-variation-settings:"opsz" 60;font-weight:400}
+  footer .brand .word em{font-style:italic;color:var(--accent)}
+  footer .brand p{margin-top:14px;font-style:italic;font-family:"Fraunces",serif;color:color-mix(in oklab, var(--paper) 60%, transparent);max-width:32ch;font-weight:300;font-size:15px;line-height:1.4}
+  footer .legal{display:flex;justify-content:space-between;border-top:1px solid color-mix(in oklab, var(--paper) 12%, transparent);margin-top:48px;padding-top:24px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in oklab, var(--paper) 45%, transparent)}
+
+  /* responsive */
+  @media (max-width: 960px){
+    :root{--pad:24px}
+    .hero .meta{grid-template-columns:1fr 1fr}
+    .hero h1 .ampline{padding-left:0}
+    .hero .sub, .artifact-wrap, .sect-head, .faq, .closing .meta, footer .row{grid-template-columns:1fr;gap:24px}
+    .steps, .pricing, .stats{grid-template-columns:1fr}
+    .stat{border-left:none;border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent);padding:24px 0}
+    .stat:first-child{border-top:none}
+    .artifact{padding:32px 28px}
+    .artifact-side{position:static}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="top">
+  <div class="wrap row">
+    <a class="mark" href="#" aria-label="Rezumfit">
+      <span class="glyph"></span>
+      <span>Rezumfit</span>
+    </a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#proof">Proof</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">Questions</a>
+    </div>
+    <div class="cta">
+      <a href="#">Sign in</a>
+      <a class="btn" href="#">Start free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hero" data-screen-label="01 Hero">
+  <div class="wrap">
+    <div class="meta mono">
+      <div>Vol. 04 — Issue 12<span>The Tailoring Quarterly</span></div>
+      <div>Edition<span>2026 / Spring</span></div>
+      <div>For<span>The job you actually want</span></div>
+      <div>Filed under<span>Résumés, reconsidered</span></div>
+    </div>
+
+    <h1 class="serif">
+      A résumé,<br>
+      <span class="ampline">tailored <em>&amp;</em> true.</span>
+    </h1>
+
+    <div class="sub">
+      <p class="lede">Rezumfit reads the job, rewrites your résumé, and returns a document that sounds like you on your sharpest day — never like a template, never like a robot.</p>
+      <div class="actions">
+        <div class="pair">
+          <button class="btn-primary">Tailor my résumé
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="btn-ghost">Watch a 90-second demo</button>
+        </div>
+        <span class="mono" style="color:var(--muted)">No credit card · Free draft in &lt; 60s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <span>Trusted by writers at</span><span class="dot">✦</span>
+      <span>Stripe</span><span class="dot">✦</span>
+      <span>The New Yorker</span><span class="dot">✦</span>
+      <span>Figma</span><span class="dot">✦</span>
+      <span>Goldman Sachs</span><span class="dot">✦</span>
+      <span>MIT Media Lab</span><span class="dot">✦</span>
+      <span>Anthropic</span><span class="dot">✦</span>
+      <span>The Met</span><span class="dot">✦</span>
+      <span>Patagonia</span><span class="dot">✦</span>
+      <!-- duplicate for loop -->
+      <span>Trusted by writers at</span><span class="dot">✦</span>
+      <span>Stripe</span><span class="dot">✦</span>
+      <span>The New Yorker</span><span class="dot">✦</span>
+      <span>Figma</span><span class="dot">✦</span>
+      <span>Goldman Sachs</span><span class="dot">✦</span>
+      <span>MIT Media Lab</span><span class="dot">✦</span>
+      <span>Anthropic</span><span class="dot">✦</span>
+      <span>The Met</span><span class="dot">✦</span>
+      <span>Patagonia</span><span class="dot">✦</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===== ARTIFACT SECTION ===== -->
+<section data-screen-label="02 Artifact">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="index">Section I<b>The Document</b></div>
+      <h2>One résumé, <em>recast</em><br>for every role.</h2>
+      <p>Paste the listing on the right; watch your résumé rewrite itself on the left. Keywords surface, language sharpens, dates align — without losing the voice that made it yours.</p>
+    </div>
+
+    <div class="artifact-wrap">
+      <!-- LEFT: the artifact (faux résumé) -->
+      <article class="artifact" aria-label="Sample tailored résumé">
+        <div class="topline">
+          <div>
+            <div class="name">Mara Okonjo<span class="tag">v.07</span></div>
+            <div class="role">Senior Product Designer · Brooklyn, NY</div>
+          </div>
+          <div class="right">
+            mara.okonjo@mail<br>
+            +1 718 · 555 · 0144<br>
+            okonjo.studio
+          </div>
+        </div>
+
+        <h3>Summary</h3>
+        <p style="font-size:14px;line-height:1.55;color:#2a2926;font-family:'Fraunces',serif;font-weight:300;font-variation-settings:'opsz' 24">
+          Designer of <span class="highlight">enterprise tooling</span> with eight years shipping calm, considered software for technical users. Comfortable holding the pen from <span class="highlight">discovery through ship</span>; happiest at the seam between research and craft.
+        </p>
+
+        <h3>Experience</h3>
+        <div class="entry">
+          <div class="when">2023 — Now</div>
+          <div class="what">
+            <b>Lead Product Designer</b><i>Quill — developer infrastructure</i>
+            <p>Owned the design of <span class="highlight">workflow primitives</span> used by 14k engineers daily. Reduced time-to-first-deploy by 41%. Mentored two designers; partnered weekly with eng + research.</p>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when">2020 — 2023</div>
+          <div class="what">
+            <b>Senior Designer</b><i>Northwind Labs</i>
+            <p>Led the redesign of the data-modelling canvas. Authored a <span class="highlight">component system</span> adopted across four product lines.</p>
+          </div>
+        </div>
+        <div class="entry">
+          <div class="when">2017 — 2020</div>
+          <div class="what">
+            <b>Product Designer</b><i>Folio (acquired)</i>
+            <p>Founding designer. From zero to 60k MAU. Designed the editor, the marketplace, and the brand.</p>
+          </div>
+        </div>
+
+        <h3>Selected Skills</h3>
+        <p style="font-family:'Inter Tight';font-size:13px;color:#3a3833;line-height:1.6">
+          Systems design · Prototyping · <span class="highlight">Workflow modelling</span> · Research synthesis · Figma · Code-aware design · Design ops
+        </p>
+      </article>
+
+      <!-- RIGHT: JD + score -->
+      <aside class="artifact-side">
+        <div class="jd-card">
+          <div class="label"><span>Job listing · pasted</span><span class="live">Analyzing</span></div>
+          <div class="title">Lead Product Designer</div>
+          <div class="co">Conduit, Inc. · Remote — North America</div>
+          <div class="keywords">
+            <span class="kw matched">Workflow design</span>
+            <span class="kw matched">Enterprise</span>
+            <span class="kw matched">Component systems</span>
+            <span class="kw matched">Cross-functional</span>
+            <span class="kw">B2B SaaS</span>
+            <span class="kw matched">Mentorship</span>
+            <span class="kw">0→1</span>
+            <span class="kw matched">Research-led</span>
+          </div>
+        </div>
+
+        <div class="score-card">
+          <div class="num">94<sub>/100</sub></div>
+          <div class="meta">
+            <b>Fit score</b>
+            <p>Strong match on craft & seniority. We surfaced three buried wins from your draft and rewrote your summary to lead with workflow tooling.</p>
+            <div class="bar"><i></i></div>
+          </div>
+        </div>
+
+        <div class="jd-card" style="background:transparent;border-style:dashed">
+          <div class="label"><span>What changed</span><span style="color:var(--brass)">+ 11 edits</span></div>
+          <ul style="list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:8px;font-family:'Fraunces',serif;font-size:14px;font-weight:300;line-height:1.4">
+            <li><span class="mono" style="color:var(--accent)">REWRITE</span> &nbsp; Summary now leads with <i>enterprise tooling</i></li>
+            <li><span class="mono" style="color:var(--accent)">SURFACE</span> &nbsp; Mentorship, previously buried in row 3</li>
+            <li><span class="mono" style="color:var(--accent)">METRIC</span> &nbsp; Pulled "41% faster deploys" forward</li>
+            <li><span class="mono" style="color:var(--graphite)">KEEP</span> &nbsp; Voice. Cadence. The em-dashes.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section id="how" data-screen-label="03 How it works">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="index">Section II<b>The Method</b></div>
+      <h2>Three quiet steps. <em>One</em> sharp document.</h2>
+      <p>No magic, no melodrama. Rezumfit is a careful editor — not a generator — that respects what's already on the page.</p>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <span class="num mono">Step 01</span>
+      <div class="ill">
+<pre class="diagram">┌─────────────────────┐
+│  résumé.pdf      ⤴  │
+│  cover_v3.docx   ⤴  │
+│  <span class="acc">linkedin.json    ✓</span>  │
+└─────────────────────┘</pre>
+      </div>
+      <h4>Bring what you <em>already</em> have.</h4>
+      <p>Drop a PDF, a Doc, a LinkedIn export — even a half-finished draft. We read structure, not just words.</p>
+    </div>
+    <div class="step">
+      <span class="num mono">Step 02</span>
+      <div class="ill">
+<pre class="diagram">                ┌──────────────┐
+   listing  ──▶ │  <span class="acc">tailor()</span>     │ ──▶ draft
+                └──────────────┘
+   "we're looking for someone who..."
+        ↳ <span class="acc">match: workflow, B2B, mentor</span></pre>
+      </div>
+      <h4>Paste the listing. We do the <em>reading</em>.</h4>
+      <p>Rezumfit identifies what the role actually rewards — then re-orders, rewrites, and re-emphasises with surgical restraint.</p>
+    </div>
+    <div class="step">
+      <span class="num mono">Step 03</span>
+      <div class="ill">
+<pre class="diagram">  draft.v07 ──▶  <span class="acc">[ you, editing ]</span>  ──▶ final
+       ▲                  │
+       └──────  redo ◀────┘
+            "make it warmer"</pre>
+      </div>
+      <h4>Edit in plain <em>English</em>.</h4>
+      <p>"Make it warmer." "Cut the jargon." "Lead with the metric." Type the note; the document obliges. You're always the editor-in-chief.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIAL ===== -->
+<section data-screen-label="04 Testimonial">
+  <div class="wrap testimonial">
+    <blockquote>
+      "I'd been sending the same résumé into the void for four months. Rezumfit didn't rewrite me — it <em>recognised</em> me. Three interviews in the first week."
+    </blockquote>
+    <div class="attr">
+      <b>Idris Halloway</b>
+      Engineering Manager · now at Conduit
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS ===== -->
+<section data-screen-label="05 Numbers">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat">
+        <div class="n serif"><em>3.4×</em></div>
+        <div class="l">Recruiter callbacks</div>
+        <div class="d">vs. an untailored résumé, measured across 12k applications</div>
+      </div>
+      <div class="stat">
+        <div class="n serif">58<em>s</em></div>
+        <div class="l">Median draft time</div>
+        <div class="d">From paste to polished, on a typical résumé</div>
+      </div>
+      <div class="stat">
+        <div class="n serif">142<em>k</em></div>
+        <div class="l">Documents shaped</div>
+        <div class="d">By writers, designers, engineers, lawyers, surgeons</div>
+      </div>
+      <div class="stat">
+        <div class="n serif"><em>0</em></div>
+        <div class="l">Em-dashes harmed</div>
+        <div class="d">We keep the voice you came in with — promise</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section id="pricing" data-screen-label="06 Pricing">
+  <div class="wrap">
+    <div class="sect-head">
+      <div class="index">Section III<b>The Terms</b></div>
+      <h2>Simple <em>pricing.</em><br>Honest defaults.</h2>
+      <p>Free to draft, fair to keep. Cancel in two clicks; export anywhere; the document is always, ever, yours.</p>
+    </div>
+
+    <div class="pricing">
+      <div class="plan">
+        <span class="tag">For trying it</span>
+        <h5>Draft</h5>
+        <div class="price">$0<sub>forever</sub></div>
+        <ul>
+          <li>3 tailored drafts / month</li>
+          <li>PDF + DOCX export</li>
+          <li>Plain-English edits</li>
+          <li class="dim">Cover letters</li>
+          <li class="dim">Version history</li>
+        </ul>
+        <button class="pbtn">Start drafting</button>
+      </div>
+      <div class="plan featured">
+        <span class="tag featured">For job-hunting</span>
+        <h5>Tailor <em>·</em> most pick this</h5>
+        <div class="price"><em>$14</em><sub>/ month</sub></div>
+        <ul>
+          <li>Unlimited tailored drafts</li>
+          <li>Cover letters that match</li>
+          <li>Version history (90 days)</li>
+          <li>Tone presets — formal, warm, dry</li>
+          <li>Priority model · faster drafts</li>
+        </ul>
+        <button class="pbtn">Tailor everything</button>
+      </div>
+      <div class="plan">
+        <span class="tag">For teams &amp; coaches</span>
+        <h5>Studio</h5>
+        <div class="price">$39<sub>/ seat / mo</sub></div>
+        <ul>
+          <li>Everything in Tailor</li>
+          <li>Shared template library</li>
+          <li>Reviewer comments &amp; suggestions</li>
+          <li>SSO · SAML · audit logs</li>
+          <li>Dedicated success contact</li>
+        </ul>
+        <button class="pbtn">Talk to us</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq" data-screen-label="07 FAQ">
+  <div class="wrap">
+    <div class="faq">
+      <h2>Reasonable <em>questions,</em><br>asked often.</h2>
+      <div class="list">
+        <details open>
+          <summary>Will it sound like me, or like ChatGPT?</summary>
+          <p>Rezumfit is trained to preserve voice. We treat your résumé as authoritative source material — we re-order, re-emphasise, and tighten, but we never invent experience or replace your phrasing with generic filler. If a sentence already sings, we leave it alone.</p>
+        </details>
+        <details>
+          <summary>Is the model reading my résumé to train itself?</summary>
+          <p>No. Your documents are processed in-session and never used as training data. Drafts are encrypted at rest and you can purge your library at any time from settings.</p>
+        </details>
+        <details>
+          <summary>What about ATS — applicant tracking systems?</summary>
+          <p>Every export passes a structural check: clean headings, parseable dates, no hidden tables. We score readability against the major ATS engines and flag anything brittle before you send.</p>
+        </details>
+        <details>
+          <summary>Can I bring my own template?</summary>
+          <p>Yes. Upload a DOCX or share a Figma file. Rezumfit fills your tailored draft into your existing layout — typography, hierarchy and all.</p>
+        </details>
+        <details>
+          <summary>Does it write cover letters?</summary>
+          <p>On the Tailor and Studio plans. Same philosophy: it studies the listing and your voice, then drafts something you'd actually have written on a good Tuesday.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CLOSING ===== -->
+<section class="closing" data-screen-label="08 Closing">
+  <div class="wrap">
+    <h2>Send your <em>best</em> draft.<br>Not your last one.</h2>
+    <div class="actions">
+      <button class="btn-primary">Tailor a résumé — free
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <button class="btn-ghost">Read the manual</button>
+    </div>
+    <div class="meta">
+      <div>Made in<b>Brooklyn &amp; Lisbon</b></div>
+      <div>Loved by<b>142,000 writers and counting</b></div>
+      <div>Backed by<b>People who hated their last résumé</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <div class="brand">
+        <div class="word">Rezumfit<em>.</em></div>
+        <p>A quieter way to apply for the job you actually want.</p>
+      </div>
+      <div>
+        <h6>Product</h6>
+        <ul>
+          <li><a href="#">Tailor</a></li>
+          <li><a href="#">Cover letters</a></li>
+          <li><a href="#">Templates</a></li>
+          <li><a href="#">Studio for teams</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6>Resources</h6>
+        <ul>
+          <li><a href="#">The Manual</a></li>
+          <li><a href="#">Job hunt journal</a></li>
+          <li><a href="#">Career coaches</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6>Company</h6>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Privacy &amp; data</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 Rezumfit Studio · All rights reserved</span>
+      <span>v.04 · Spring edition</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,8 +1,7 @@
-<% content_for :title, "Free ATS Resume Score Checker - RezumFit" %>
+<% content_for :title, "Free ATS Resume Score Checker — RezumFit" %>
 <% content_for :meta_description, "Check your resume's ATS compatibility score for free. Upload your resume and get instant feedback on formatting, keywords, and improvements to pass applicant tracking systems." %>
 
 <% content_for :head do %>
-  <!-- WebApplication Schema -->
   <script type="application/ld+json">
   <%= raw({
     "@context": "https://schema.org",
@@ -12,154 +11,144 @@
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "description": "Check your resume's ATS compatibility score for free. Get instant feedback on formatting, keywords, and improvements."
+    "description": "Check your resume's ATS compatibility score for free."
   }.to_json) %>
   </script>
   <style>
     @keyframes score-fill { from { stroke-dashoffset: 283; } }
     @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-up { animation: fade-up 0.5s ease-out; }
+    .ats-drop{ position: relative; border: 1px dashed color-mix(in oklab, var(--ink) 22%, transparent); border-radius: 8px; padding: 56px 28px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; background: #FBFBFC; }
+    .ats-drop:hover{ border-color: var(--ink); background: var(--paper-2); }
+    .ats-drop.dragging{ border-color: var(--accent); background: color-mix(in oklab, var(--accent) 6%, var(--paper)); }
   </style>
 <% end %>
 
-<!-- Main Content -->
-<div class="bg-gray-50 min-h-screen">
-  <div class="py-8 sm:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div style="background: var(--paper); min-height: 100vh; color: var(--ink); font-family: 'Inter Tight', system-ui, sans-serif;">
+  <div style="padding: 56px 0 80px;">
+    <div class="max-w-7xl mx-auto" style="padding: 0 24px;">
 
       <!-- Header -->
-      <div class="text-center mb-10">
+      <div style="text-align: center; margin-bottom: 56px;">
         <% unless user_signed_in? %>
-          <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-green-50 border border-green-200 mb-4">
-            <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-            <span class="text-xs font-semibold text-green-700">100% Free - No Sign Up Required</span>
-          </div>
+          <span class="font-mono-label" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 999px; background: var(--paper); color: var(--accent); margin-bottom: 24px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: edit-pulse 2s infinite; display: inline-block;"></span>
+            100% Free · No sign-up required
+          </span>
         <% end %>
-        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight">
-          Free ATS Resume <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Score Checker</span>
+        <h1 class="font-display" style="font-size: clamp(48px, 7vw, 96px); line-height: 0.98; letter-spacing: -0.04em; max-width: 18ch; margin: 0 auto;">
+          Free ATS resume<br><em>score checker</em>.
         </h1>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-          Upload your resume and get an instant ATS compatibility score with actionable feedback to help you pass applicant tracking systems.
+        <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 21px; color: var(--muted); max-width: 48ch; margin: 24px auto 0; line-height: 1.4;">
+          Upload your resume, get an instant ATS compatibility score, and a punch-list of fixes that get you past the bots.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <!-- Two-up: upload | results -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;" class="ats-grid">
 
-        <!-- Left: Upload Form -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8" data-controller="ats-checker">
-          <h2 class="text-lg font-semibold text-gray-900 mb-1">Upload Your Resume</h2>
-          <p class="text-sm text-gray-500 mb-6">Supports PDF, DOCX, and TXT files (max 10MB)</p>
+        <!-- Upload form -->
+        <div style="background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 8px; padding: 32px;" data-controller="ats-checker">
+          <span class="font-mono-label">01 / Upload</span>
+          <h2 class="font-display" style="font-size: 28px; line-height: 1.05; margin-top: 6px;">Drop your resume here.</h2>
+          <p style="font-size: 13px; color: var(--muted); margin-top: 4px; margin-bottom: 24px;">PDF, DOCX, or TXT — up to 10MB.</p>
 
           <%= form_with url: ats_checker_check_path, method: :post, multipart: true, data: { ats_checker_target: "form", action: "submit->ats-checker#submit", turbo: true } do |f| %>
 
-            <!-- Drop Zone -->
-            <div data-ats-checker-target="dropZone"
-                 data-action="dragover->ats-checker#dragOver dragenter->ats-checker#dragOver dragleave->ats-checker#dragLeave drop->ats-checker#drop click->ats-checker#openFilePicker"
-                 class="relative border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-all">
+            <div class="ats-drop"
+                 data-ats-checker-target="dropZone"
+                 data-action="dragover->ats-checker#dragOver dragenter->ats-checker#dragOver dragleave->ats-checker#dragLeave drop->ats-checker#drop click->ats-checker#openFilePicker">
 
-              <!-- Upload Icon -->
+              <!-- Upload state -->
               <div data-ats-checker-target="uploadIcon">
-                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                  </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-700">Drag & drop your resume here</p>
-                <p class="text-xs text-gray-400 mt-1">or click to browse files</p>
+                <svg style="width: 32px; height: 32px; color: var(--ink); margin: 0 auto 18px; display: block; opacity: 0.6;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                <p style="font-family: 'Fraunces', serif; font-size: 19px; font-weight: 500; letter-spacing: -0.01em; font-variation-settings: 'opsz' 24;">Drag &amp; drop your resume here</p>
+                <p class="font-mono-label" style="margin-top: 8px;">or click to browse</p>
               </div>
 
-              <!-- File Selected State -->
+              <!-- File selected state -->
               <div data-ats-checker-target="fileInfo" class="hidden">
-                <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg class="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                </div>
-                <p class="text-sm font-medium text-gray-700" data-ats-checker-target="fileName"></p>
-                <p class="text-xs text-gray-400 mt-1" data-ats-checker-target="fileSize"></p>
+                <span class="font-mono-label" style="color: var(--accent);">✓ Ready</span>
+                <p style="font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; letter-spacing: -0.01em; margin-top: 8px;" data-ats-checker-target="fileName"></p>
+                <p class="font-mono-label" style="margin-top: 4px;" data-ats-checker-target="fileSize"></p>
               </div>
-
             </div>
 
             <input type="file" name="resume_file" accept=".pdf,.docx,.doc,.txt" class="hidden" data-ats-checker-target="fileInput" data-action="change->ats-checker#fileSelected">
 
-            <!-- Submit -->
-            <button type="submit" data-ats-checker-target="submitBtn"
-                    class="mt-6 w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            <button type="submit" data-ats-checker-target="submitBtn" class="btn-ink"
+                    style="width: 100%; justify-content: center; padding: 16px 24px; margin-top: 20px; font-size: 15px; opacity: 1;"
                     disabled>
-              <span data-ats-checker-target="submitText">Check My ATS Score</span>
-              <span data-ats-checker-target="loadingText" class="hidden items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">
+              <span data-ats-checker-target="submitText">Check my ATS score</span>
+              <span data-ats-checker-target="loadingText" class="hidden" style="align-items: center; justify-content: center;">
+                <svg class="animate-spin" style="width: 14px; height: 14px; margin-right: 8px; color: var(--paper);" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Analyzing your resume...
+                Analyzing…
               </span>
             </button>
           <% end %>
 
           <% if @rate_limited %>
-            <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-              <p class="text-sm text-amber-800 font-medium">You've used your free check.</p>
-              <p class="text-xs text-amber-600 mt-1">Create a free account to check more resumes and unlock AI optimization.</p>
-              <div class="mt-3 flex gap-2">
-                <%= link_to "Create Free Account", new_user_registration_path, class: "text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-lg" %>
-                <%= link_to "Sign In", new_user_session_path, class: "text-xs font-medium text-gray-600 hover:text-gray-900 px-4 py-2" %>
+            <div style="margin-top: 24px; padding: 18px 20px; background: var(--ink); color: var(--paper); border-radius: 6px;">
+              <span class="font-mono-label" style="color: var(--accent);">Limit reached</span>
+              <p style="font-family: 'Fraunces', serif; font-size: 17px; font-weight: 400; letter-spacing: -0.01em; margin-top: 4px;">You've used your free check.</p>
+              <p style="font-size: 13px; color: color-mix(in oklab, var(--paper) 65%, transparent); margin-top: 4px; line-height: 1.5;">Create a free account to check more resumes and unlock AI optimization.</p>
+              <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+                <%= link_to "Create free account", new_user_registration_path, class: "btn-accent", style: "padding: 9px 16px; font-size: 13px;" %>
+                <%= link_to "Sign in", new_user_session_path, style: "padding: 9px 16px; font-size: 13px; color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none; align-self: center;" %>
               </div>
             </div>
           <% end %>
         </div>
 
-        <!-- Right: Results Area -->
+        <!-- Results area -->
         <div id="ats-results">
-          <!-- Initial placeholder -->
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 text-center">
-            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Your Score Will Appear Here</h3>
-            <p class="text-sm text-gray-500 max-w-sm mx-auto">Upload your resume to get an instant ATS compatibility analysis with actionable improvements.</p>
+          <div style="background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 8px; padding: 48px 32px; text-align: center;">
+            <span class="font-mono-label">02 / Results</span>
+            <h3 class="font-display" style="font-size: 32px; line-height: 1.05; margin-top: 8px;">Your <em>score</em> appears here.</h3>
+            <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: var(--muted); font-size: 16px; max-width: 32ch; margin: 12px auto 32px;">
+              Upload your resume to get an instant ATS compatibility analysis with actionable improvements.
+            </p>
 
-            <div class="mt-6 space-y-3 text-left max-w-xs mx-auto">
-              <div class="flex items-center gap-3 text-sm text-gray-500">
-                <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                <span>ATS format compatibility check</span>
-              </div>
-              <div class="flex items-center gap-3 text-sm text-gray-500">
-                <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                <span>Content quality analysis</span>
-              </div>
-              <div class="flex items-center gap-3 text-sm text-gray-500">
-                <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                <span>Actionable improvement tips</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Social Proof -->
-      <div class="mt-16 text-center">
-        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-6">Trusted by job seekers worldwide</p>
-        <div class="flex flex-wrap justify-center gap-8 text-gray-400">
-          <div class="text-center">
-            <p class="text-2xl font-bold text-gray-900">10K+</p>
-            <p class="text-xs text-gray-500 mt-1">Resumes Analyzed</p>
-          </div>
-          <div class="text-center">
-            <p class="text-2xl font-bold text-gray-900">85%</p>
-            <p class="text-xs text-gray-500 mt-1">Avg Score Improvement</p>
-          </div>
-          <div class="text-center">
-            <p class="text-2xl font-bold text-gray-900">4.8/5</p>
-            <p class="text-xs text-gray-500 mt-1">User Rating</p>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; text-align: left; max-width: 280px; margin: 0 auto;">
+              <% [
+                "ATS format compatibility check",
+                "Content quality analysis",
+                "Actionable improvement tips"
+              ].each do |item| %>
+                <li style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; font-size: 14px; color: var(--ink);">
+                  <span class="font-mono-label" style="color: var(--accent); padding-top: 1px;">✦</span>
+                  <span><%= item %></span>
+                </li>
+              <% end %>
+            </ul>
           </div>
         </div>
       </div>
 
+      <!-- Social proof -->
+      <div style="margin-top: 80px; padding-top: 48px; border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);">
+        <span class="font-mono-label" style="display: block; text-align: center; color: var(--muted); margin-bottom: 28px;">Trusted by job seekers worldwide</span>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; max-width: 600px; margin: 0 auto;" class="ats-stats">
+          <% [["10K+", "Resumes analyzed"], ["85%", "Avg score improvement"], ["4.8/5", "User rating"]].each_with_index do |(n, l), i| %>
+            <div style="text-align: center; padding: 0 24px; <%= 'border-left: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);' unless i == 0 %>">
+              <div style="font-family: 'Fraunces', serif; font-size: 48px; font-weight: 400; letter-spacing: -0.03em; line-height: 0.95; font-variation-settings: 'opsz' 96;">
+                <em style="font-style: italic; color: var(--accent);"><%= n %></em>
+              </div>
+              <div class="font-mono-label" style="margin-top: 8px;"><%= l %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+  @media (max-width: 960px){ .ats-grid{grid-template-columns: 1fr !important;} }
+  @media (max-width: 600px){ .ats-stats{grid-template-columns: 1fr !important;} .ats-stats > div{padding: 18px 0 !important; border-left: none !important; border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);} .ats-stats > div:first-child{border-top: none;} }
+</style>

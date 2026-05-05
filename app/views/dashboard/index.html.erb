@@ -1,373 +1,215 @@
-<div class="min-h-full">
-  <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+<div style="background: var(--paper); min-height: 100vh; color: var(--ink); font-family: 'Inter Tight', system-ui, sans-serif;">
+  <main class="max-w-7xl mx-auto" style="padding: 32px 24px 64px;">
 
-    <!-- Upsell Banner -->
+    <!-- Upsell banner (kept, restyled inline below) -->
     <% unless current_user.has_active_subscription? %>
       <% if current_user.credits_remaining <= 1 %>
-        <%= render "shared/upsell_banner", heading: "Running low on credits!", message: "You have #{current_user.credits_remaining} credit left. Upgrade to Pro for unlimited optimizations, cover letters, and more." %>
+        <%= render "shared/upsell_banner", heading: "Running low on credits.", message: "You have #{current_user.credits_remaining} credit left. Upgrade to Pro for unlimited optimizations, cover letters, and more." %>
       <% elsif current_user.resumes.count >= 1 %>
-        <%= render "shared/upsell_banner", heading: "Ready for your next interview?", message: "Unlock AI Interview Prep, LinkedIn Optimization, and Automated Job Scraper with Premium." %>
+        <%= render "shared/upsell_banner", heading: "Ready for your next interview?", message: "Unlock AI Interview Prep, LinkedIn Optimization, and the Automated Job Scraper with Premium." %>
       <% end %>
     <% end %>
 
     <!-- Greeting -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
-            <%= time_of_day_greeting %>, <%= current_user.first_name %>
-          </h1>
-          <p class="mt-1 text-gray-500">Here's what's happening with your job search.</p>
-        </div>
-        <%= link_to new_resume_path, class: "hidden sm:inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm hover:shadow transition-all" do %>
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-          </svg>
-          New Resume
-        <% end %>
+    <div style="display: flex; align-items: end; justify-content: space-between; gap: 24px; padding-bottom: 32px; border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); margin-bottom: 40px;">
+      <div>
+        <span class="font-mono-label">Today</span>
+        <h1 class="font-display" style="font-size: clamp(36px, 5vw, 56px); margin-top: 6px; line-height: 1.05;">
+          <%= time_of_day_greeting %>, <em><%= current_user.first_name %></em>.
+        </h1>
+        <p style="color: var(--muted); font-size: 15px; margin-top: 8px; font-family:'Fraunces',serif; font-style: italic; font-weight: 300; font-variation-settings:'opsz' 24;">
+          Here's what's happening with your job search.
+        </p>
       </div>
+      <%= link_to new_resume_path, class: "btn-ink hidden sm:inline-flex", style: "flex-shrink: 0;" do %>
+        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6"/></svg>
+        New resume
+      <% end %>
     </div>
 
-    <!-- Subscription Status Banner -->
+    <!-- Status banners -->
     <% if !current_user.has_active_subscription? && current_user.credits_remaining == 0 %>
-      <div class="mb-6 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-            </svg>
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-amber-900">You're out of credits</p>
-            <p class="text-sm text-amber-700">Upgrade to Pro for unlimited generations or purchase credit packs.</p>
-          </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; background: var(--ink); color: var(--paper); border-radius: 6px; margin-bottom: 32px;">
+        <div>
+          <span class="font-mono-label" style="color: var(--accent);">Out of credits</span>
+          <p style="font-family:'Fraunces',serif; font-size: 19px; font-weight: 400; letter-spacing: -0.01em; font-variation-settings:'opsz' 24; margin-top: 4px;">
+            You've used your free credits. <em style="color: var(--accent); font-style: italic;">Upgrade to keep tailoring.</em>
+          </p>
         </div>
-        <%= link_to new_subscription_path, class: "flex-shrink-0 inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all shadow-sm" do %>
-          Upgrade
-        <% end %>
+        <%= link_to "Upgrade", new_subscription_path, class: "btn-accent", style: "flex-shrink: 0;" %>
       </div>
     <% elsif current_user.trial_active? %>
-      <div class="mb-6 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-blue-900">Trial active</p>
-            <p class="text-sm text-blue-700">Your trial ends <%= time_ago_in_words(current_user.trial_ends_at) %> from now. Upgrade to keep access.</p>
-          </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 6px; margin-bottom: 32px;">
+        <div>
+          <span class="font-mono-label" style="color: var(--accent);">Trial active</span>
+          <p style="font-family:'Fraunces',serif; font-size: 17px; font-weight: 400; margin-top: 4px;">
+            Your trial ends <em style="color: var(--accent); font-style: italic;"><%= time_ago_in_words(current_user.trial_ends_at) %></em> from now.
+          </p>
         </div>
-        <%= link_to new_subscription_path, class: "flex-shrink-0 inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold text-blue-700 bg-white border border-blue-300 hover:bg-blue-50 transition-all" do %>
-          View Plans
-        <% end %>
+        <%= link_to "View plans", new_subscription_path, class: "btn-outline", style: "flex-shrink: 0;" %>
       </div>
     <% end %>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
-      <!-- Credits -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+    <!-- Stats grid — editorial 4-up -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px; overflow: hidden; margin-bottom: 56px;" class="stats-grid">
+      <% stats = [
+        ["Credits", current_user.has_active_subscription? ? "∞" : @credits_remaining.to_s, current_user.has_active_subscription? ? "Unlimited (subscription)" : "Remaining on your account"],
+        ["Resumes", @resumes_count.to_s, "#{@optimized_count} optimized"],
+        ["Cover letters", @cover_letters_count.to_s, "Drafted on RezumFit"],
+        ["Avg ATS score", (@avg_ats_score ? "#{@avg_ats_score}%" : "—"), "Across optimized resumes"]
+      ] %>
+      <% stats.each_with_index do |(label, value, sub), i| %>
+        <div style="padding: 28px 24px; <%= 'border-left: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);' unless i == 0 %> background: var(--paper);">
+          <span class="font-mono-label"><%= label %></span>
+          <div style="font-family:'Fraunces',serif; font-size: clamp(36px, 4vw, 56px); font-weight: 400; letter-spacing: -0.03em; line-height: 0.95; font-variation-settings:'opsz' 96; margin-top: 12px;">
+            <% if value.match?(/^[+\-]?\d/) %><em style="font-style: italic; color: var(--accent);"><%= value %></em><% else %><%= value %><% end %>
           </div>
-          <% if current_user.has_active_subscription? %>
-            <span class="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">Unlimited</span>
-          <% end %>
-        </div>
-        <p class="text-2xl font-bold text-gray-900">
-          <%= current_user.has_active_subscription? ? "∞" : @credits_remaining %>
-        </p>
-        <p class="text-sm text-gray-500 mt-0.5">Credits remaining</p>
-      </div>
-
-      <!-- Resumes -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-blue-500"></div>
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-          </div>
-        </div>
-        <p class="text-2xl font-bold text-gray-900"><%= @resumes_count %></p>
-        <p class="text-sm text-gray-500 mt-0.5">Resumes <span class="text-green-600 font-medium">(<%= @optimized_count %> optimized)</span></p>
-      </div>
-
-      <!-- Cover Letters -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-purple-500"></div>
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-50 to-fuchsia-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-          </div>
-        </div>
-        <p class="text-2xl font-bold text-gray-900"><%= @cover_letters_count %></p>
-        <p class="text-sm text-gray-500 mt-0.5">Cover letters</p>
-      </div>
-
-      <!-- Avg ATS Score -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-400 to-violet-500"></div>
-        <div class="flex items-center justify-between mb-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center group-hover:scale-105 transition-transform">
-            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-          </div>
-        </div>
-        <p class="text-2xl font-bold text-gray-900">
-          <% if @avg_ats_score %>
-            <%= @avg_ats_score %>%
-          <% else %>
-            --
-          <% end %>
-        </p>
-        <p class="text-sm text-gray-500 mt-0.5">Avg ATS score</p>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="mb-8">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- Build Resume from Scratch -->
-        <%= link_to new_resume_wizard_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-emerald-200 transition-all" do %>
-          <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors">Build Resume</p>
-              <p class="text-xs text-gray-500 mt-0.5">Create from scratch with AI</p>
-            </div>
-          </div>
-          <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        <% end %>
-
-        <!-- Upload Resume -->
-        <%= link_to new_resume_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-blue-200 transition-all" do %>
-          <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Upload Resume</p>
-              <p class="text-xs text-gray-500 mt-0.5">Optimize for any job posting</p>
-            </div>
-          </div>
-          <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        <% end %>
-
-        <!-- Write Cover Letter -->
-        <% if current_user.resumes.any? %>
-          <%= link_to new_resume_cover_letter_path(current_user.resumes.recent.first), class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-purple-200 transition-all" do %>
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Write Cover Letter</p>
-                <p class="text-xs text-gray-500 mt-0.5">AI-generated, tailored to the job</p>
-              </div>
-            </div>
-            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          <% end %>
-        <% else %>
-          <%= link_to new_resume_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-purple-200 transition-all" do %>
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Write Cover Letter</p>
-                <p class="text-xs text-gray-500 mt-0.5">Upload a resume first to get started</p>
-              </div>
-            </div>
-            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          <% end %>
-        <% end %>
-
-        <!-- View Billing -->
-        <%= link_to billing_index_path, class: "group relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-green-200 transition-all" do %>
-          <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900 group-hover:text-green-600 transition-colors">Billing & Credits</p>
-              <p class="text-xs text-gray-500 mt-0.5">Manage subscription and credits</p>
-            </div>
-          </div>
-          <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        <% end %>
-      </div>
-    </div>
-
-    <!-- Locked Premium Features (show to non-premium users) -->
-    <% unless current_user.has_premium_subscription? %>
-      <div class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Unlock Premium Tools</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <% [
-            { title: "AI Interview Prep", desc: "STAR-method answers for any role", icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z", path: interview_preps_path },
-            { title: "LinkedIn Optimization", desc: "AI-powered profile rewrite", icon: "M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z", path: linkedin_optimizations_path },
-            { title: "Automated Job Scraper", desc: "AI finds jobs matching your skills", icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z", path: scraped_jobs_path },
-          ].each do |feature| %>
-            <%= link_to feature[:path], class: "group relative bg-white rounded-2xl border border-gray-100 p-5 hover:border-blue-200 hover:shadow-md transition-all overflow-hidden" do %>
-              <div class="absolute top-3 right-3">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                  PREMIUM
-                </span>
-              </div>
-              <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-3 opacity-50 group-hover:opacity-100 transition-opacity">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= feature[:icon] %>"/></svg>
-              </div>
-              <p class="text-sm font-semibold text-gray-900 mb-0.5"><%= feature[:title] %></p>
-              <p class="text-xs text-gray-500"><%= feature[:desc] %></p>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- Job Scraper Widget (Premium) -->
-    <% if current_user.has_premium_subscription? %>
-      <div class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-900">Latest Scraped Jobs</h2>
-          <%= link_to scraped_jobs_path, class: "text-sm text-blue-600 hover:text-blue-800 font-medium" do %>
-            View all &rarr;
-          <% end %>
-        </div>
-        <% scraped = current_user.scraped_jobs.not_hidden.high_match.limit(3) %>
-        <% if scraped.any? %>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <% scraped.each do |job| %>
-              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-gray-300 transition-all">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold
-                    <%= case job.match_color
-                        when 'green' then 'bg-green-100 text-green-800'
-                        when 'yellow' then 'bg-yellow-100 text-yellow-800'
-                        else 'bg-gray-100 text-gray-800'
-                        end %>">
-                    <%= job.match_score %>% match
-                  </span>
-                  <% if job.remote? %>
-                    <span class="text-xs text-green-600 font-medium">Remote</span>
-                  <% end %>
-                </div>
-                <h3 class="text-sm font-semibold text-gray-900 truncate"><%= job.role %></h3>
-                <p class="text-sm text-gray-500 truncate"><%= job.company_name %></p>
-                <% if job.location.present? %>
-                  <p class="text-xs text-gray-400 mt-1"><%= job.location %></p>
-                <% end %>
-                <div class="mt-3">
-                  <%= link_to scraped_job_path(job), class: "text-xs text-blue-600 hover:text-blue-800 font-medium" do %>
-                    View details &rarr;
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="bg-purple-50 border border-purple-200 rounded-xl p-5 text-center">
-            <p class="text-sm text-purple-800 mb-2">No scraped jobs yet. Configure your scraper to get started!</p>
-            <%= link_to "Set Up Scraper", settings_scraped_jobs_path, class: "text-sm font-medium text-purple-700 hover:text-purple-900" %>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-
-    <!-- Recent Activity -->
-    <div>
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-      <% if @recent_activity.any? %>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
-          <% @recent_activity.each do |activity| %>
-            <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
-              <div class="flex items-center space-x-4 min-w-0">
-                <% if activity[:type] == "resume" %>
-                  <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                  </div>
-                <% else %>
-                  <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4.5 h-4.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                  </div>
-                <% end %>
-
-                <div class="min-w-0">
-                  <p class="text-sm font-medium text-gray-900 truncate"><%= activity[:title] %></p>
-                  <p class="text-xs text-gray-500">
-                    <%= activity[:type] == "resume" ? "Resume" : "Cover letter" %>
-                    <%= activity[:action] %>
-                    <%= time_ago_in_words(activity[:date]) %> ago
-                  </p>
-                </div>
-              </div>
-
-              <% if activity[:type] == "resume" %>
-                <%= link_to resume_path(activity[:record]), class: "text-sm text-blue-600 hover:text-blue-800 font-medium flex-shrink-0" do %>
-                  View
-                <% end %>
-              <% else %>
-                <%= link_to resume_cover_letter_path(activity[:record].resume, activity[:record]), class: "text-sm text-purple-600 hover:text-purple-800 font-medium flex-shrink-0" do %>
-                  View
-                <% end %>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-          <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-            </svg>
-          </div>
-          <h3 class="text-sm font-semibold text-gray-900 mb-1">No activity yet</h3>
-          <p class="text-sm text-gray-500 mb-4">Upload your first resume to get started.</p>
-          <%= link_to new_resume_path, class: "inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-sm" do %>
-            Upload Resume
-          <% end %>
+          <p style="font-size: 13px; color: var(--muted); margin-top: 8px; font-family:'Fraunces',serif; font-weight: 300; font-style: italic; font-variation-settings:'opsz' 24;"><%= sub %></p>
         </div>
       <% end %>
     </div>
 
+    <!-- Quick Actions -->
+    <div style="margin-bottom: 56px;">
+      <div style="display: flex; align-items: end; justify-content: space-between; margin-bottom: 24px;">
+        <div>
+          <span class="font-mono-label">01 / Quick actions</span>
+          <h2 class="font-display" style="font-size: 32px; line-height: 1; margin-top: 6px;">What's next?</h2>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;" class="actions-grid">
+        <% [
+          [new_resume_wizard_path, "Build resume", "Create from scratch with AI"],
+          [new_resume_path, "Upload resume", "Optimize for any job posting"],
+          [(current_user.resumes.any? ? new_resume_cover_letter_path(current_user.resumes.recent.first) : new_resume_path), "Write cover letter", current_user.resumes.any? ? "Tailored to the job" : "Upload a resume first"],
+          [billing_index_path, "Billing & credits", "Manage subscription and packs"]
+        ].each do |path, title, sub| %>
+          <%= link_to path, style: "display: flex; flex-direction: column; gap: 12px; padding: 22px 20px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px; text-decoration: none; color: var(--ink); transition: background .15s, border-color .15s; min-height: 140px;",
+              onmouseover: "this.style.background='var(--paper-2)'; this.style.borderColor='var(--ink)'", onmouseout: "this.style.background='var(--paper)'; this.style.borderColor='color-mix(in oklab, var(--ink) 12%, transparent)'" do %>
+            <span class="font-mono-label" style="color: var(--accent);">→</span>
+            <div style="margin-top: auto;">
+              <p style="font-family:'Fraunces',serif; font-size: 19px; font-weight: 500; letter-spacing: -0.01em; font-variation-settings:'opsz' 24;"><%= title %></p>
+              <p style="font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.4;"><%= sub %></p>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Locked premium tools -->
+    <% unless current_user.has_premium_subscription? %>
+      <div style="margin-bottom: 56px;">
+        <div style="margin-bottom: 24px;">
+          <span class="font-mono-label">02 / Premium</span>
+          <h2 class="font-display" style="font-size: 32px; line-height: 1; margin-top: 6px;">Tools to <em>unlock</em>.</h2>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;" class="locked-grid">
+          <% [
+            [interview_preps_path, "AI Interview Prep", "STAR-method answers for any role"],
+            [linkedin_optimizations_path, "LinkedIn Optimization", "AI-powered profile rewrite"],
+            [scraped_jobs_path, "Automated Job Scraper", "AI finds jobs matching your skills"]
+          ].each do |path, title, sub| %>
+            <%= link_to path, style: "position: relative; display: flex; flex-direction: column; gap: 14px; padding: 24px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px; text-decoration: none; color: var(--ink); transition: all .15s; min-height: 160px;",
+                onmouseover: "this.style.background='var(--paper-2)'", onmouseout: "this.style.background='var(--paper)'" do %>
+              <span class="font-mono-label" style="position: absolute; top: 16px; right: 16px; color: var(--accent);">Premium</span>
+              <span class="font-mono-label">Locked</span>
+              <div style="margin-top: auto;">
+                <p style="font-family:'Fraunces',serif; font-size: 21px; font-weight: 500; letter-spacing: -0.01em; font-variation-settings:'opsz' 24;"><%= title %></p>
+                <p style="font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.45;"><%= sub %></p>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Job scraper widget (premium) -->
+    <% if current_user.has_premium_subscription? %>
+      <% scraped = current_user.scraped_jobs.not_hidden.high_match.limit(3) %>
+      <div style="margin-bottom: 56px;">
+        <div style="display: flex; align-items: end; justify-content: space-between; margin-bottom: 24px;">
+          <div>
+            <span class="font-mono-label">03 / Scraped jobs</span>
+            <h2 class="font-display" style="font-size: 32px; line-height: 1; margin-top: 6px;">Latest <em>matches</em>.</h2>
+          </div>
+          <%= link_to scraped_jobs_path, style: "font-size: 13px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink);" do %>View all →<% end %>
+        </div>
+        <% if scraped.any? %>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;" class="scraped-grid">
+            <% scraped.each do |job| %>
+              <div style="padding: 22px 20px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                  <span class="font-mono-label" style="color: var(--accent);"><%= job.match_score %>% match</span>
+                  <% if job.remote? %><span class="font-mono-label">Remote</span><% end %>
+                </div>
+                <p style="font-family:'Fraunces',serif; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; font-variation-settings:'opsz' 24;"><%= job.role %></p>
+                <p style="font-size: 13px; color: var(--muted); margin-top: 4px; font-family:'Fraunces',serif; font-style: italic; font-weight: 300;"><%= job.company_name %></p>
+                <% if job.location.present? %><p style="font-size: 12px; color: var(--muted); margin-top: 2px;"><%= job.location %></p><% end %>
+                <%= link_to scraped_job_path(job), style: "font-size: 13px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); display: inline-block; margin-top: 14px;" do %>View →<% end %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div style="padding: 32px; background: var(--paper); border: 1px dashed color-mix(in oklab, var(--ink) 18%, transparent); border-radius: 6px; text-align: center;">
+            <p style="font-family:'Fraunces',serif; font-size: 17px; font-style: italic; color: var(--muted); margin-bottom: 14px;">No scraped jobs yet — configure your scraper to begin.</p>
+            <%= link_to "Set up scraper", settings_scraped_jobs_path, class: "btn-outline" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Recent activity -->
+    <div>
+      <div style="margin-bottom: 24px;">
+        <span class="font-mono-label">Latest</span>
+        <h2 class="font-display" style="font-size: 32px; line-height: 1; margin-top: 6px;">Recent <em>activity</em>.</h2>
+      </div>
+
+      <% if @recent_activity.any? %>
+        <div style="background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px; overflow: hidden;">
+          <% @recent_activity.each_with_index do |activity, i| %>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; <%= 'border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);' if i > 0 %>">
+              <div style="display: flex; align-items: center; gap: 16px; min-width: 0;">
+                <span class="font-mono-label" style="color: var(--accent); flex-shrink: 0; min-width: 60px;">
+                  <%= activity[:type] == "resume" ? "Resume" : "Cover" %>
+                </span>
+                <div style="min-width: 0;">
+                  <p style="font-family:'Fraunces',serif; font-size: 16px; font-weight: 500; letter-spacing: -0.01em; font-variation-settings:'opsz' 24; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= activity[:title] %></p>
+                  <p style="font-size: 12px; color: var(--muted); margin-top: 2px;">
+                    <%= activity[:action] %> · <%= time_ago_in_words(activity[:date]) %> ago
+                  </p>
+                </div>
+              </div>
+              <% target = activity[:type] == "resume" ? resume_path(activity[:record]) : resume_cover_letter_path(activity[:record].resume, activity[:record]) %>
+              <%= link_to target, style: "font-size: 13px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); flex-shrink: 0;" do %>View<% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div style="padding: 56px 32px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px; text-align: center;">
+          <span class="font-mono-label">Empty</span>
+          <h3 class="font-display" style="font-size: 28px; margin-top: 8px;">Nothing yet.</h3>
+          <p style="font-family:'Fraunces',serif; font-style: italic; color: var(--muted); font-size: 16px; font-weight: 300; margin: 8px 0 24px;">Upload your first resume to get started.</p>
+          <%= link_to "Upload resume", new_resume_path, class: "btn-ink" %>
+        </div>
+      <% end %>
+    </div>
   </main>
 </div>
+
+<style>
+  @media (max-width: 960px){
+    .stats-grid{grid-template-columns: repeat(2, 1fr) !important;}
+    .stats-grid > div:nth-child(odd){border-left: none !important;}
+    .stats-grid > div:nth-child(n+3){border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);}
+    .actions-grid{grid-template-columns: repeat(2, 1fr) !important;}
+    .locked-grid, .scraped-grid{grid-template-columns: 1fr !important;}
+  }
+  @media (max-width: 600px){
+    .stats-grid{grid-template-columns: 1fr !important;}
+    .stats-grid > div{border-left: none !important; border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);}
+    .stats-grid > div:first-child{border-top: none;}
+    .actions-grid{grid-template-columns: 1fr !important;}
+  }
+</style>

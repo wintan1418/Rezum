@@ -1,42 +1,7 @@
-<!DOCTYPE html>
-<html lang="<%= I18n.locale %>" class="scroll-smooth">
-<head>
-  <title>RezumFit - AI-Powered Resume & Cover Letter Generator</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Optimize your resume for ATS systems and generate tailored cover letters in seconds. AI-powered tools trusted by thousands of job seekers.">
-  <meta name="keywords" content="resume optimizer, ATS score, cover letter generator, AI resume, job application">
-  <link rel="canonical" href="<%= root_url %>">
+<% content_for :title, "RezumFit — A resume, tailored." %>
+<% content_for :meta_description, "RezumFit reads the listing, rewrites your resume, and returns a document that beats the ATS — without losing the voice that made it yours." %>
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="RezumFit">
-  <meta property="og:title" content="RezumFit - AI-Powered Resume & Cover Letter Generator">
-  <meta property="og:description" content="Optimize your resume for ATS systems and generate tailored cover letters in seconds. AI-powered tools trusted by thousands of job seekers.">
-  <meta property="og:url" content="<%= root_url %>">
-  <meta property="og:image" content="<%= "#{request.base_url}/og-image.png" %>">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="RezumFit - AI-Powered Resume & Cover Letter Generator">
-  <meta name="twitter:description" content="Optimize your resume for ATS systems and generate tailored cover letters in seconds.">
-  <meta name="twitter:image" content="<%= "#{request.base_url}/og-image.png" %>">
-
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="icon" href="/icon.png" type="image/png">
-
-  <style>
-    body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
-  </style>
-
-  <!-- Organization Schema -->
+<% content_for :head do %>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -45,13 +10,9 @@
     "url": "<%= root_url %>",
     "logo": "<%= "#{request.base_url}/icon.png" %>",
     "description": "AI-powered resume optimization and cover letter generation platform.",
-    "sameAs": [
-      "https://github.com/wintan1418"
-    ]
+    "sameAs": ["https://github.com/wintan1418"]
   }
   </script>
-
-  <!-- WebApplication Schema -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -60,1383 +21,851 @@
     "url": "<%= root_url %>",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD",
-      "description": "Free tier with 2 credits. Pro plans start at $29/month."
-    },
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free tier with 2 credits. Pro plans start at $29/month."},
     "description": "Optimize your resume for ATS systems and generate tailored cover letters in seconds."
   }
   </script>
-</head>
+<% end %>
 
-<body class="bg-white">
+<div class="editorial">
 
-  <!-- ============================================ -->
-  <!-- NAVBAR                                       -->
-  <!-- ============================================ -->
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-300" data-controller="navbar-scroll mobile-menu">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16 sm:h-20">
-        <!-- Logo -->
-        <a href="#" class="flex items-center space-x-2">
-          <img src="/icon.svg" alt="RezumFit" class="w-9 h-9 rounded-xl shadow-lg">
-          <span class="text-xl font-bold text-gray-900">RezumFit</span>
-        </a>
-
-        <!-- Desktop Links -->
-        <div class="hidden md:flex items-center space-x-8">
-          <%= link_to "Free ATS Checker", ats_checker_path, class: "text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors" %>
-          <a href="#features" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-          <a href="#how-it-works" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">How It Works</a>
-          <%= link_to "Blog", articles_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
-          <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
-          <a href="#faq" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">FAQ</a>
-        </div>
-
-        <!-- Auth Buttons -->
-        <div class="hidden md:flex items-center space-x-3">
-          <%= link_to "Sign In", new_user_session_path, class: "text-sm font-medium text-gray-700 hover:text-gray-900 px-4 py-2 transition-colors" %>
-          <%= link_to new_user_registration_path, class: "text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all" do %>
-            Get Started Free
-          <% end %>
-        </div>
-
-        <!-- Mobile Hamburger -->
-        <button type="button" data-action="click->mobile-menu#toggle" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100">
-          <svg data-mobile-menu-target="openIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-          <svg data-mobile-menu-target="closeIcon" class="hidden w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <nav class="top">
+    <div class="wrap row">
+      <%= link_to root_path, class: "mark", aria: { label: "RezumFit" } do %>
+        <span class="glyph"></span>
+        <span>RezumFit</span>
+      <% end %>
+      <div class="links">
+        <%= link_to "ATS Checker", ats_checker_path, style: "color:var(--accent)" %>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <%= link_to "Blog", articles_path %>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
       </div>
-    </div>
-
-    <!-- Mobile Menu -->
-    <div data-mobile-menu-target="menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
-      <div class="px-4 py-4 space-y-2">
-        <%= link_to "Free ATS Checker", ats_checker_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-blue-600 hover:bg-blue-50" %>
-        <a href="#features" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Features</a>
-        <a href="#how-it-works" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">How It Works</a>
-        <%= link_to "Blog", articles_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-        <a href="#pricing" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Pricing</a>
-        <a href="#faq" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">FAQ</a>
-        <div class="pt-3 border-t border-gray-100 space-y-2">
-          <%= link_to "Sign In", new_user_session_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-          <%= link_to "Get Started Free", new_user_registration_path, class: "block px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 text-center" %>
-        </div>
+      <div class="cta">
+        <% if user_signed_in? %>
+          <%= link_to "Dashboard", dashboard_path %>
+          <%= link_to "New resume", new_resume_path, class: "btn" %>
+        <% else %>
+          <%= link_to "Sign in", new_user_session_path %>
+          <%= link_to "Start free", new_user_registration_path, class: "btn" %>
+        <% end %>
       </div>
     </div>
   </nav>
 
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <header class="hero" data-screen-label="01 Hero">
+    <div class="wrap">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        <span class="mono">AI-powered career tools · Free to start</span>
+      </div>
 
-  <!-- ============================================ -->
-  <!-- HERO                                         -->
-  <!-- ============================================ -->
-  <section class="relative pt-28 sm:pt-36 pb-20 sm:pb-28 overflow-hidden">
-    <!-- Background Blobs -->
-    <div class="absolute inset-0 -z-10">
-      <div class="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full opacity-40 blur-3xl blob-animate"></div>
-      <div class="absolute bottom-0 left-0 w-96 h-96 bg-purple-100 rounded-full opacity-40 blur-3xl blob-animate" style="animation-delay: -4s;"></div>
-      <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-100 rounded-full opacity-30 blur-3xl blob-animate" style="animation-delay: -8s;"></div>
+      <h1>
+        Is your resume<br>
+        <span class="ampline">getting <em>rejected</em>&thinsp;?</span>
+      </h1>
+
+      <div class="sub">
+        <p class="lede">75% of resumes are rejected by ATS before a human ever sees them. RezumFit reads the listing, rewrites your draft, and returns a document that passes — without losing the voice that made it yours.</p>
+        <div class="actions">
+          <div class="pair">
+            <%= link_to ats_checker_path, class: "btn-primary" do %>
+              Check my ATS score — free
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <% end %>
+            <%= link_to "Or tailor a draft", new_user_registration_path, class: "btn-ghost" %>
+          </div>
+          <span class="mono" style="color:var(--muted)">No credit card · Free report in &lt; 30s · GPT-4 + Claude + Gemini</span>
+        </div>
+      </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <!-- Left: Copy -->
-        <div>
-          <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100/60 mb-6 shadow-sm">
-            <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-            <span class="text-xs font-semibold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">AI-Powered Career Tools</span>
-            <span class="mx-2 text-gray-300">|</span>
-            <span class="text-xs font-medium text-gray-500">Free to start</span>
+    <!-- Trusted by — companies our users target -->
+    <div class="marquee" aria-hidden="true">
+      <div class="track">
+        <span class="mono" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-style:normal">Trusted by professionals at</span><span class="dot">✦</span>
+        <span>Google</span><span class="dot">✦</span>
+        <span>Microsoft</span><span class="dot">✦</span>
+        <span>Amazon</span><span class="dot">✦</span>
+        <span>Meta</span><span class="dot">✦</span>
+        <span>Deloitte</span><span class="dot">✦</span>
+        <span>PwC</span><span class="dot">✦</span>
+        <span>Stripe</span><span class="dot">✦</span>
+        <span>Andela</span><span class="dot">✦</span>
+        <span>Flutterwave</span><span class="dot">✦</span>
+        <span>McKinsey</span><span class="dot">✦</span>
+        <span class="mono" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-style:normal">Trusted by professionals at</span><span class="dot">✦</span>
+        <span>Google</span><span class="dot">✦</span>
+        <span>Microsoft</span><span class="dot">✦</span>
+        <span>Amazon</span><span class="dot">✦</span>
+        <span>Meta</span><span class="dot">✦</span>
+        <span>Deloitte</span><span class="dot">✦</span>
+        <span>PwC</span><span class="dot">✦</span>
+        <span>Stripe</span><span class="dot">✦</span>
+        <span>Andela</span><span class="dot">✦</span>
+        <span>Flutterwave</span><span class="dot">✦</span>
+        <span>McKinsey</span><span class="dot">✦</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       STATS BAR
+       ============================================================ -->
+  <section data-screen-label="02 Numbers">
+    <div class="wrap">
+      <div class="stats">
+        <div class="stat">
+          <div class="n"><em>+47</em></div>
+          <div class="l">Avg ATS score boost</div>
+          <div class="d">After a single RezumFit pass</div>
+        </div>
+        <div class="stat">
+          <div class="n">30<em>s</em></div>
+          <div class="l">Median draft time</div>
+          <div class="d">From paste to polished</div>
+        </div>
+        <div class="stat">
+          <div class="n">3<em>×</em></div>
+          <div class="l">Recruiter callbacks</div>
+          <div class="d">vs. an untailored resume</div>
+        </div>
+        <div class="stat">
+          <div class="n">95<em>%</em></div>
+          <div class="l">Satisfaction rate</div>
+          <div class="d">From verified RezumFit users</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ARTIFACT — the document on the left, JD + score on the right
+       ============================================================ -->
+  <section data-screen-label="03 Artifact">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">01 / Live preview</div>
+        <h2>One resume, <em>recast</em><br>for every role.</h2>
+        <p>Paste the listing on the right; watch your resume rewrite itself on the left. Keywords surface, language sharpens, dates align — without losing the voice that made it yours.</p>
+      </div>
+
+      <div class="artifact-wrap">
+        <article class="artifact" aria-label="Sample tailored resume">
+          <div class="topline">
+            <div>
+              <div class="name">Adaeze Eze</div>
+              <div class="role">Senior Product Designer · Lagos / Remote</div>
+            </div>
+            <div class="right">
+              adaeze.eze@mail<br>
+              +234 · 803 · 555 · 0144<br>
+              adaeze.studio
+            </div>
           </div>
 
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            Is your resume getting
-            <span class="gradient-text">rejected by ATS?</span>
-          </h1>
-
-          <p class="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed max-w-lg">
-            75% of resumes are rejected before a human ever sees them. Find out your score in 10 seconds — <span class="font-semibold text-gray-900">completely free, no sign-up required.</span>
+          <h3>Summary</h3>
+          <p style="font-size:14px;line-height:1.55;color:#2a2926;font-family:'Fraunces',serif;font-weight:300;font-variation-settings:'opsz' 24">
+            Designer of enterprise tooling with eight years shipping calm, considered software for technical users. Comfortable holding the pen from discovery through ship; happiest at the seam between research and craft.
           </p>
 
-          <div class="mt-8">
-            <%= link_to ats_checker_path, class: "inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all" do %>
-              <svg class="w-6 h-6 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-              Check My ATS Score — Free
-            <% end %>
-            <p class="mt-3 text-sm text-gray-500">No account needed. Upload your resume and get results instantly.</p>
+          <h3>Experience</h3>
+          <div class="entry">
+            <div class="when">2023 — Now</div>
+            <div class="what">
+              <b>Lead Product Designer</b><i>Quill — developer infrastructure</i>
+              <p>Owned the design of workflow primitives used by 14k engineers daily. Reduced time-to-first-deploy by 41%. Mentored two designers; partnered weekly with eng + research.</p>
+            </div>
+          </div>
+          <div class="entry">
+            <div class="when">2020 — 2023</div>
+            <div class="what">
+              <b>Senior Designer</b><i>Northwind Labs</i>
+              <p>Led the redesign of the data-modelling canvas. Authored a component system adopted across four product lines.</p>
+            </div>
+          </div>
+          <div class="entry">
+            <div class="when">2017 — 2020</div>
+            <div class="what">
+              <b>Product Designer</b><i>Folio (acquired)</i>
+              <p>Founding designer. From zero to 60k MAU. Designed the editor, the marketplace, and the brand.</p>
+            </div>
           </div>
 
-          <!-- Trust Stats -->
-          <div class="mt-10 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-6 text-sm text-gray-500">
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              <span class="font-medium">No credit card required</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              <span class="font-medium">2 free credits</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              <span class="font-medium">GPT-4 + Claude + Gemini</span>
+          <h3>Selected Skills</h3>
+          <p style="font-family:'Inter Tight';font-size:13px;color:#3a3833;line-height:1.6">
+            Systems design · Prototyping · Workflow modelling · Research synthesis · Figma · Code-aware design · Design ops
+          </p>
+        </article>
+
+        <aside class="artifact-side">
+          <div class="jd-card">
+            <div class="label"><span>Job listing · pasted</span><span class="live">Analyzing</span></div>
+            <div class="title">Lead Product Designer</div>
+            <div class="co">Conduit, Inc. · Remote — North America</div>
+            <div class="keywords">
+              <span class="kw matched">Workflow design</span>
+              <span class="kw matched">Enterprise</span>
+              <span class="kw matched">Component systems</span>
+              <span class="kw matched">Cross-functional</span>
+              <span class="kw">B2B SaaS</span>
+              <span class="kw matched">Mentorship</span>
+              <span class="kw">0→1</span>
+              <span class="kw matched">Research-led</span>
             </div>
           </div>
+
+          <div class="score-card">
+            <div class="num">94<sub>/100</sub></div>
+            <div class="meta">
+              <b>ATS fit score</b>
+              <p>Strong match on craft & seniority. We surfaced three buried wins from your draft and rewrote your summary to lead with workflow tooling.</p>
+              <div class="bar"><i></i></div>
+            </div>
+          </div>
+
+          <div class="jd-card" style="background:transparent;border-style:dashed">
+            <div class="label"><span>What changed</span><span style="color:var(--accent)">+ 11 edits</span></div>
+            <ul style="list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;font-family:'Fraunces',serif;font-size:14px;font-weight:300;line-height:1.4">
+              <li><span class="mono" style="color:var(--accent)">REWRITE</span> &nbsp; Summary now leads with <i>enterprise tooling</i></li>
+              <li><span class="mono" style="color:var(--accent)">SURFACE</span> &nbsp; Mentorship, previously buried in row 3</li>
+              <li><span class="mono" style="color:var(--accent)">METRIC</span> &nbsp; Pulled "41% faster deploys" forward</li>
+              <li><span class="mono" style="color:var(--graphite)">KEEP</span> &nbsp; Voice. Cadence. The em-dashes.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PERKS — what you get free
+       ============================================================ -->
+  <section data-screen-label="04 Perks">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">02 / What you get free</div>
+        <h2>Start <em>free.</em><br>No strings attached.</h2>
+        <p>Every account comes loaded from day one — no credit card, no trial timer, no upsell ambush. Two credits, all the AI providers, real exports.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <span class="num mono">Perk 01</span>
+          <div class="ill">
+<pre class="diagram">┌──────────────┐
+│ <span class="acc">credits: 2</span>   │
+│ status: live │
+└──────────────┘</pre>
+          </div>
+          <h4>Two free <em>credits</em>.</h4>
+          <p>No card needed. Upload your resume and start optimizing immediately — no friction between you and a working draft.</p>
         </div>
-
-        <!-- Right: Mock UI -->
-        <div class="relative hero-float hidden lg:block">
-          <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 max-w-md ml-auto">
-            <!-- Mock Header -->
-            <div class="flex items-center justify-between mb-5">
-              <div>
-                <p class="text-xs text-gray-400 uppercase tracking-wide font-semibold">ATS Score</p>
-                <p class="text-3xl font-bold text-green-600 mt-1">89%</p>
-              </div>
-              <div class="w-16 h-16 relative">
-                <svg class="w-16 h-16 -rotate-90" viewBox="0 0 36 36">
-                  <path class="text-gray-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
-                  <path class="text-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="89, 100" stroke-linecap="round"/>
-                </svg>
-              </div>
-            </div>
-
-            <!-- Mock Keywords -->
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Matched Keywords</p>
-            <div class="flex flex-wrap gap-1.5 mb-5">
-              <span class="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-md">React.js</span>
-              <span class="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-md">TypeScript</span>
-              <span class="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-md">Node.js</span>
-              <span class="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-md">AWS</span>
-              <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-md">CI/CD</span>
-              <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-md">Agile</span>
-            </div>
-
-            <!-- Mock Resume Preview -->
-            <div class="bg-gray-50 rounded-lg p-4 space-y-2">
-              <div class="h-3 bg-gray-200 rounded w-3/4"></div>
-              <div class="h-2 bg-gray-200 rounded w-full"></div>
-              <div class="h-2 bg-gray-200 rounded w-5/6"></div>
-              <div class="h-2 bg-gray-200 rounded w-4/6"></div>
-              <div class="h-3 bg-gray-200 rounded w-2/4 mt-3"></div>
-              <div class="h-2 bg-gray-200 rounded w-full"></div>
-              <div class="h-2 bg-gray-200 rounded w-3/4"></div>
-            </div>
+        <div class="step">
+          <span class="num mono">Perk 02</span>
+          <div class="ill">
+<pre class="diagram">  GPT-4    <span class="acc">●</span>
+  Claude   <span class="acc">●</span>
+  Gemini   <span class="acc">●</span>
+  → best-of-each</pre>
           </div>
-
-          <!-- Floating Badge: Bottom Left -->
-          <div class="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-              <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-gray-900">Resume Optimized</p>
-              <p class="text-xs text-gray-500">+47 ATS points</p>
-            </div>
+          <h4>Three frontier <em>models</em>.</h4>
+          <p>GPT-4, Claude, and Gemini — included on every account. We route each task to the model that handles it best, automatically.</p>
+        </div>
+        <div class="step">
+          <span class="num mono">Perk 03</span>
+          <div class="ill">
+<pre class="diagram">  resume.<span class="acc">pdf</span>   ↓
+  resume.<span class="acc">docx</span>  ↓
+  cover.<span class="acc">pdf</span>    ↓</pre>
           </div>
-
-          <!-- Floating Badge: Top Left -->
-          <div class="absolute -top-2 -left-6 bg-white rounded-xl shadow-lg border border-gray-100 px-3.5 py-2.5 flex items-center space-x-2" style="animation: heroFloat 8s ease-in-out infinite; animation-delay: -3s;">
-            <div class="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center">
-              <svg class="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-gray-900">Cover Letter</p>
-              <p class="text-xs text-gray-500">Generated in 15s</p>
-            </div>
+          <h4>PDF &amp; DOCX <em>exports</em>.</h4>
+          <p>Download in any format. Free users included. Formatting and typography are preserved end-to-end — no broken layouts, ever.</p>
+        </div>
+        <div class="step">
+          <span class="num mono">Perk 04</span>
+          <div class="ill">
+<pre class="diagram">  bought:    ████
+  expires:   <span class="acc">never</span>
+  use when:  ready</pre>
           </div>
+          <h4>Credits don't <em>expire</em>.</h4>
+          <p>Use them whenever you're ready. No monthly counter to remember, no rush, no pressure. Buy ten — use one a year if you want.</p>
+        </div>
+        <div class="step">
+          <span class="num mono">Perk 05</span>
+          <div class="ill">
+<pre class="diagram">  upload    ↓
+  paste JD  ↓
+  download  <span class="acc">✓</span></pre>
+          </div>
+          <h4>Under <em>30</em> seconds.</h4>
+          <p>From paste to polished, on a typical resume. The first draft is on screen before you've finished your coffee.</p>
+        </div>
+        <div class="step">
+          <span class="num mono">Perk 06</span>
+          <div class="ill">
+<pre class="diagram">  ATS engines:
+   workday  <span class="acc">✓</span>
+   greenhouse <span class="acc">✓</span>
+   lever     <span class="acc">✓</span></pre>
+          </div>
+          <h4>Real ATS <em>checks</em>.</h4>
+          <p>We score readability against the major ATS engines and flag anything brittle before you send. No surprises in the recruiter inbox.</p>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- ============================================================
+       HOW IT WORKS
+       ============================================================ -->
+  <section id="how-it-works" data-screen-label="05 How it works">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">03 / How it works</div>
+        <h2>Three quiet steps.<br><em>One</em> sharp document.</h2>
+        <p>No magic, no melodrama. RezumFit is a careful editor — not a generator — that respects what's already on the page.</p>
+      </div>
+    </div>
 
-  <!-- ============================================ -->
-  <!-- STATS BAR                                    -->
-  <!-- ============================================ -->
-  <section class="py-12 bg-white border-y border-gray-100" data-controller="scroll-reveal">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center" data-scroll-reveal-target="item">
-        <div>
-          <p class="text-3xl sm:text-4xl font-extrabold text-gray-900">47+</p>
-          <p class="text-sm text-gray-500 mt-1 font-medium">Avg ATS score boost</p>
+    <div class="steps">
+      <div class="step">
+        <span class="num mono">Step 01</span>
+        <div class="ill">
+<pre class="diagram">┌─────────────────────┐
+│  resume.pdf      ⤴  │
+│  cover_v3.docx   ⤴  │
+│  <span class="acc">linkedin.json    ✓</span>  │
+└─────────────────────┘</pre>
         </div>
-        <div>
-          <p class="text-3xl sm:text-4xl font-extrabold text-gray-900">30s</p>
-          <p class="text-sm text-gray-500 mt-1 font-medium">Average processing time</p>
+        <h4>Bring what you <em>already</em> have.</h4>
+        <p>Drop a PDF, a DOCX, a LinkedIn export — even a half-finished draft. We read structure, not just words.</p>
+      </div>
+      <div class="step">
+        <span class="num mono">Step 02</span>
+        <div class="ill">
+<pre class="diagram">                ┌──────────────┐
+   listing  ──▶ │  <span class="acc">tailor()</span>     │ ──▶ draft
+                └──────────────┘
+   "we're looking for someone who..."
+        ↳ <span class="acc">match: workflow, B2B, mentor</span></pre>
         </div>
-        <div>
-          <p class="text-3xl sm:text-4xl font-extrabold text-gray-900">3x</p>
-          <p class="text-sm text-gray-500 mt-1 font-medium">More interview callbacks</p>
+        <h4>Paste the listing. We do the <em>reading</em>.</h4>
+        <p>RezumFit identifies what the role actually rewards — then re-orders, rewrites, and re-emphasises with surgical restraint.</p>
+      </div>
+      <div class="step">
+        <span class="num mono">Step 03</span>
+        <div class="ill">
+<pre class="diagram">  draft.v07 ──▶  <span class="acc">[ you, editing ]</span>  ──▶ final
+       ▲                  │
+       └──────  redo ◀────┘
+            "make it warmer"</pre>
         </div>
-        <div>
-          <p class="text-3xl sm:text-4xl font-extrabold text-gray-900">95%</p>
-          <p class="text-sm text-gray-500 mt-1 font-medium">User satisfaction rate</p>
-        </div>
+        <h4>Edit in plain <em>English</em>.</h4>
+        <p>"Make it warmer." "Cut the jargon." "Lead with the metric." Type the note; the document obliges. You're always editor-in-chief.</p>
       </div>
     </div>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- PERKS / WHAT YOU GET FREE                    -->
-  <!-- ============================================ -->
-  <section class="py-16 sm:py-20 bg-gradient-to-b from-white to-gray-50" data-controller="scroll-reveal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">What You Get</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Start for free. No strings attached.</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Every account comes loaded with these perks from day one.</p>
+  <!-- ============================================================
+       WHY NOT JUST USE CHATGPT?
+       ============================================================ -->
+  <section data-screen-label="06 vs ChatGPT">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">04 / vs ChatGPT</div>
+        <h2>"Can't I just use <em>ChatGPT</em>?"</h2>
+        <p>You could. But here's what that actually looks like — and why most candidates abandon the prompt-engineering approach by application three.</p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Perk 1: Free Credits -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden" class="vs-grid">
+        <!-- ChatGPT side (paper) -->
+        <div style="background:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:20px">
+          <div>
+            <span class="mono" style="color:var(--muted)">Option A</span>
+            <h3 style="font-family:'Fraunces',serif;font-size:28px;letter-spacing:-0.02em;font-weight:400;font-variation-settings:'opsz' 36;margin-top:8px">The ChatGPT way<em style="font-style:italic;color:var(--muted)">.</em></h3>
+            <p style="color:var(--muted);font-size:13px;margin-top:6px">Manual, fragmented, time-consuming.</p>
           </div>
-          <h3 class="text-base font-semibold text-gray-900 mb-1">2 Free Credits</h3>
-          <p class="text-sm text-gray-500">No credit card needed. Start optimizing immediately.</p>
-        </div>
-
-        <!-- Perk 2: All AI Providers -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-            </svg>
-          </div>
-          <h3 class="text-base font-semibold text-gray-900 mb-1">GPT-4 + Claude + Gemini</h3>
-          <p class="text-sm text-gray-500">All premium AI providers included. Pick the best for your needs.</p>
-        </div>
-
-        <!-- Perk 3: PDF & DOCX Export -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-          </div>
-          <h3 class="text-base font-semibold text-gray-900 mb-1">PDF & DOCX Export</h3>
-          <p class="text-sm text-gray-500">Download in any format. Free users included.</p>
-        </div>
-
-        <!-- Perk 4: Credits Never Expire -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <h3 class="text-base font-semibold text-gray-900 mb-1">Credits Never Expire</h3>
-          <p class="text-sm text-gray-500">Use your credits whenever you're ready. No rush, no pressure.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================ -->
-  <!-- SOCIAL PROOF                                 -->
-  <!-- ============================================ -->
-  <section class="py-10 bg-gray-50 border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-center text-xs font-semibold text-gray-400 uppercase tracking-wider mb-6">Trusted by professionals at leading companies</p>
-      <div class="flex flex-wrap justify-center items-center gap-x-14 gap-y-6">
-        <span class="text-xl font-bold text-gray-300 tracking-tight hover:text-gray-400 transition-colors">Google</span>
-        <span class="text-xl font-bold text-gray-300 tracking-tight hover:text-gray-400 transition-colors">Microsoft</span>
-        <span class="text-xl font-bold text-gray-300 tracking-tight hover:text-gray-400 transition-colors">Amazon</span>
-        <span class="text-xl font-bold text-gray-300 tracking-tight hover:text-gray-400 transition-colors">Meta</span>
-        <span class="text-xl font-bold text-gray-300 tracking-tight hover:text-gray-400 transition-colors">Deloitte</span>
-        <span class="text-xl font-bold text-gray-300 tracking-tight hover:text-gray-400 transition-colors">PwC</span>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================ -->
-  <!-- HOW IT WORKS                                 -->
-  <!-- ============================================ -->
-  <section id="how-it-works" class="py-20 sm:py-28" data-controller="scroll-reveal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">How It Works</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Three steps to your dream job</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">No complicated setup. Upload, optimize, and start applying with confidence.</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-        <!-- Step 1 -->
-        <div class="relative text-center" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-5">
-            <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-            </svg>
-          </div>
-          <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">1</span>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Upload Your Resume</h3>
-          <p class="text-gray-600">Upload your existing resume as PDF, DOCX, or paste the text directly. Add the job posting URL or description.</p>
-          <!-- Connector (hidden on mobile) -->
-          <div class="hidden md:block absolute top-7 left-full w-full h-px border-t-2 border-dashed border-gray-200 -translate-x-1/2"></div>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="relative text-center" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-5">
-            <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-          </div>
-          <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">2</span>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">AI Optimizes It</h3>
-          <p class="text-gray-600">Our AI analyzes the job requirements, optimizes your resume for ATS systems, and generates a matching cover letter.</p>
-          <div class="hidden md:block absolute top-7 left-full w-full h-px border-t-2 border-dashed border-gray-200 -translate-x-1/2"></div>
-        </div>
-
-        <!-- Step 3 -->
-        <div class="relative text-center" data-scroll-reveal-target="item">
-          <div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-5">
-            <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-          </div>
-          <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-xs font-bold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">3</span>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Land the Interview</h3>
-          <p class="text-gray-600">Download your polished resume and cover letter as PDF or DOCX, apply with confidence, and get more callbacks.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================ -->
-  <!-- WHY NOT JUST USE CHATGPT?                    -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28 bg-white">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-14">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">The Real Question</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">"Can't I just use ChatGPT for this?"</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">You could. But here's what that actually looks like.</p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        <!-- ChatGPT Way -->
-        <div class="bg-gray-50 rounded-2xl border-2 border-gray-200 p-8">
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-xl bg-gray-200 flex items-center justify-center">
-              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-gray-900">The ChatGPT Way</h3>
-              <p class="text-xs text-gray-500">Manual, fragmented, time-consuming</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.5;padding:0;margin:0;border-top:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding-top:20px">
             <% [
               ["Write a detailed prompt", "15 min crafting the right instructions"],
               ["Copy-paste your resume", "Format gets destroyed in the process"],
-              ["Copy-paste the job description", "Hope ChatGPT understands the context"],
+              ["Copy-paste the job description", "Hope it understands the context"],
               ["Ask for keyword analysis", "Separate prompt, separate conversation"],
               ["Ask for a cover letter", "Another prompt, more copy-pasting"],
               ["Format everything yourself", "Back to Word/Docs to rebuild layout"],
-              ["No ATS score", "You have zero idea if it'll pass screening"],
-              ["Repeat for every job", "Start from scratch each time"],
+              ["No ATS score", "Zero idea if it'll pass screening"],
+              ["Repeat for every job", "Start from scratch each time"]
             ].each do |step, detail| %>
-              <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+              <li style="display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start">
+                <span class="mono" style="color:var(--graphite);padding-top:2px">·</span>
                 <div>
-                  <p class="text-sm font-medium text-gray-700"><%= step %></p>
-                  <p class="text-xs text-gray-500"><%= detail %></p>
+                  <b style="font-weight:500;color:var(--ink)"><%= step %></b>
+                  <span style="display:block;color:var(--muted);font-size:13px;margin-top:2px"><%= detail %></span>
                 </div>
-              </div>
+              </li>
             <% end %>
-          </div>
-
-          <div class="mt-6 pt-5 border-t border-gray-200 flex items-center justify-between">
-            <span class="text-sm text-gray-500">Total time per application</span>
-            <span class="text-lg font-bold text-red-600">45+ minutes</span>
+          </ul>
+          <div style="margin-top:auto;padding-top:20px;border-top:1px solid color-mix(in oklab, var(--ink) 12%, transparent);display:flex;justify-content:space-between;align-items:baseline">
+            <span class="mono" style="color:var(--muted)">Total / application</span>
+            <span style="font-family:'Fraunces',serif;font-size:32px;font-weight:400;letter-spacing:-0.02em;font-variation-settings:'opsz' 60">45<em style="font-style:italic;color:var(--graphite)">+ min</em></span>
           </div>
         </div>
 
-        <!-- RezumFit Way -->
-        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-8 relative">
-          <div class="absolute -top-3 right-6">
-            <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Recommended</span>
+        <!-- RezumFit side (ink dark) -->
+        <div style="background:var(--ink);color:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:20px;position:relative">
+          <div style="position:absolute;top:-1px;right:24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:0 0 4px 4px">Recommended</div>
+          <div>
+            <span class="mono" style="color:color-mix(in oklab, var(--paper) 60%, transparent)">Option B</span>
+            <h3 style="font-family:'Fraunces',serif;font-size:28px;letter-spacing:-0.02em;font-weight:400;font-variation-settings:'opsz' 36;margin-top:8px;color:var(--paper)">The RezumFit way<em style="font-style:italic;color:var(--accent)">.</em></h3>
+            <p style="color:color-mix(in oklab, var(--paper) 65%, transparent);font-size:13px;margin-top:6px">Automated, instant, professional.</p>
           </div>
-
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-gray-900">The RezumFit Way</h3>
-              <p class="text-xs text-blue-600 font-medium">Automated, instant, professional</p>
-            </div>
-          </div>
-
-          <div class="space-y-4">
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.5;padding:0;margin:0;border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding-top:20px">
             <% [
-              ["Upload your resume", "PDF, DOCX, or paste text — we parse it"],
+              ["Upload your resume", "PDF, DOCX, or paste — we parse it"],
               ["Paste the job description", "AI extracts every keyword automatically"],
-              ["Get your ATS score instantly", "See exactly where you stand: 34% → 89%"],
-              ["One-click optimization", "AI rewrites for maximum ATS compatibility"],
+              ["Get your ATS score instantly", "See where you stand: 34% → 89%"],
+              ["One-click optimization", "Rewrites for maximum ATS compatibility"],
               ["Cover letter included", "Tailored to the job, ready to send"],
               ["Download DOCX & PDF", "Professional formatting preserved"],
               ["AI Pitch Deck generator", "12 investor slides in 60 seconds"],
-              ["Track all applications", "Dashboard with status, follow-ups, scores"],
+              ["Track all applications", "Dashboard with status, follow-ups, scores"]
             ].each do |step, detail| %>
-              <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
+              <li style="display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start">
+                <span class="mono" style="color:var(--accent);padding-top:2px">✓</span>
                 <div>
-                  <p class="text-sm font-medium text-gray-900"><%= step %></p>
-                  <p class="text-xs text-gray-600"><%= detail %></p>
+                  <b style="font-weight:500;color:var(--paper)"><%= step %></b>
+                  <span style="display:block;color:color-mix(in oklab, var(--paper) 60%, transparent);font-size:13px;margin-top:2px"><%= detail %></span>
                 </div>
-              </div>
+              </li>
             <% end %>
-          </div>
-
-          <div class="mt-6 pt-5 border-t border-blue-200 flex items-center justify-between">
-            <span class="text-sm text-gray-600">Total time per application</span>
-            <span class="text-lg font-bold text-green-600">Under 30 seconds</span>
+          </ul>
+          <div style="margin-top:auto;padding-top:20px;border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent);display:flex;justify-content:space-between;align-items:baseline">
+            <span class="mono" style="color:color-mix(in oklab, var(--paper) 60%, transparent)">Total / application</span>
+            <span style="font-family:'Fraunces',serif;font-size:32px;font-weight:400;letter-spacing:-0.02em;font-variation-settings:'opsz' 60;color:var(--paper)"><em style="font-style:italic;color:var(--accent)">&lt;30</em>s</span>
           </div>
         </div>
       </div>
 
-      <!-- Bottom line -->
-      <div class="text-center mt-12">
-        <p class="text-gray-600 max-w-2xl mx-auto mb-6">
-          ChatGPT is a blank canvas — you write the prompts, format the output, and manage everything manually.
-          <span class="font-semibold text-gray-900">RezumFit is the finished product.</span>
-        </p>
-        <%= link_to new_user_registration_path, class: "inline-flex items-center px-7 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all" do %>
-          Try It Free — No Prompt Engineering Required
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      <div style="text-align:center;padding:48px 0 24px">
+        <p style="font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--muted);max-width:46ch;margin:0 auto 24px;line-height:1.45;font-style:italic">ChatGPT is a blank canvas. RezumFit is the finished document.</p>
+        <%= link_to new_user_registration_path, class: "btn-primary" do %>
+          Try it free — no prompt engineering
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         <% end %>
       </div>
     </div>
+    <style>
+      @media (max-width: 960px){ .editorial .vs-grid{grid-template-columns:1fr !important} }
+    </style>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- MID-PAGE CTA                                 -->
-  <!-- ============================================ -->
-  <section class="py-14 sm:py-16 bg-gradient-to-r from-blue-50 via-purple-50 to-blue-50 border-y border-blue-100/50" data-controller="scroll-reveal">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-scroll-reveal-target="item">
-      <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Ready to see the difference?</h2>
-      <p class="mt-3 text-gray-600 max-w-xl mx-auto">Upload your resume and watch your ATS score jump in under 30 seconds. No credit card required.</p>
-      <div class="mt-6">
-        <%= link_to new_user_registration_path, class: "inline-flex items-center px-7 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all" do %>
-          Start Optimizing Free
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-        <% end %>
-      </div>
+  <!-- ============================================================
+       MID-PAGE CTA
+       ============================================================ -->
+  <section data-screen-label="07 Mid CTA" style="padding:48px 0">
+    <div class="wrap" style="text-align:center;border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding:64px 0">
+      <span class="mono" style="color:var(--accent)">Ready to begin</span>
+      <h2 style="font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);letter-spacing:-0.035em;line-height:0.95;font-weight:400;font-variation-settings:'opsz' 96;margin-top:16px;text-wrap:balance">Watch your ATS score <em style="font-style:italic;color:var(--accent)">jump</em> in 30 seconds.</h2>
+      <p style="color:var(--muted);font-size:16px;max-width:48ch;margin:18px auto 32px;line-height:1.55">Upload your resume, paste any listing, and see the difference before you commit. No credit card required.</p>
+      <%= link_to new_user_registration_path, class: "btn-primary" do %>
+        Start optimizing — free
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <% end %>
     </div>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- FEATURES                                     -->
-  <!-- ============================================ -->
-  <section id="features" class="py-20 sm:py-28 bg-gray-50" data-controller="scroll-reveal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">Features</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Everything you need to land the job</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Powerful AI tools designed to give your application the edge it deserves.</p>
+  <!-- ============================================================
+       FEATURES — 9
+       ============================================================ -->
+  <section id="features" data-screen-label="08 Features">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">05 / Features</div>
+        <h2>Everything you need<br>to <em>land</em> the job.</h2>
+        <p>Nine quiet tools, working in concert. Each one designed to give your application the unfair advantage it deserves.</p>
       </div>
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        <!-- Feature 1: ATS Optimization -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">ATS Optimization</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">Get a compatibility score and optimize your resume to pass applicant tracking systems that screen 75% of applications.</p>
+    <div class="steps" style="grid-template-columns:repeat(3,1fr)">
+      <% [
+        ["Feature 01", "ATS Optimization", "Get a compatibility score and optimize your resume to pass the applicant tracking systems that screen 75% of applications."],
+        ["Feature 02", "AI Cover Letters", "Generate personalized cover letters that match the job posting, with customizable tone and length. Get multiple variations instantly."],
+        ["Feature 03", "Smart Keywords", "Automatically extract and incorporate the right keywords from job descriptions to maximize your match rate."],
+        ["Feature 04", "Interview Prep", "Role-specific questions with STAR-method answers. Behavioral, technical, and situational — practiced before the call."],
+        ["Feature 05", "LinkedIn Optimization", "AI-powered headline, about section, and experience optimization to attract more recruiters and double profile views."],
+        ["Feature 06", "Job Scraper", "Set your preferences and let AI surface matching openings automatically. Apply directly from the platform."],
+        ["Feature 07", "Score Tracking", "See exactly how your resume scores against each posting. Track improvements and optimize until you hit 90%+."],
+        ["Feature 08", "Resume Builder", "No resume? No problem. A chat-style wizard builds a professional one from scratch in minutes."],
+        ["Feature 09", "Multi-Provider AI", "GPT-4, Claude, and Gemini. We route each task to the best model for the job — automatically, no toggles."]
+      ].each_with_index do |(num, title, body), i| %>
+        <div class="step">
+          <span class="num mono"><%= num %></span>
+          <h4 style="margin-top:auto"><%= title %></h4>
+          <p><%= body %></p>
         </div>
-
-        <!-- Feature 2: AI Cover Letters -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">AI Cover Letters</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">Generate personalized cover letters that match the job posting, with customizable tone and length. Get multiple variations instantly.</p>
-        </div>
-
-        <!-- Feature 3: Smart Keywords -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Smart Keywords</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">Automatically extract and incorporate the right keywords from job descriptions to maximize your match rate.</p>
-        </div>
-
-        <!-- Feature 4: Interview Prep -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">AI Interview Prep</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">Get role-specific interview questions with STAR-method answers. Practice behavioral, technical, and situational questions before the big day.</p>
-        </div>
-
-        <!-- Feature 5: LinkedIn Optimization -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">LinkedIn Optimization</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">AI-powered headline, about section, and experience optimization to attract more recruiters and double your profile views.</p>
-        </div>
-
-        <!-- Feature 6: Job Scraper -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Automated Job Scraper</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">Automatically discover and collect matching job postings. Set your preferences and let AI find the right opportunities for you.</p>
-        </div>
-
-        <!-- Feature 7: Score Tracking -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Score Tracking</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">See exactly how your resume scores against each job posting. Track improvements and optimize until you hit 90%+.</p>
-        </div>
-
-        <!-- Feature 8: Resume Builder -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">AI Resume Builder</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">No resume? No problem. Our chat-style wizard builds a professional resume from scratch. Just answer a few questions and AI does the rest.</p>
-        </div>
-
-        <!-- Feature 9: Multi-Provider AI -->
-        <div class="bg-white rounded-2xl p-7 hover-lift border border-gray-100" data-scroll-reveal-target="item">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-            </svg>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Multi-Provider AI</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">Powered by GPT-4, Claude, and Gemini. We use the best AI model for each task to deliver the highest quality results.</p>
-        </div>
-      </div>
+      <% end %>
     </div>
   </section>
 
+  <!-- ============================================================
+       AI PITCH DECK GENERATOR — feature highlight (dark)
+       ============================================================ -->
+  <section data-screen-label="09 Pitch Deck">
+    <div class="wrap">
+      <div style="background:var(--ink);color:var(--paper);padding:80px 56px;border-radius:8px;margin-top:80px;position:relative;overflow:hidden">
+        <span class="mono" style="color:var(--accent)">New feature · Live</span>
+        <h2 style="font-family:'Fraunces',serif;font-size:clamp(40px,6vw,88px);letter-spacing:-0.04em;line-height:0.95;font-weight:400;font-variation-settings:'opsz' 144;margin-top:14px;color:var(--paper);max-width:18ch">AI Pitch Decks <em style="font-style:italic;color:var(--accent);font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1">that</em> win investors.</h2>
+        <p style="color:color-mix(in oklab, var(--paper) 65%, transparent);font-size:17px;margin-top:24px;max-width:54ch;line-height:1.55;font-family:'Fraunces',serif;font-weight:300;font-style:italic">A professional 12-slide investor deck in under 60 seconds — using the exact frameworks favoured by Y Combinator and Sequoia-backed founders.</p>
 
-  <!-- ============================================ -->
-  <!-- NEW: AI PITCH DECK GENERATOR                 -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28 bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 relative overflow-hidden">
-    <!-- Background decoration -->
-    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0); background-size: 40px 40px;"></div>
-    <div class="absolute top-20 left-1/4 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-10 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <!-- Header -->
-      <div class="text-center mb-14">
-        <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-6">
-          <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-          NEW FEATURE
-        </span>
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-          AI Pitch Decks
-          <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">That Win Investors</span>
-        </h2>
-        <p class="mt-5 text-lg text-blue-200/80 leading-relaxed max-w-2xl mx-auto">
-          Our AI generates a professional 12-slide investor deck in under 60 seconds — following the exact frameworks used by Y Combinator & Sequoia-backed startups.
-        </p>
-      </div>
-
-      <!-- Stats Row -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto mb-14">
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 text-center">
-          <p class="text-3xl font-extrabold text-white">12</p>
-          <p class="text-sm text-blue-300 mt-1">Slides</p>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 text-center">
-          <p class="text-3xl font-extrabold text-white">&lt;60s</p>
-          <p class="text-sm text-blue-300 mt-1">Generation</p>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 text-center">
-          <p class="text-3xl font-extrabold text-white">PPTX</p>
-          <p class="text-sm text-blue-300 mt-1">Export</p>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/20 text-center">
-          <p class="text-3xl font-extrabold text-white">GPT-4o</p>
-          <p class="text-sm text-blue-300 mt-1">AI Engine</p>
-        </div>
-      </div>
-
-      <!-- Slide Preview Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-14">
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-colors">
-          <div class="flex items-center space-x-3 mb-3">
-            <span class="w-9 h-9 rounded-xl bg-blue-500/25 flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-              </svg>
-            </span>
-            <span class="text-sm font-bold text-white">Problem Slide</span>
-          </div>
-          <p class="text-sm text-blue-200/80 leading-relaxed">Identifies pain points, adds real data, and frames the problem so investors feel the urgency.</p>
-        </div>
-
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-colors">
-          <div class="flex items-center space-x-3 mb-3">
-            <span class="w-9 h-9 rounded-xl bg-blue-500/25 flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064"/>
-              </svg>
-            </span>
-            <span class="text-sm font-bold text-white">Market Size</span>
-          </div>
-          <p class="text-sm text-blue-200/80 leading-relaxed">Auto-calculates realistic TAM/SAM/SOM using top-down and bottom-up analysis.</p>
-        </div>
-
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-colors">
-          <div class="flex items-center space-x-3 mb-3">
-            <span class="w-9 h-9 rounded-xl bg-blue-500/25 flex items-center justify-center">
-              <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-              </svg>
-            </span>
-            <span class="text-sm font-bold text-white">Financials</span>
-          </div>
-          <p class="text-sm text-blue-200/80 leading-relaxed">3-year revenue forecasts, unit economics, LTV/CAC ratios, and break-even analysis.</p>
-        </div>
-      </div>
-
-      <!-- CTA + Slide Types -->
-      <div class="text-center">
-        <div class="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-          <%= link_to user_signed_in? ? new_pitch_deck_path : new_user_registration_path, class: "inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-blue-900 bg-white hover:bg-gray-100 rounded-xl shadow-lg hover:shadow-xl transition-all" do %>
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            Create Your Pitch Deck
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:48px;border-block:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding:28px 0" class="pd-stats">
+          <% [
+            ["12", "Slides"],
+            ["<60s", "Generation"],
+            ["PPTX", "Export"],
+            ["GPT-4o", "AI Engine"]
+          ].each_with_index do |(n, l), i| %>
+            <div style="padding:0 24px;<%= 'border-left:1px solid color-mix(in oklab, var(--paper) 14%, transparent);' unless i == 0 %>">
+              <div style="font-family:'Fraunces',serif;font-size:36px;letter-spacing:-0.03em;font-weight:400;font-variation-settings:'opsz' 60;color:var(--paper)"><%= n %></div>
+              <div class="mono" style="color:color-mix(in oklab, var(--paper) 60%, transparent);margin-top:8px"><%= l %></div>
+            </div>
           <% end %>
-          <a href="#pricing" class="inline-flex items-center justify-center px-7 py-3.5 text-base font-medium text-white border border-white/30 hover:bg-white/10 hover:border-white/50 rounded-xl transition-all">
-            See Pricing
-          </a>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-2">
-          <% %w[Cover Problem Solution Why\ Now Market Product Business\ Model Traction Competition Team Financials The\ Ask].each do |slide| %>
-            <span class="px-3 py-1.5 rounded-full text-xs font-medium bg-white/10 text-blue-200 border border-white/20"><%= slide %></span>
+        <!-- Slide preview cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px" class="pd-cards">
+          <% [
+            ["Problem Slide", "Identifies pain points, adds real data, and frames the problem so investors feel the urgency."],
+            ["Market Size", "Auto-calculates realistic TAM/SAM/SOM using top-down and bottom-up analysis."],
+            ["Financials", "3-year revenue forecasts, unit economics, LTV/CAC ratios, and break-even analysis."]
+          ].each do |title, body| %>
+            <div style="border:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding:24px;border-radius:6px">
+              <span class="mono" style="color:var(--accent)">Slide</span>
+              <h4 style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;letter-spacing:-0.01em;font-variation-settings:'opsz' 36;color:var(--paper);margin-top:10px"><%= title %></h4>
+              <p style="color:color-mix(in oklab, var(--paper) 65%, transparent);font-size:13px;line-height:1.55;margin-top:8px"><%= body %></p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- CTA + slide types -->
+        <div style="margin-top:48px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <%= link_to user_signed_in? ? new_pitch_deck_path : new_user_registration_path, class: "btn-primary", style: "background:var(--accent);color:#fff" do %>
+            Create your pitch deck
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <% end %>
+          <a href="#pricing" class="btn-ghost" style="color:var(--paper);border-color:color-mix(in oklab, var(--paper) 40%, transparent)">See pricing</a>
+        </div>
+
+        <div style="margin-top:36px;display:flex;flex-wrap:wrap;gap:8px">
+          <% %w[Cover Problem Solution Why-Now Market Product Business-Model Traction Competition Team Financials The-Ask].each do |slide| %>
+            <span class="mono" style="padding:6px 12px;border:1px solid color-mix(in oklab, var(--paper) 20%, transparent);border-radius:999px;color:color-mix(in oklab, var(--paper) 75%, transparent);font-size:10px"><%= slide.tr('-', ' ') %></span>
           <% end %>
         </div>
       </div>
     </div>
+    <style>
+      @media (max-width:960px){
+        .editorial .pd-stats{grid-template-columns:repeat(2,1fr) !important}
+        .editorial .pd-cards{grid-template-columns:1fr !important}
+      }
+    </style>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- COMPARISON TABLE                             -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28" data-controller="scroll-reveal">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">Why RezumFit?</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Manual editing vs. RezumFit</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">See why thousands of job seekers switched to AI-powered optimization.</p>
+  <!-- ============================================================
+       COMPARISON TABLE — Manual vs RezumFit
+       ============================================================ -->
+  <section data-screen-label="10 Comparison">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">06 / Side by side</div>
+        <h2>Manual editing<br>vs. <em>RezumFit</em>.</h2>
+        <p>The same resume, the same listing, two different approaches. Here's what changes when AI does the heavy lifting.</p>
       </div>
 
-      <div class="overflow-x-auto" data-scroll-reveal-target="item">
-        <table class="w-full">
+      <div style="border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden">
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
           <thead>
-            <tr>
-              <th class="text-left py-4 px-4 sm:px-6 text-sm font-medium text-gray-500"></th>
-              <th class="text-center py-4 px-4 sm:px-6">
-                <span class="text-sm font-semibold text-gray-500">Manual</span>
-              </th>
-              <th class="text-center py-4 px-4 sm:px-6 bg-gradient-to-b from-blue-50 to-purple-50 rounded-t-2xl">
-                <span class="text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">RezumFit</span>
-              </th>
+            <tr style="background:var(--paper-2)">
+              <th style="text-align:left;padding:18px 24px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500"></th>
+              <th style="text-align:center;padding:18px 24px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;width:30%">Manual</th>
+              <th style="text-align:center;padding:18px 24px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:500;width:30%;background:var(--ink);color:var(--accent)">RezumFit</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr>
-              <td class="py-4 px-4 sm:px-6 text-sm font-medium text-gray-700">Time per resume</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm text-gray-500">45-60 minutes</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm font-semibold text-green-600 bg-gradient-to-b from-blue-50/50 to-purple-50/50">30 seconds</td>
-            </tr>
-            <tr>
-              <td class="py-4 px-4 sm:px-6 text-sm font-medium text-gray-700">ATS pass rate</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm text-gray-500">~34%</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm font-semibold text-green-600 bg-gradient-to-b from-blue-50/50 to-purple-50/50">89%</td>
-            </tr>
-            <tr>
-              <td class="py-4 px-4 sm:px-6 text-sm font-medium text-gray-700">Cost</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm text-gray-500">$50-100/resume</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm font-semibold text-green-600 bg-gradient-to-b from-blue-50/50 to-purple-50/50">Free to start</td>
-            </tr>
-            <tr>
-              <td class="py-4 px-4 sm:px-6 text-sm font-medium text-gray-700">Keyword matching</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm text-gray-500">Hit or miss</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm font-semibold text-green-600 bg-gradient-to-b from-blue-50/50 to-purple-50/50">AI-optimized</td>
-            </tr>
-            <tr>
-              <td class="py-4 px-4 sm:px-6 text-sm font-medium text-gray-700">Cover letters</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm text-gray-500">Hours each</td>
-              <td class="py-4 px-4 sm:px-6 text-center text-sm font-semibold text-green-600 bg-gradient-to-b from-blue-50/50 to-purple-50/50 rounded-b-2xl">Auto-generated</td>
-            </tr>
+          <tbody>
+            <% [
+              ["Time per resume", "45–60 minutes", "30 seconds"],
+              ["ATS pass rate", "~34%", "89%"],
+              ["Cost per draft", "$50–100", "Free to start"],
+              ["Keyword matching", "Hit or miss", "AI-optimized"],
+              ["Cover letters", "Hours each", "Auto-generated"],
+              ["ATS score", "None", "Verified, real-time"],
+              ["Application tracking", "Spreadsheet hell", "Built in"]
+            ].each_with_index do |(label, manual, rezum), i| %>
+              <tr style="border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent)">
+                <td style="padding:18px 24px;font-family:'Fraunces',serif;font-size:16px;font-weight:400;font-variation-settings:'opsz' 24;letter-spacing:-0.01em"><%= label %></td>
+                <td style="padding:18px 24px;text-align:center;color:var(--muted)"><%= manual %></td>
+                <td style="padding:18px 24px;text-align:center;background:var(--ink);color:var(--paper);font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:16px;font-variation-settings:'opsz' 24"><span style="color:var(--accent)"><%= rezum %></span></td>
+              </tr>
+            <% end %>
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- PLATFORM TOOLS                               -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28" data-controller="scroll-reveal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">Complete Platform</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">More than just a resume optimizer</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">A full suite of AI-powered tools to manage your entire job search from application to offer.</p>
+  <!-- ============================================================
+       PLATFORM TOOLS — 5 cards
+       ============================================================ -->
+  <section data-screen-label="11 Platform">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">07 / Platform tools</div>
+        <h2>More than just<br>a resume <em>optimizer</em>.</h2>
+        <p>A full suite of AI-powered tools to manage your entire job search — from first application to signed offer.</p>
       </div>
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8" data-scroll-reveal-target="item">
-        <!-- Job Tracker -->
-        <div class="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-7 border border-blue-100 hover-lift">
-          <div class="flex items-start gap-5">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1.5">Job Application Tracker</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Track every application with a Kanban board. Set follow-up reminders, link resumes and cover letters, and never lose track of an opportunity.</p>
-            </div>
-          </div>
+    <div class="steps" style="grid-template-columns:repeat(2,1fr)">
+      <% [
+        ["Tool 01", "Job Application Tracker", "Track every application on a Kanban board. Set follow-up reminders, link resumes and cover letters, and never lose a thread."],
+        ["Tool 02", "AI Interview Prep", "Get role-specific interview questions with STAR-method answer frameworks. Walk in prepared, walk out confident."],
+        ["Tool 03", "LinkedIn Optimization", "Headline, About, and experience bullets — rewritten with AI to attract more recruiter inbound and profile views."],
+        ["Tool 04", "Resume Builder & Templates", "Drag-and-drop builder. Five typeset templates: Professional, Modern, Creative, Minimal, Executive."],
+        ["Tool 05", "Automated Job Scraper", "Set target role, location, and preferences. Our AI surfaces matching openings — no more daily LinkedIn scrolls."]
+      ].each do |(num, title, body)| %>
+        <div class="step">
+          <span class="num mono"><%= num %></span>
+          <h4 style="margin-top:auto"><%= title %></h4>
+          <p><%= body %></p>
         </div>
-
-        <!-- Interview Prep -->
-        <div class="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-7 border border-blue-100 hover-lift">
-          <div class="flex items-start gap-5">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1.5">AI Interview Prep</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Get AI-generated interview questions tailored to the specific role, with STAR-method answer frameworks to help you prepare with confidence.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- LinkedIn Optimization -->
-        <div class="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-7 border border-blue-100 hover-lift">
-          <div class="flex items-start gap-5">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
-              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1.5">LinkedIn Optimization</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Optimize your LinkedIn headline, about section, and experience bullets using AI to attract more recruiters and opportunities.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Resume Templates -->
-        <div class="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-7 border border-blue-100 hover-lift">
-          <div class="flex items-start gap-5">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1.5">Resume Builder & Templates</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Build professional resumes with our drag-and-drop builder. Choose from 5 beautiful templates: Professional, Modern, Creative, Minimal, and Executive.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Job Scraper -->
-        <div class="bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-7 border border-blue-100 hover-lift md:col-span-2">
-          <div class="flex items-start gap-5">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 mb-1.5">Automated Job Scraper</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">Set your target role, location, and preferences. Our AI automatically discovers and collects matching job postings so you never miss the right opportunity. Apply directly from the platform.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <% end %>
     </div>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- BEFORE / AFTER                               -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28" data-controller="scroll-reveal">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">Results</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">See the difference AI makes</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Average ATS score improvement of 47 points after optimization.</p>
+  <!-- ============================================================
+       BEFORE / AFTER
+       ============================================================ -->
+  <section data-screen-label="12 Before / After">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">08 / Before & after</div>
+        <h2>See the difference<br>AI <em>actually</em> makes.</h2>
+        <p>Average ATS score improvement of 47 points after a single optimization. Same resume. Same listing. Different document.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8" data-scroll-reveal-target="item">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden" class="ba-grid">
         <!-- Before -->
-        <div class="bg-white rounded-2xl border-2 border-red-100 p-6">
-          <div class="flex items-center justify-between mb-5">
-            <span class="text-sm font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full">Before</span>
-            <span class="text-3xl font-bold text-red-500">34%</span>
+        <div style="background:var(--paper);padding:40px 32px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <span class="mono" style="color:var(--muted)">Before</span>
+            <span style="font-family:'Fraunces',serif;font-size:64px;letter-spacing:-0.04em;font-weight:400;font-variation-settings:'opsz' 144;color:var(--graphite)">34<sub style="font-size:18px;font-family:'JetBrains Mono',monospace;color:var(--muted);vertical-align:top">%</sub></span>
           </div>
-          <div class="bg-gray-100 rounded-full h-3 mb-5">
-            <div class="bg-red-400 h-3 rounded-full" style="width: 34%"></div>
+          <div style="margin-top:14px;height:3px;background:color-mix(in oklab, var(--ink) 10%, transparent);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:34%;background:var(--graphite)"></div>
           </div>
-          <div class="space-y-3 text-sm">
-            <div class="flex items-center text-gray-500">
-              <svg class="w-4 h-4 mr-2 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-              Missing 12 key industry terms
-            </div>
-            <div class="flex items-center text-gray-500">
-              <svg class="w-4 h-4 mr-2 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-              No quantified achievements
-            </div>
-            <div class="flex items-center text-gray-500">
-              <svg class="w-4 h-4 mr-2 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-              Poor ATS formatting
-            </div>
-          </div>
-        </div>
-
-        <!-- After -->
-        <div class="bg-white rounded-2xl border-2 border-green-100 p-6">
-          <div class="flex items-center justify-between mb-5">
-            <span class="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">After RezumFit</span>
-            <span class="text-3xl font-bold text-green-500">89%</span>
-          </div>
-          <div class="bg-gray-100 rounded-full h-3 mb-5">
-            <div class="bg-green-500 h-3 rounded-full" style="width: 89%"></div>
-          </div>
-          <div class="space-y-3 text-sm">
-            <div class="flex items-center text-gray-700">
-              <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              All keywords naturally incorporated
-            </div>
-            <div class="flex items-center text-gray-700">
-              <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Impact metrics on every bullet
-            </div>
-            <div class="flex items-center text-gray-700">
-              <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              ATS-optimized structure
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="text-center mt-10" data-scroll-reveal-target="item">
-        <%= link_to new_user_registration_path, class: "inline-flex items-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-md hover:shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all" do %>
-          Try It Free
-          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-        <% end %>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================ -->
-  <!-- ROI / RESULTS                                -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden" data-controller="scroll-reveal">
-    <div class="absolute inset-0 opacity-10">
-      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="roi-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#roi-grid)"/></svg>
-    </div>
-    <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/4"></div>
-
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="text-center mb-14" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-3">Proven Results</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-white">Numbers that speak for themselves</h2>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center mb-12" data-scroll-reveal-target="item">
-        <div>
-          <p class="text-5xl sm:text-6xl font-extrabold text-white">3x</p>
-          <p class="text-blue-200 mt-2 font-medium">More interview callbacks</p>
-        </div>
-        <div>
-          <p class="text-5xl sm:text-6xl font-extrabold text-white">89%</p>
-          <p class="text-blue-200 mt-2 font-medium">Average ATS score after optimization</p>
-        </div>
-        <div>
-          <p class="text-5xl sm:text-6xl font-extrabold text-white">+47</p>
-          <p class="text-blue-200 mt-2 font-medium">Point ATS score improvement</p>
-        </div>
-      </div>
-
-      <div class="text-center" data-scroll-reveal-target="item">
-        <%= link_to new_user_registration_path, class: "inline-flex items-center px-8 py-4 text-base font-semibold text-blue-700 bg-white hover:bg-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all" do %>
-          Start Optimizing Free
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-        <% end %>
-        <p class="mt-4 text-sm text-blue-200">No credit card required. 2 free credits included.</p>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================ -->
-  <!-- PRICING                                      -->
-  <!-- ============================================ -->
-  <section id="pricing" class="py-20 sm:py-28 bg-gray-50" data-controller="scroll-reveal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">Pricing</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Simple, transparent pricing</h2>
-        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Start free. Upgrade when you need more power.</p>
-        <div class="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-green-200 shadow-sm">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-          </span>
-          <span class="text-sm font-medium text-gray-700">237 resumes optimized in the last 24 hours</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
-        <!-- Free -->
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col" data-scroll-reveal-target="item">
-          <div class="mb-5">
-            <h3 class="text-lg font-semibold text-gray-900">Free</h3>
-            <div class="mt-3 flex items-baseline">
-              <span class="text-3xl font-bold text-gray-900" data-price-ngn="&#8358;0" data-price-usd="$0" data-pricing-target="price">&#8358;0</span>
-            </div>
-            <p class="mt-2 text-sm text-gray-500">Try it out with 2 free credits</p>
-          </div>
-          <ul class="space-y-2.5 mb-7 flex-1">
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              2 free credits
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              ATS score analysis
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              PDF & DOCX export
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Cover letter generation
-            </li>
+          <ul style="list-style:none;margin:24px 0 0;padding:24px 0 0;border-top:1px solid color-mix(in oklab, var(--ink) 12%, transparent);display:flex;flex-direction:column;gap:14px;font-family:'Fraunces',serif;font-size:15px;font-weight:300;font-variation-settings:'opsz' 24">
+            <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span class="mono" style="color:var(--graphite);padding-top:2px">×</span> Missing 12 key industry terms</li>
+            <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span class="mono" style="color:var(--graphite);padding-top:2px">×</span> No quantified achievements</li>
+            <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span class="mono" style="color:var(--graphite);padding-top:2px">×</span> Poor ATS formatting</li>
           </ul>
-          <%= link_to new_user_registration_path, class: "w-full inline-flex justify-center items-center px-5 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors" do %>
-            Get Started
+        </div>
+        <!-- After -->
+        <div style="background:var(--ink);color:var(--paper);padding:40px 32px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <span class="mono" style="color:var(--accent)">After RezumFit</span>
+            <span style="font-family:'Fraunces',serif;font-size:64px;letter-spacing:-0.04em;font-weight:400;font-variation-settings:'opsz' 144;color:var(--paper)"><em style="font-style:italic;color:var(--accent);font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1">89</em><sub style="font-size:18px;font-family:'JetBrains Mono',monospace;color:color-mix(in oklab, var(--paper) 60%, transparent);vertical-align:top">%</sub></span>
+          </div>
+          <div style="margin-top:14px;height:3px;background:color-mix(in oklab, var(--paper) 14%, transparent);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:89%;background:var(--accent)"></div>
+          </div>
+          <ul style="list-style:none;margin:24px 0 0;padding:24px 0 0;border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent);display:flex;flex-direction:column;gap:14px;font-family:'Fraunces',serif;font-size:15px;font-weight:300;font-variation-settings:'opsz' 24">
+            <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span class="mono" style="color:var(--accent);padding-top:2px">✓</span> All keywords naturally incorporated</li>
+            <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span class="mono" style="color:var(--accent);padding-top:2px">✓</span> Impact metrics on every bullet</li>
+            <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span class="mono" style="color:var(--accent);padding-top:2px">✓</span> ATS-optimized structure</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:48px 0 24px">
+        <%= link_to new_user_registration_path, class: "btn-primary" do %>
+          Try it free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <% end %>
+      </div>
+    </div>
+    <style>@media (max-width:960px){.editorial .ba-grid{grid-template-columns:1fr !important}}</style>
+  </section>
+
+  <!-- ============================================================
+       ROI / RESULTS — dark numbers strip
+       ============================================================ -->
+  <section data-screen-label="13 ROI">
+    <div class="wrap">
+      <div style="background:var(--ink);color:var(--paper);padding:80px 56px;border-radius:8px;text-align:center">
+        <span class="mono" style="color:var(--accent)">Proven results</span>
+        <h2 style="font-family:'Fraunces',serif;font-size:clamp(36px,5vw,72px);letter-spacing:-0.035em;line-height:0.95;font-weight:400;font-variation-settings:'opsz' 96;color:var(--paper);margin-top:14px;text-wrap:balance">Numbers that speak <em style="font-style:italic;color:var(--accent)">for themselves</em>.</h2>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-block:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding:48px 0;margin-top:56px" class="roi-grid">
+          <% [["3×", "More interview callbacks"], ["89%", "Avg ATS score after"], ["+47", "ATS point improvement"]].each_with_index do |(n, l), i| %>
+            <div style="<%= 'border-left:1px solid color-mix(in oklab, var(--paper) 14%, transparent);' unless i == 0 %>padding:0 24px">
+              <div style="font-family:'Fraunces',serif;font-size:clamp(56px,8vw,112px);letter-spacing:-0.04em;line-height:0.9;font-weight:400;font-variation-settings:'opsz' 144;color:var(--paper)"><em style="font-style:italic;color:var(--accent)"><%= n %></em></div>
+              <div class="mono" style="color:color-mix(in oklab, var(--paper) 65%, transparent);margin-top:14px"><%= l %></div>
+            </div>
           <% end %>
+        </div>
+
+        <div style="margin-top:48px">
+          <%= link_to new_user_registration_path, class: "btn-primary", style: "background:var(--accent);color:#fff" do %>
+            Start optimizing — free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <% end %>
+          <p class="mono" style="color:color-mix(in oklab, var(--paper) 60%, transparent);margin-top:18px">No credit card required · 2 free credits included</p>
+        </div>
+      </div>
+    </div>
+    <style>@media (max-width:960px){.editorial .roi-grid{grid-template-columns:1fr !important}.editorial .roi-grid > div{border-left:none !important;border-top:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding:24px 0 !important}.editorial .roi-grid > div:first-child{border-top:none}}</style>
+  </section>
+
+  <!-- ============================================================
+       PRICING — 4 tiers
+       ============================================================ -->
+  <section id="pricing" data-screen-label="14 Pricing">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">09 / Pricing</div>
+        <h2>Simple <em>pricing.</em><br>Honest defaults.</h2>
+        <p>Start free. Upgrade when you need more power. Credits never expire — buy what you need, use it when you're ready.</p>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-bottom:24px">
+        <span class="mono" style="display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border:1px solid color-mix(in oklab, var(--ink) 14%, transparent);border-radius:999px;background:var(--paper)">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(37,64,255,.6);animation:edit-pulse 2s infinite;display:inline-block"></span>
+          237 resumes optimized in the last 24 hours
+        </span>
+      </div>
+
+      <div class="pricing" style="grid-template-columns:repeat(4,1fr)">
+        <!-- Free -->
+        <div class="plan">
+          <span class="tag">For trying it</span>
+          <h5>Free</h5>
+          <div class="price"><span data-price-ngn="₦0" data-price-usd="$0" data-pricing-target="price">$0</span><sub>forever</sub></div>
+          <ul>
+            <li>2 free credits</li>
+            <li>ATS score analysis</li>
+            <li>PDF &amp; DOCX export</li>
+            <li>Cover letter (1 included)</li>
+            <li class="dim">Priority models</li>
+          </ul>
+          <%= link_to "Get started", new_user_registration_path, class: "pbtn" %>
         </div>
 
         <!-- Credit Packs -->
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col" data-scroll-reveal-target="item">
-          <div class="mb-5">
-            <h3 class="text-lg font-semibold text-gray-900">Credit Packs</h3>
-            <div class="mt-3 flex items-baseline">
-              <span class="text-3xl font-bold text-gray-900" data-price-ngn="&#8358;5,000" data-price-usd="$5" data-pricing-target="price">&#8358;5,000</span>
-              <span class="ml-1.5 text-sm text-gray-500">for 10</span>
-            </div>
-            <p class="mt-2 text-sm text-gray-500">Pay as you go, no commitment</p>
-          </div>
-          <ul class="space-y-2.5 mb-7 flex-1">
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Everything in Free
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              10, 50, or 100 credit packs
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              AI Resume Builder (10 credits)
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-purple-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              <span>AI Pitch Decks <span class="text-purple-600 font-medium">(30 credits)</span></span>
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Credits never expire
-            </li>
+        <div class="plan">
+          <span class="tag">Pay as you go</span>
+          <h5>Credit Packs</h5>
+          <div class="price"><span data-price-ngn="₦5,000" data-price-usd="$5" data-pricing-target="price">$5</span><sub>for 10</sub></div>
+          <ul>
+            <li>Everything in Free</li>
+            <li>10 / 50 / 100 credit packs</li>
+            <li>AI Resume Builder (10 cr)</li>
+            <li>AI Pitch Decks (30 cr)</li>
+            <li>Credits never expire</li>
           </ul>
-          <%= link_to new_user_registration_path, class: "w-full inline-flex justify-center items-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-md transition-all" do %>
-            Buy Credits
-          <% end %>
+          <%= link_to "Buy credits", user_signed_in? ? billing_index_path : new_user_registration_path, class: "pbtn" %>
         </div>
 
-        <!-- Pro -->
-        <div class="bg-white rounded-2xl border-2 border-blue-200 p-6 flex flex-col relative" data-scroll-reveal-target="item">
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span class="px-4 py-1 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-md">Popular</span>
-          </div>
-          <div class="mb-5">
-            <h3 class="text-lg font-semibold text-gray-900">Pro</h3>
-            <div class="mt-3 flex items-baseline">
-              <span class="text-3xl font-bold text-gray-900" data-price-ngn="&#8358;29,000" data-price-usd="$29" data-pricing-target="price">&#8358;29,000</span>
-              <span class="ml-1.5 text-sm text-gray-500">/month</span>
-            </div>
-            <p class="mt-2 text-xs text-gray-500" data-price-ngn="Or &#8358;290,000/year (save &#8358;58,000)" data-price-usd="Or $290/year (save $58)" data-pricing-target="price">Or &#8358;290,000/year (save &#8358;58,000)</p>
-          </div>
-          <ul class="space-y-2.5 mb-7 flex-1">
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Unlimited resume optimizations
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Unlimited cover letters
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              5 professional templates
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Job Application Tracker
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-purple-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              <span>AI Pitch Decks <span class="text-purple-600 font-medium">(30 credits each)</span></span>
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Priority support
-            </li>
+        <!-- Pro / featured -->
+        <div class="plan featured">
+          <span class="tag featured">Most pick this</span>
+          <h5>Pro <em>·</em> popular</h5>
+          <div class="price"><em><span data-price-ngn="₦29,000" data-price-usd="$29" data-pricing-target="price">$29</span></em><sub>/ month</sub></div>
+          <ul>
+            <li>Unlimited optimizations</li>
+            <li>Unlimited cover letters</li>
+            <li>5 professional templates</li>
+            <li>Job application tracker</li>
+            <li>AI Pitch Decks (30 cr each)</li>
+            <li>Priority support</li>
           </ul>
-          <%= link_to new_user_registration_path, class: "w-full inline-flex justify-center items-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-md transition-all" do %>
-            Start Pro
-          <% end %>
+          <%= link_to "Start Pro", new_user_registration_path, class: "pbtn" %>
         </div>
 
         <!-- Premium -->
-        <div class="bg-white rounded-2xl border-2 border-purple-300 p-6 flex flex-col relative shadow-lg" data-scroll-reveal-target="item">
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span class="px-4 py-1 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-full shadow-md">Best Value</span>
-          </div>
-          <div class="mb-5">
-            <h3 class="text-lg font-semibold text-gray-900">Premium</h3>
-            <div class="mt-3 flex items-baseline">
-              <span class="text-3xl font-bold text-gray-900" data-price-ngn="&#8358;59,000" data-price-usd="$59" data-pricing-target="price">&#8358;59,000</span>
-              <span class="ml-1.5 text-sm text-gray-500">/month</span>
-            </div>
-            <p class="mt-2 text-xs text-gray-500" data-price-ngn="Or &#8358;590,000/year (save &#8358;118,000)" data-price-usd="Or $590/year (save $118)" data-pricing-target="price">Or &#8358;590,000/year (save &#8358;118,000)</p>
-          </div>
-          <ul class="space-y-2.5 mb-7 flex-1">
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Everything in Pro
-            </li>
-            <li class="flex items-start text-sm font-semibold text-purple-700 bg-purple-50 -mx-1 px-1 py-0.5 rounded-lg">
-              <svg class="w-4 h-4 mr-2 text-purple-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Unlimited AI Pitch Decks
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Unlimited AI Resume Builder
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              AI Interview Prep (STAR)
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              LinkedIn Profile Optimization
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Automated Job Scraper
-            </li>
-            <li class="flex items-start text-sm text-gray-600">
-              <svg class="w-4 h-4 mr-2 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Priority AI models (GPT-4, Claude)
-            </li>
+        <div class="plan">
+          <span class="tag">Best value</span>
+          <h5>Premium</h5>
+          <div class="price"><span data-price-ngn="₦59,000" data-price-usd="$59" data-pricing-target="price">$59</span><sub>/ month</sub></div>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>Unlimited Pitch Decks</li>
+            <li>Unlimited Resume Builder</li>
+            <li>AI Interview Prep (STAR)</li>
+            <li>LinkedIn optimization</li>
+            <li>Automated Job Scraper</li>
+            <li>Priority models (GPT-4 + Claude)</li>
           </ul>
-          <%= link_to new_user_registration_path, class: "w-full inline-flex justify-center items-center px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl shadow-md transition-all" do %>
-            Start Premium
-          <% end %>
+          <%= link_to "Start Premium", new_user_registration_path, class: "pbtn" %>
         </div>
       </div>
     </div>
+    <style>@media (max-width:960px){.editorial .pricing{grid-template-columns:1fr !important}}</style>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- TESTIMONIALS                                 -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28" data-controller="scroll-reveal">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">Testimonials</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Loved by job seekers</h2>
-      </div>
-
-      <!-- Social Proof Counter -->
-      <div class="flex items-center justify-center gap-3 mb-10" data-scroll-reveal-target="item">
-        <div class="flex -space-x-2">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">S</div>
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">M</div>
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">J</div>
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">A</div>
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">D</div>
-        </div>
-        <p class="text-sm text-gray-600"><span class="font-semibold text-gray-900">1,000+</span> professionals optimized this month</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        <div class="bg-white rounded-2xl border border-gray-100 p-7 hover-lift" data-scroll-reveal-target="item">
-          <div class="flex items-center gap-1 mb-4">
-            <% 5.times do %>
-              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-          </div>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">"RezumFit helped me land a senior engineering role at a top tech company. My ATS score went from 31% to 92% and I got 3x more callbacks."</p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">SK</div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900">Sarah K.</p>
-              <p class="text-xs text-gray-500">Software Engineer</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-gray-100 p-7 hover-lift" data-scroll-reveal-target="item">
-          <div class="flex items-center gap-1 mb-4">
-            <% 4.times do %>
-              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-            <svg class="w-4 h-4 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          </div>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">"Cover letter generator is great and saves me hours. The only reason it's not 5 stars is I wish there were more template layouts. But the AI output quality is top notch."</p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">MR</div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900">Marcus R.</p>
-              <p class="text-xs text-gray-500">Product Manager</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-gray-100 p-7 hover-lift" data-scroll-reveal-target="item">
-          <div class="flex items-center gap-1 mb-4">
-            <% 5.times do %>
-              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-          </div>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">"As a career changer, I struggled to position my experience. RezumFit rewrote my resume to highlight transferable skills. Got my dream job within 3 weeks."</p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">JP</div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900">Jessica P.</p>
-              <p class="text-xs text-gray-500">Marketing Director</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- New Testimonial 4: New Grad -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-7 hover-lift" data-scroll-reveal-target="item">
-          <div class="flex items-center gap-1 mb-4">
-            <% 5.times do %>
-              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-          </div>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">"Fresh out of uni with zero interview calls. After RezumFit optimized my resume, I got 4 interviews in one week. The ATS keyword matching is a game changer."</p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">AO</div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900">Amara O.</p>
-              <p class="text-xs text-gray-500">Recent Graduate</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Testimonial 5: Career Changer (4 stars) -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-7 hover-lift" data-scroll-reveal-target="item">
-          <div class="flex items-center gap-1 mb-4">
-            <% 4.times do %>
-              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-            <svg class="w-4 h-4 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          </div>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">"Switching from teaching to tech seemed impossible. RezumFit translated my classroom skills into corporate language. Took a couple of tweaks, but I'm now a UX Researcher at a Fortune 500."</p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">DM</div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900">David M.</p>
-              <p class="text-xs text-gray-500">Career Changer &rarr; UX Researcher</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- New Testimonial 6: Executive -->
-        <div class="bg-white rounded-2xl border border-gray-100 p-7 hover-lift" data-scroll-reveal-target="item">
-          <div class="flex items-center gap-1 mb-4">
-            <% 5.times do %>
-              <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <% end %>
-          </div>
-          <p class="text-gray-600 text-sm leading-relaxed mb-5">"Even at the executive level, ATS matters. RezumFit optimized my VP resume in seconds and the interview prep feature helped me nail the behavioral questions."</p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">LT</div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900">Linda T.</p>
-              <p class="text-xs text-gray-500">VP of Operations</p>
-            </div>
-          </div>
-        </div>
+  <!-- ============================================================
+       TESTIMONIALS — hero quote + 6 cards
+       ============================================================ -->
+  <section data-screen-label="15 Testimonials">
+    <div class="wrap testimonial">
+      <blockquote>
+        "I'd been sending the same resume into the void for four months. RezumFit didn't rewrite me — it <em>recognised</em> me. Three interviews in the first week."
+      </blockquote>
+      <div class="attr">
+        <b>Idris Halloway</b>
+        Engineering Manager · now at Conduit
       </div>
     </div>
-  </section>
 
-
-  <!-- ============================================ -->
-  <!-- TRUST BADGES                                 -->
-  <!-- ============================================ -->
-  <section class="py-14 sm:py-16 bg-gray-50 border-b border-gray-100" data-controller="scroll-reveal">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center" data-scroll-reveal-target="item">
-        <!-- SSL Encrypted -->
-        <div class="flex flex-col items-center gap-2">
-          <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-          </div>
-          <p class="text-sm font-semibold text-gray-900">SSL Encrypted</p>
-          <p class="text-xs text-gray-500">256-bit encryption</p>
-        </div>
-
-        <!-- Data Privacy -->
-        <div class="flex flex-col items-center gap-2">
-          <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
-          </div>
-          <p class="text-sm font-semibold text-gray-900">Data Privacy</p>
-          <p class="text-xs text-gray-500">Your data stays yours</p>
-        </div>
-
-        <!-- Satisfaction Rate -->
-        <div class="flex flex-col items-center gap-2">
-          <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
-            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <p class="text-sm font-semibold text-gray-900">95% Satisfaction</p>
-          <p class="text-xs text-gray-500">Users love RezumFit</p>
-        </div>
-
-        <!-- Cancel Anytime -->
-        <div class="flex flex-col items-center gap-2">
-          <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center">
-            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-          </div>
-          <p class="text-sm font-semibold text-gray-900">Cancel Anytime</p>
-          <p class="text-xs text-gray-500">No commitments</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ============================================ -->
-  <!-- FAQ                                          -->
-  <!-- ============================================ -->
-  <section id="faq" class="py-20 sm:py-28 bg-gray-50" data-controller="accordion scroll-reveal">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16" data-scroll-reveal-target="item">
-        <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">FAQ</p>
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Frequently asked questions</h2>
+    <div class="wrap">
+      <div style="text-align:center;margin-bottom:48px">
+        <span class="mono" style="display:inline-flex;align-items:center;gap:12px;color:var(--muted)">
+          <span style="display:inline-flex">
+            <% %w[S M J A D].each_with_index do |i, idx| %>
+              <span style="width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;justify-content:center;font-family:'Inter Tight';font-size:11px;font-weight:600;<%= 'margin-left:-8px;' if idx > 0 %>border:2px solid var(--paper)"><%= i %></span>
+            <% end %>
+          </span>
+          <span><b style="color:var(--ink);font-weight:500">1,000+</b> professionals optimized this month</span>
+        </span>
       </div>
 
-      <div class="space-y-3" data-scroll-reveal-target="item">
-        <% FaqHelper::FAQ_ITEMS.each_with_index do |faq, index| %>
-          <% question = faq[:question]; answer = faq[:answer] %>
-          <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <button type="button" data-action="click->accordion#toggle" data-index="<%= index %>" class="w-full flex items-center justify-between px-6 py-4 text-left">
-              <span class="text-sm font-semibold text-gray-900 pr-4"><%= question %></span>
-              <svg data-accordion-target="icon" class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-            <div data-accordion-target="content" class="hidden px-6 pb-4">
-              <p class="text-sm text-gray-600 leading-relaxed"><%= answer %></p>
+      <div class="steps" style="grid-template-columns:repeat(3,1fr)">
+        <% [
+          ["★★★★★", "RezumFit helped me land a senior engineering role at a top tech company. My ATS score went from 31% to 92% and I got 3× more callbacks.", "Sarah K.", "Software Engineer", "SK"],
+          ["★★★★☆", "Cover letter generator is great and saves me hours. The only reason it's not 5 stars is I wish there were more template layouts. AI output quality is top notch.", "Marcus R.", "Product Manager", "MR"],
+          ["★★★★★", "As a career changer, I struggled to position my experience. RezumFit rewrote my resume to highlight transferable skills. Got my dream job within 3 weeks.", "Jessica P.", "Marketing Director", "JP"],
+          ["★★★★★", "Fresh out of uni with zero interview calls. After RezumFit optimized my resume, I got 4 interviews in one week. The ATS keyword matching is a game changer.", "Amara O.", "Recent Graduate", "AO"],
+          ["★★★★☆", "Switching from teaching to tech seemed impossible. RezumFit translated my classroom skills into corporate language. I'm now a UX Researcher at a Fortune 500.", "David M.", "Career Changer → UX Researcher", "DM"],
+          ["★★★★★", "Even at the executive level, ATS matters. RezumFit optimized my VP resume in seconds and the interview prep feature helped me nail the behavioural questions.", "Linda T.", "VP of Operations", "LT"]
+        ].each do |(stars, body, name, role, init)| %>
+          <div class="step" style="min-height:auto;padding:36px 32px">
+            <span class="mono" style="color:var(--accent);letter-spacing:.2em"><%= stars %></span>
+            <p style="font-family:'Fraunces',serif;font-size:16px;font-weight:300;font-variation-settings:'opsz' 24;line-height:1.5;color:var(--ink);max-width:none;margin-top:0;font-style:italic">"<%= body %>"</p>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:24px;border-top:1px solid color-mix(in oklab, var(--ink) 10%, transparent)">
+              <div style="width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500"><%= init %></div>
+              <div>
+                <p style="font-family:'Fraunces',serif;font-size:15px;font-weight:500;letter-spacing:-0.01em;font-variation-settings:'opsz' 24;color:var(--ink);margin:0"><%= name %></p>
+                <p class="mono" style="color:var(--muted);margin-top:2px"><%= role %></p>
+              </div>
             </div>
           </div>
         <% end %>
@@ -1444,128 +873,206 @@
     </div>
   </section>
 
-
-  <!-- ============================================ -->
-  <!-- FINAL CTA                                    -->
-  <!-- ============================================ -->
-  <section class="py-20 sm:py-28" data-controller="scroll-reveal">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-scroll-reveal-target="item">
-      <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-3xl p-10 sm:p-16 relative overflow-hidden shadow-2xl">
-        <!-- Decorative elements -->
-        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-        <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/3 -translate-x-1/4"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full"></div>
-
-        <!-- SVG pattern overlay -->
-        <div class="absolute inset-0 opacity-5">
-          <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="cta-grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="white" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#cta-grid)"/></svg>
-        </div>
-
-        <h2 class="text-3xl sm:text-4xl font-bold text-white relative z-10">Ready to land your dream job?</h2>
-        <p class="mt-4 text-lg text-blue-100 max-w-xl mx-auto relative z-10">Join thousands of professionals using AI to optimize their resumes, ace interviews, and get more offers.</p>
-        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-          <%= link_to new_user_registration_path, class: "inline-flex items-center px-8 py-4 text-base font-semibold text-blue-700 bg-white hover:bg-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all" do %>
-            Get Started Free
-            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-          <% end %>
-          <a href="#pricing" class="inline-flex items-center px-6 py-3.5 text-base font-medium text-white/90 hover:text-white border border-white/30 hover:border-white/50 rounded-xl transition-all">
-            View Pricing
-          </a>
-        </div>
-        <p class="mt-5 text-sm text-blue-200 relative z-10">No credit card required. 2 free credits included.</p>
+  <!-- ============================================================
+       TRUST BADGES — 4
+       ============================================================ -->
+  <section data-screen-label="16 Trust">
+    <div class="wrap">
+      <div class="stats" style="grid-template-columns:repeat(4,1fr);padding:40px 0">
+        <% [
+          ["SSL Encrypted", "256-bit encryption · end to end"],
+          ["Data Privacy", "Your documents, never trained on"],
+          ["95% Satisfaction", "From verified user surveys"],
+          ["Cancel Anytime", "No commitments, no contracts"]
+        ].each_with_index do |(title, body), i| %>
+          <div class="stat">
+            <div class="mono" style="color:var(--accent)">Trust 0<%= i + 1 %></div>
+            <div style="font-family:'Fraunces',serif;font-size:24px;letter-spacing:-0.02em;font-weight:500;font-variation-settings:'opsz' 36;margin-top:14px"><%= title %></div>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px;font-family:'Inter Tight';font-style:normal;line-height:1.5"><%= body %></div>
+          </div>
+        <% end %>
       </div>
     </div>
   </section>
 
+  <!-- ============================================================
+       FAQ
+       ============================================================ -->
+  <section id="faq" data-screen-label="17 FAQ">
+    <div class="wrap">
+      <div class="faq">
+        <h2>Reasonable <em>questions,</em><br>asked often.</h2>
+        <div class="list">
+          <% if defined?(FaqHelper) && FaqHelper.const_defined?(:FAQ_ITEMS) && FaqHelper::FAQ_ITEMS.any? %>
+            <% FaqHelper::FAQ_ITEMS.each_with_index do |faq, index| %>
+              <details<%= ' open' if index == 0 %>>
+                <summary><%= faq[:question] %></summary>
+                <p><%= faq[:answer] %></p>
+              </details>
+            <% end %>
+          <% else %>
+            <details open>
+              <summary>Will it sound like me, or like ChatGPT?</summary>
+              <p>RezumFit is trained to preserve voice. We treat your resume as authoritative source material — we re-order, re-emphasise, and tighten, but never invent experience or replace your phrasing with generic filler.</p>
+            </details>
+            <details>
+              <summary>Is the model reading my resume to train itself?</summary>
+              <p>No. Your documents are processed in-session and never used as training data. Drafts are encrypted at rest and you can purge your library at any time from settings.</p>
+            </details>
+            <details>
+              <summary>What about ATS — applicant tracking systems?</summary>
+              <p>Every export passes a structural check: clean headings, parseable dates, no hidden tables. We score readability against the major ATS engines and flag anything brittle before you send.</p>
+            </details>
+            <details>
+              <summary>Can I bring my own template?</summary>
+              <p>Yes. Upload a DOCX or share a Figma file. RezumFit fills your tailored draft into your existing layout — typography, hierarchy and all.</p>
+            </details>
+            <details>
+              <summary>Does it write cover letters?</summary>
+              <p>Yes — included on the Pro and Premium plans. Same philosophy: it studies the listing and your voice, then drafts something you'd actually have written on a good Tuesday.</p>
+            </details>
+            <details>
+              <summary>How does pricing work? Do credits expire?</summary>
+              <p>One credit equals one resume optimization. Credits never expire and you only buy what you need — no monthly bill to remember to cancel.</p>
+            </details>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <!-- ============================================ -->
-  <!-- FOOTER                                       -->
-  <!-- ============================================ -->
-  <%= render 'shared/public_footer' %>
+  <!-- ============================================================
+       CLOSING / FINAL CTA
+       ============================================================ -->
+  <section class="closing" data-screen-label="18 Closing">
+    <div class="wrap">
+      <h2>Send your <em>best</em> draft.<br>Not your last one.</h2>
+      <div class="actions">
+        <%= link_to ats_checker_path, class: "btn-primary" do %>
+          Score my resume — free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <% end %>
+        <a href="#pricing" class="btn-ghost">View pricing</a>
+      </div>
+      <div class="meta">
+        <div>Free to start<b>2 credits, no card needed</b></div>
+        <div>Built for<b>Job seekers who want callbacks</b></div>
+        <div>Trusted by<b>1,000+ professionals this month</b></div>
+      </div>
+    </div>
+  </section>
 
-<script>
-  // Detect visitor location and swap pricing display
-  (function() {
-    var nigerianTimezones = ["Africa/Lagos"];
-    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    var isNigeria = nigerianTimezones.indexOf(tz) !== -1;
+  <!-- ============================================================
+       FOOTER — editorial dark
+       ============================================================ -->
+  <footer class="edit">
+    <div class="wrap">
+      <div class="row">
+        <div class="brand">
+          <div class="word">RezumFit<em>.</em></div>
+          <p>A quieter way to apply for the job you actually want.</p>
+        </div>
+        <div>
+          <h6>Product</h6>
+          <ul>
+            <li><%= link_to "ATS Checker", ats_checker_path %></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6>Resources</h6>
+          <ul>
+            <li><%= link_to "Blog", articles_path %></li>
+            <li><a href="#faq">Questions</a></li>
+            <li><a href="https://t.me/+MaJ-KpCG_OFkZTA0" target="_blank" rel="noopener">Telegram community</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6>Company</h6>
+          <ul>
+            <% if user_signed_in? %>
+              <li><%= link_to "Dashboard", dashboard_path %></li>
+              <li><%= link_to "Sign out", destroy_user_session_path, data: { turbo_method: :delete } %></li>
+            <% else %>
+              <li><%= link_to "Sign in", new_user_session_path %></li>
+              <li><%= link_to "Get started", new_user_registration_path %></li>
+            <% end %>
+            <li><a href="mailto:hello@rezumfit.com">hello@rezumfit.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="legal">
+        <span>© <%= Date.current.year %> RezumFit · All rights reserved</span>
+        <span>Made for job seekers who want callbacks</span>
+      </div>
+    </div>
+  </footer>
 
-    // Default is NGN (already rendered). Only swap if international.
-    if (!isNigeria) {
-      var els = document.querySelectorAll("[data-pricing-target='price']");
-      els.forEach(function(el) {
-        var usd = el.getAttribute("data-price-usd");
-        if (usd) {
-          el.textContent = usd;
+  <!-- ============================================================
+       EXIT POPUP — editorial styled
+       ============================================================ -->
+  <% unless user_signed_in? %>
+    <div id="exit-popup" class="exit-pop" role="dialog" aria-labelledby="exit-pop-title" aria-modal="true">
+      <div class="panel">
+        <button class="close" type="button" onclick="document.getElementById('exit-popup').classList.remove('show')">CLOSE ✕</button>
+        <span class="eyebrow">Before you go</span>
+        <h3 id="exit-pop-title">Your resume might be <em>getting rejected</em> right now.</h3>
+        <p>Check your ATS score in under 30 seconds. Free. No sign-up. No credit card. Just upload and see where you stand.</p>
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
+          <%= link_to ats_checker_path, class: "btn-primary", style: "background:var(--accent);color:#fff;justify-content:center;text-align:center" do %>
+            Check my ATS score — free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <% end %>
+          <div style="text-align:center;padding-top:16px;border-top:1px solid color-mix(in oklab, var(--ink) 12%, transparent);margin-top:8px">
+            <p class="mono" style="color:var(--muted);margin-bottom:12px">Or join the community</p>
+            <a href="https://t.me/+MaJ-KpCG_OFkZTA0" target="_blank" rel="noopener" class="btn-ghost" style="display:inline-flex;justify-content:center">Join Telegram — free</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        var key = "rezumfit_exit_seen_v3";
+        if (sessionStorage.getItem(key)) return;
+        var pop = document.getElementById("exit-popup");
+        if (!pop) return;
+        function show(){
+          if (sessionStorage.getItem(key)) return;
+          sessionStorage.setItem(key, "1");
+          pop.classList.add("show");
         }
-      });
-    }
-  })();
-</script>
+        setTimeout(show, 12000);
+        document.addEventListener("mouseout", function(e){
+          if (!e.toElement && !e.relatedTarget && e.clientY < 10) show();
+        });
+        pop.addEventListener("click", function(e){
+          if (e.target === pop) pop.classList.remove("show");
+        });
+        document.addEventListener("keydown", function(e){
+          if (e.key === "Escape") pop.classList.remove("show");
+        });
+      })();
+    </script>
+  <% end %>
 
-<!-- ============================================ -->
-<!-- EXIT INTENT POPUP                            -->
-<!-- ============================================ -->
-<div id="exit-popup" class="fixed inset-0 z-[100] hidden">
-  <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="document.getElementById('exit-popup').classList.add('hidden')"></div>
+  <!-- Pricing currency swap (NGN ↔ USD by timezone) -->
+  <script>
+    (function(){
+      try {
+        var nigerianTZ = ["Africa/Lagos"];
+        var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        var isNigeria = nigerianTZ.indexOf(tz) !== -1;
+        if (isNigeria) {
+          document.querySelectorAll("[data-pricing-target='price']").forEach(function(el){
+            var ngn = el.getAttribute("data-price-ngn");
+            if (ngn) el.textContent = ngn;
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
 
-  <!-- Modal -->
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md mx-4">
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8 text-center relative">
-        <button onclick="document.getElementById('exit-popup').classList.add('hidden'); localStorage.setItem('exitPopupDismissed','true')" class="absolute top-3 right-3 text-white/60 hover:text-white">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-        <p class="text-4xl mb-3">Wait!</p>
-        <h3 class="text-xl font-bold text-white">Before you go...</h3>
-        <p class="mt-2 text-blue-100 text-sm">Your resume might be getting rejected right now and you don't even know it.</p>
-      </div>
-
-      <!-- Body -->
-      <div class="px-6 py-6 text-center">
-        <p class="text-gray-700 font-medium mb-2">Check your ATS score in 10 seconds</p>
-        <p class="text-sm text-gray-500 mb-6">Free. No sign-up. No credit card. Just upload and see your score.</p>
-
-        <%= link_to ats_checker_path, class: "block w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-lg transition-all text-center" do %>
-          Check My ATS Score — Free
-        <% end %>
-
-        <div class="mt-5 pt-5 border-t border-gray-100">
-          <p class="text-xs text-gray-500 mb-3">Or join our community for free career tips & job alerts:</p>
-          <a href="https://t.me/+MaJ-KpCG_OFkZTA0" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-colors">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-            Join RezumFit on Telegram
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
-
-<script>
-  // Exit intent popup — triggers when mouse leaves viewport (desktop) or after 45s (mobile)
-  (function() {
-    if (localStorage.getItem('exitPopupDismissed')) return;
-
-    var shown = false;
-    function showPopup() {
-      if (shown) return;
-      shown = true;
-      document.getElementById('exit-popup').classList.remove('hidden');
-    }
-
-    // Desktop: mouse leaves top of page
-    document.addEventListener('mouseout', function(e) {
-      if (e.clientY < 5 && e.relatedTarget == null) showPopup();
-    });
-
-    // Mobile: after 45 seconds of inactivity
-    setTimeout(function() {
-      if (!document.hidden) showPopup();
-    }, 12000);
-  })();
-</script>
-</body>
-</html>

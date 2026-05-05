@@ -1,58 +1,79 @@
-<footer class="bg-gray-900 pt-16 pb-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+<footer style="background: var(--ink); color: color-mix(in oklab, var(--paper) 70%, transparent); padding: 64px 0 36px; font-size: 13px; font-family: 'Inter Tight', system-ui, sans-serif;">
+  <div class="max-w-7xl mx-auto" style="padding: 0 24px;">
+
+    <!-- Top: brand + links -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 32px; align-items: start; padding-bottom: 48px;" class="footer-row">
+
+      <!-- Brand -->
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+          <span style="width: 22px; height: 22px; border: 1.5px solid var(--paper); border-radius: 50%; position: relative; display: inline-block;">
+            <span style="position: absolute; inset: 4px; background: var(--paper); border-radius: 50%; clip-path: polygon(0 0,100% 0,100% 60%,40% 60%,40% 100%,0 100%); display: block;"></span>
+          </span>
+          <span style="font-family: 'Fraunces', serif; font-weight: 500; font-size: 26px; letter-spacing: -0.02em; color: var(--paper); font-variation-settings: 'opsz' 36;">RezumFit<em style="font-style: italic; color: var(--accent);">.</em></span>
+        </div>
+        <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 15px; color: color-mix(in oklab, var(--paper) 60%, transparent); max-width: 28ch; line-height: 1.5; margin: 0;">A quieter way to apply for the job you actually want.</p>
+      </div>
+
       <!-- Product -->
       <div>
-        <h4 class="text-sm font-semibold text-white mb-4">Product</h4>
-        <ul class="space-y-2.5">
-          <li><%= link_to "Features", root_path(anchor: "features"), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "Pricing", root_path(anchor: "pricing"), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "How It Works", root_path(anchor: "how-it-works"), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "Free ATS Checker", ats_checker_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+        <h6 class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 50%, transparent); margin-bottom: 16px;">Product</h6>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          <li><%= link_to "Features", root_path(anchor: "features"), style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "Pricing", root_path(anchor: "pricing"), style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "How it works", root_path(anchor: "how-it-works"), style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "ATS Checker", ats_checker_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
         </ul>
       </div>
 
       <!-- Resources -->
       <div>
-        <h4 class="text-sm font-semibold text-white mb-4">Resources</h4>
-        <ul class="space-y-2.5">
-          <li><%= link_to "Blog", articles_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "Resume Tips", articles_path(category: 'resume_tips'), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "ATS Guide", articles_path(category: 'ats_guide'), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "Interview Prep", articles_path(category: 'interview_prep'), class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+        <h6 class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 50%, transparent); margin-bottom: 16px;">Resources</h6>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          <li><%= link_to "Blog", articles_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "Resume Tips", articles_path(category: 'resume_tips'), style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "ATS Guide", articles_path(category: 'ats_guide'), style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "Interview Prep", articles_path(category: 'interview_prep'), style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
         </ul>
       </div>
 
       <!-- Legal -->
       <div>
-        <h4 class="text-sm font-semibold text-white mb-4">Legal</h4>
-        <ul class="space-y-2.5">
-          <li><%= link_to "Terms of Service", terms_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-          <li><%= link_to "Privacy Policy", privacy_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+        <h6 class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 50%, transparent); margin-bottom: 16px;">Legal</h6>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          <li><%= link_to "Terms", terms_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+          <li><%= link_to "Privacy", privacy_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
         </ul>
       </div>
 
       <!-- Account -->
       <div>
-        <h4 class="text-sm font-semibold text-white mb-4">Account</h4>
-        <ul class="space-y-2.5">
+        <h6 class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 50%, transparent); margin-bottom: 16px;">Account</h6>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
           <% if user_signed_in? %>
-            <li><%= link_to "Dashboard", dashboard_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-            <li><%= link_to "My Resumes", resumes_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+            <li><%= link_to "Dashboard", dashboard_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+            <li><%= link_to "My resumes", resumes_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
           <% else %>
-            <li><%= link_to "Sign In", new_user_session_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
-            <li><%= link_to "Sign Up", new_user_registration_path, class: "text-sm text-gray-400 hover:text-white transition-colors" %></li>
+            <li><%= link_to "Sign in", new_user_session_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
+            <li><%= link_to "Sign up", new_user_registration_path, style: "color: color-mix(in oklab, var(--paper) 75%, transparent); text-decoration: none;" %></li>
           <% end %>
         </ul>
       </div>
     </div>
 
-    <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center space-x-2">
-        <img src="/icon.svg" alt="RezumFit" class="w-7 h-7 rounded-lg">
-        <span class="text-sm font-semibold text-white">RezumFit</span>
-      </div>
-      <p class="text-sm text-gray-500">&copy; <%= Date.current.year %> RezumFit. All rights reserved.</p>
+    <!-- Legal row -->
+    <div style="border-top: 1px solid color-mix(in oklab, var(--paper) 12%, transparent); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: color-mix(in oklab, var(--paper) 45%, transparent);">
+      <span>© <%= Date.current.year %> RezumFit · All rights reserved</span>
+      <span>Made for job seekers who want callbacks</span>
     </div>
   </div>
+
+  <style>
+    @media (max-width: 960px){
+      .footer-row{grid-template-columns: 1fr 1fr !important;}
+    }
+    @media (max-width: 600px){
+      .footer-row{grid-template-columns: 1fr !important; gap: 32px !important;}
+    }
+  </style>
 </footer>

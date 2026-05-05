@@ -83,28 +83,59 @@
             <div class="p-6">
               <% tiers = @pricing[:tiers] %>
               <% sym = @pricing[:symbol] %>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: color-mix(in oklab, var(--ink) 12%, transparent); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 8px; overflow: hidden;" class="credits-grid">
                 <% tiers.each do |tier| %>
-                  <% has_badge = tier[:badge].present? %>
                   <% is_popular = tier[:badge] == "Most Popular" %>
-                  <div class="<%= is_popular ? 'border-2 border-blue-300 bg-blue-50/50' : 'border border-gray-200 hover:border-blue-300' %> rounded-2xl p-5 text-center relative transition-all hover:shadow-md">
-                    <% if has_badge %>
-                      <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                        <span class="px-2.5 py-0.5 text-xs font-bold text-white rounded-full shadow-sm <%= is_popular ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gray-700' %>"><%= tier[:badge] %></span>
+                  <div style="display: flex; flex-direction: column; padding: 24px 20px; min-height: 280px; <%= is_popular ? 'background: var(--ink); color: var(--paper);' : 'background: var(--paper); color: var(--ink);' %>">
+                    <!-- Eyebrow with badge inline -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; min-height: 16px;">
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: <%= is_popular ? 'color-mix(in oklab, var(--paper) 60%, transparent)' : 'var(--muted)' %>;">
+                        <%= tier[:label] || "#{tier[:credits]} Pack" %>
+                      </span>
+                      <% if tier[:badge].present? %>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--accent);"><%= tier[:badge] %></span>
+                      <% end %>
+                    </div>
+
+                    <!-- Credits numeral -->
+                    <div style="font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; letter-spacing: -0.04em; line-height: 0.9; font-variation-settings: 'opsz' 144;">
+                      <%= tier[:credits] %>
+                    </div>
+                    <span style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 14px; color: <%= is_popular ? 'color-mix(in oklab, var(--paper) 60%, transparent)' : 'var(--muted)' %>; margin-top: 4px;">credits</span>
+
+                    <!-- Price -->
+                    <div style="margin-top: 18px;">
+                      <div style="font-family: 'Fraunces', serif; font-size: 28px; font-weight: 500; letter-spacing: -0.02em; font-variation-settings: 'opsz' 36;">
+                        <% if is_popular %>
+                          <em style="font-style: italic; color: var(--accent);"><%= sym %><%= tier[:display] %></em>
+                        <% else %>
+                          <%= sym %><%= tier[:display] %>
+                        <% end %>
                       </div>
-                    <% end %>
-                    <p class="text-sm font-semibold text-gray-500 mb-1 mt-1"><%= tier[:label] || "#{tier[:credits]} Pack" %></p>
-                    <p class="text-3xl font-extrabold text-gray-900"><%= tier[:credits] %></p>
-                    <p class="text-xs text-gray-500 mb-1">credits</p>
-                    <p class="text-lg font-bold text-blue-600 mb-1"><%= sym %><%= tier[:display] %></p>
-                    <p class="text-xs text-gray-500 mb-4"><%= sym %><%= tier[:per_credit] %>/credit</p>
-                    <%= form_with url: purchase_credits_billing_index_path, method: :post, local: true, data: { turbo: false } do |f| %>
-                      <%= hidden_field_tag :credits, tier[:credits] %>
-                      <%= f.submit "Buy Now", class: "w-full px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer" %>
-                    <% end %>
+                      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: <%= is_popular ? 'color-mix(in oklab, var(--paper) 55%, transparent)' : 'var(--muted)' %>; margin-top: 4px;">
+                        <%= sym %><%= tier[:per_credit] %> / credit
+                      </div>
+                    </div>
+
+                    <!-- Buy button -->
+                    <div style="margin-top: auto; padding-top: 20px;">
+                      <%= form_with url: purchase_credits_billing_index_path, method: :post, local: true, data: { turbo: false } do |f| %>
+                        <%= hidden_field_tag :credits, tier[:credits] %>
+                        <% if is_popular %>
+                          <%= f.submit "Buy now", class: "btn-accent", style: "width: 100%; justify-content: center; padding: 12px 18px; font-size: 13px; cursor: pointer; border: none;" %>
+                        <% else %>
+                          <%= f.submit "Buy now", class: "btn-outline", style: "width: 100%; justify-content: center; padding: 11px 17px; font-size: 13px; cursor: pointer;" %>
+                        <% end %>
+                      <% end %>
+                    </div>
                   </div>
                 <% end %>
               </div>
+
+              <style>
+                @media (max-width: 960px){ .credits-grid{grid-template-columns: repeat(2, 1fr) !important;} }
+                @media (max-width: 480px){ .credits-grid{grid-template-columns: 1fr !important;} }
+              </style>
 
               <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <p class="text-xs font-medium text-gray-700 mb-1">Credit Usage:</p>

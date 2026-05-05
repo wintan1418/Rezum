@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-100">
+<html lang="en" class="h-full">
   <head>
     <title>Admin — RezumFit</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,136 +7,107 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <style>
+      body{font-family:'Inter Tight',system-ui,sans-serif; background: var(--paper); color: var(--ink);}
+      .admin-side a.active{ background: color-mix(in oklab, var(--paper) 6%, var(--ink)); color: var(--paper); }
+      .admin-side a{ transition: background .15s, color .15s; }
+      .admin-side a:hover{ background: color-mix(in oklab, var(--paper) 6%, var(--ink)); color: var(--paper); }
+    </style>
   </head>
-  <body class="h-full">
+  <body class="h-full" style="background: var(--paper);">
     <div class="min-h-full flex">
-      <!-- Sidebar -->
-      <div class="hidden md:flex md:w-64 md:flex-col">
-        <div class="flex flex-col flex-grow bg-gray-900 overflow-y-auto">
+
+      <!-- SIDEBAR -->
+      <aside class="hidden md:flex md:w-64 md:flex-col admin-side" style="background: var(--ink); color: color-mix(in oklab, var(--paper) 80%, transparent);">
+        <div class="flex flex-col flex-grow overflow-y-auto" style="padding: 0;">
+
           <!-- Logo -->
-          <div class="flex items-center h-16 flex-shrink-0 px-4 border-b border-gray-800">
-            <img src="/icon.svg" alt="RezumFit" class="w-8 h-8 rounded-lg">
-            <span class="ml-3 text-white font-bold text-lg">RezumFit Admin</span>
+          <div style="display: flex; align-items: center; gap: 10px; height: 64px; flex-shrink: 0; padding: 0 20px; border-bottom: 1px solid color-mix(in oklab, var(--paper) 12%, transparent);">
+            <span style="width:22px; height:22px; border:1.5px solid var(--paper); border-radius:50%; position:relative; display:inline-block;">
+              <span style="position:absolute; inset:4px; background:var(--paper); border-radius:50%; clip-path: polygon(0 0,100% 0,100% 60%,40% 60%,40% 100%,0 100%); display:block;"></span>
+            </span>
+            <span style="font-family:'Fraunces',serif; font-weight:500; font-size:18px; letter-spacing:-0.02em; color: var(--paper); font-variation-settings:'opsz' 24;">RezumFit</span>
+            <span class="font-mono-label" style="color: var(--accent); margin-left: 6px;">Admin</span>
           </div>
 
-          <!-- Navigation -->
-          <nav class="flex-1 px-3 py-4 space-y-1">
-            <%= link_to admin_root_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'dashboard' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-              </svg>
-              Dashboard
-            <% end %>
-
-            <%= link_to admin_users_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'users' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-              </svg>
-              Users
-            <% end %>
-
-            <%= link_to admin_leads_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'leads' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
-              Leads CRM
-              <% lead_count = Lead.count rescue 0 %>
-              <% if lead_count > 0 %>
-                <span class="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-blue-500 text-white text-xs font-bold"><%= lead_count %></span>
-              <% end %>
-            <% end %>
-
-            <% unread_conversations = @unread_conversations || 0 %>
-            <%= link_to admin_conversations_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'conversations' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-              </svg>
-              Conversations
-              <% if unread_conversations > 0 %>
-                <span class="ml-auto inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold"><%= unread_conversations %></span>
-              <% end %>
-            <% end %>
-            <%= link_to admin_articles_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'articles' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-              </svg>
-              Blog Articles
-            <% end %>
-
-            <%= link_to admin_marketing_index_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'marketing' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
-              Marketing
-            <% end %>
-
-            <% unread_hire = @unread_hire || 0 %>
-            <%= link_to admin_hire_messages_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors #{controller_name == 'hire_messages' ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
-              </svg>
-              Hire Messages
-              <% if unread_hire > 0 %>
-                <span class="ml-auto inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold"><%= unread_hire %></span>
+          <!-- Nav -->
+          <nav style="flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 2px;">
+            <% nav_items = [
+              [admin_root_path, "Dashboard", "dashboard"],
+              [admin_users_path, "Users", "users"],
+              [admin_leads_path, "Leads CRM", "leads", (Lead.count rescue 0)],
+              [admin_conversations_path, "Conversations", "conversations", (@unread_conversations || 0)],
+              [admin_articles_path, "Blog Articles", "articles"],
+              [admin_marketing_index_path, "Marketing", "marketing"],
+              [admin_hire_messages_path, "Hire Messages", "hire_messages", (@unread_hire || 0)]
+            ] %>
+            <% nav_items.each do |path, label, ctrl, badge| %>
+              <% active = controller_name == ctrl %>
+              <%= link_to path, class: ("active" if active), style: "display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 4px; font-size: 13.5px; font-weight: 400; text-decoration: none; color: #{active ? 'var(--paper)' : 'color-mix(in oklab, var(--paper) 70%, transparent)'};" do %>
+                <span style="display: flex; align-items: center; gap: 10px;">
+                  <% if active %><span style="width: 2px; height: 14px; background: var(--accent); display: inline-block;"></span><% else %><span style="width: 2px; height: 14px; display: inline-block;"></span><% end %>
+                  <%= label %>
+                </span>
+                <% if badge && badge.to_i > 0 %>
+                  <span class="font-mono-label" style="color: var(--accent); background: color-mix(in oklab, var(--accent) 14%, transparent); padding: 2px 8px; border-radius: 999px; font-size: 10px;"><%= badge %></span>
+                <% end %>
               <% end %>
             <% end %>
           </nav>
 
-          <!-- Quick Links -->
-          <div class="px-3 py-4 border-t border-gray-800 space-y-1">
-            <%= link_to root_path(preview: 1), target: "_blank", data: { turbo: false }, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-              View Website
+          <!-- Quick links -->
+          <div style="padding: 16px 12px; border-top: 1px solid color-mix(in oklab, var(--paper) 12%, transparent);">
+            <%= link_to root_path(preview: 1), target: "_blank", data: { turbo: false }, style: "display: block; padding: 10px 14px; border-radius: 4px; font-size: 13px; color: color-mix(in oklab, var(--paper) 60%, transparent); text-decoration: none;" do %>
+              View website ↗
             <% end %>
-            <%= link_to dashboard_path, class: "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors" do %>
-              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
-              </svg>
-              Back to App
+            <%= link_to dashboard_path, style: "display: block; padding: 10px 14px; border-radius: 4px; font-size: 13px; color: color-mix(in oklab, var(--paper) 60%, transparent); text-decoration: none;" do %>
+              ← Back to app
             <% end %>
 
-            <div class="flex items-center px-3 py-2 mt-2">
-              <img src="<%= current_user.avatar_url(variant: :thumb) %>" alt="" class="w-8 h-8 rounded-full object-cover">
-              <div class="ml-3">
-                <p class="text-sm font-medium text-white"><%= current_user.first_name %></p>
-                <p class="text-xs text-gray-400">Admin</p>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 14px; margin-top: 8px; border-top: 1px solid color-mix(in oklab, var(--paper) 8%, transparent);">
+              <img src="<%= current_user.avatar_url(variant: :thumb) %>" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+              <div style="min-width: 0;">
+                <p style="font-family:'Fraunces',serif; font-size: 14px; font-weight: 500; color: var(--paper); margin: 0; font-variation-settings:'opsz' 24;"><%= current_user.first_name %></p>
+                <p class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 50%, transparent); margin-top: 2px;">Admin</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <!-- Main Content -->
+      <!-- MAIN -->
       <div class="flex flex-col flex-1 min-w-0">
-        <!-- Mobile Header -->
-        <div class="md:hidden flex items-center justify-between h-16 px-4 bg-gray-900 border-b border-gray-800">
-          <div class="flex items-center">
-            <img src="/icon.svg" alt="RezumFit" class="w-8 h-8 rounded-lg">
-            <span class="ml-2 text-white font-bold">Admin</span>
+
+        <!-- Mobile header -->
+        <div class="md:hidden" style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px; background: var(--ink); color: var(--paper); border-bottom: 1px solid color-mix(in oklab, var(--paper) 10%, transparent);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width:18px; height:18px; border:1.5px solid var(--paper); border-radius:50%; position:relative; display:inline-block;">
+              <span style="position:absolute; inset:3px; background:var(--paper); border-radius:50%; clip-path: polygon(0 0,100% 0,100% 60%,40% 60%,40% 100%,0 100%); display:block;"></span>
+            </span>
+            <span style="font-family:'Fraunces',serif; font-weight:500; font-size:16px; letter-spacing:-0.02em;">Admin</span>
           </div>
-          <div class="flex items-center space-x-2">
-            <%= link_to admin_root_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Dashboard<% end %>
-            <%= link_to admin_users_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Users<% end %>
-            <%= link_to admin_articles_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Blog<% end %>
-            <%= link_to admin_marketing_index_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Marketing<% end %>
-            <%= link_to admin_hire_messages_path, class: "text-gray-300 hover:text-white px-2 py-1 text-sm" do %>Hire<% end %>
-            <%= link_to root_path(preview: 1), target: "_blank", data: { turbo: false }, class: "text-gray-400 hover:text-white px-2 py-1 text-sm" do %>Site<% end %>
+          <div style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+            <%= link_to "Users", admin_users_path, style: "color: color-mix(in oklab, var(--paper) 70%, transparent); padding: 4px 8px; text-decoration: none;" %>
+            <%= link_to "Leads", admin_leads_path, style: "color: color-mix(in oklab, var(--paper) 70%, transparent); padding: 4px 8px; text-decoration: none;" %>
+            <%= link_to "Blog", admin_articles_path, style: "color: color-mix(in oklab, var(--paper) 70%, transparent); padding: 4px 8px; text-decoration: none;" %>
+            <%= link_to "Site", root_path(preview: 1), target: "_blank", data: { turbo: false }, style: "color: color-mix(in oklab, var(--paper) 50%, transparent); padding: 4px 8px; text-decoration: none;" %>
           </div>
         </div>
 
-        <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto">
+        <!-- Page content -->
+        <main style="flex: 1; overflow-y: auto;">
           <% if flash[:notice] %>
-            <div class="mx-4 mt-4 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm">
+            <div style="margin: 16px; padding: 12px 16px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 14px; color: var(--ink);">
               <%= flash[:notice] %>
             </div>
           <% end %>
           <% if flash[:alert] %>
-            <div class="mx-4 mt-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm">
+            <div style="margin: 16px; padding: 12px 16px; background: color-mix(in oklab, var(--ink) 5%, var(--paper)); border: 1px solid color-mix(in oklab, var(--ink) 25%, transparent); border-left: 3px solid var(--ink); border-radius: 4px; font-size: 14px; color: var(--ink);">
               <%= flash[:alert] %>
             </div>
           <% end %>

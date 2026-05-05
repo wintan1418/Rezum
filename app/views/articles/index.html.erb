@@ -1,131 +1,137 @@
-<% content_for :title, "Career Blog - Resume Tips, ATS Guides & Interview Advice | RezumFit" %>
+<% content_for :title, "Career Blog — Resume tips, ATS guides & interview advice | RezumFit" %>
 <% content_for :meta_description, "Expert career advice, resume writing tips, ATS optimization guides, and interview preparation strategies to help you land your dream job." %>
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div style="background: var(--paper); min-height: 100vh; color: var(--ink); font-family: 'Inter Tight', system-ui, sans-serif;">
+  <div class="max-w-6xl mx-auto" style="padding: 64px 24px 80px;">
 
-  <!-- Header -->
-  <div class="text-center mb-12">
-    <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-4">
-      <svg class="w-4 h-4 text-blue-500 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-      </svg>
-      <span class="text-xs font-semibold text-blue-700">RezumFit Blog</span>
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 56px;">
+      <span class="font-mono-label" style="display: inline-block; color: var(--accent); margin-bottom: 18px;">RezumFit · Blog</span>
+      <h1 class="font-display" style="font-size: clamp(56px, 8vw, 120px); line-height: 0.95; letter-spacing: -0.045em;">
+        Career <em>blog</em>.
+      </h1>
+      <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 21px; color: var(--muted); max-width: 50ch; margin: 22px auto 0; line-height: 1.4;">
+        Expert tips, guides, and strategies to help you land your dream job faster.
+      </p>
     </div>
-    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 tracking-tight">Career Blog</h1>
-    <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">Expert tips, guides, and strategies to help you land your dream job faster.</p>
-  </div>
 
-  <!-- Category Filters -->
-  <div class="flex flex-wrap justify-center gap-2 mb-10">
-    <%= link_to "All", articles_path, class: "px-4 py-2 rounded-full text-sm font-medium transition-all #{params[:category].blank? ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
-    <% @categories.each do |cat| %>
-      <% label = cat.humanize.titleize %>
-      <%= link_to label, articles_path(category: cat), class: "px-4 py-2 rounded-full text-sm font-medium transition-all #{params[:category] == cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}" %>
-    <% end %>
-  </div>
-
-  <% if @articles.empty? %>
-    <!-- Empty State -->
-    <div class="text-center py-20">
-      <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-        </svg>
-      </div>
-      <h3 class="text-lg font-semibold text-gray-900">No articles yet</h3>
-      <p class="mt-1 text-sm text-gray-500">Check back soon for career tips and resume advice.</p>
-    </div>
-  <% else %>
-
-    <!-- Featured Article (first one) -->
-    <% featured = @articles.first %>
-    <% if params[:category].blank? %>
-      <%= link_to article_path(featured), class: "group block mb-10 bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all" do %>
-        <div class="grid grid-cols-1 md:grid-cols-2">
-          <% if featured.featured_image_url.present? %>
-            <div class="aspect-video md:aspect-auto md:h-full bg-gray-100 overflow-hidden">
-              <img src="<%= featured.featured_image_url %>" alt="<%= featured.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-            </div>
-          <% else %>
-            <div class="aspect-video md:aspect-auto md:h-full bg-gradient-to-br <%= featured.category_gradient_classes %> flex items-center justify-center">
-              <svg class="w-16 h-16 <%= featured.category_icon_class %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-              </svg>
-            </div>
-          <% end %>
-          <div class="p-6 sm:p-8 flex flex-col justify-center">
-            <div class="flex items-center gap-3 mb-3">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold <%= featured.category_badge_classes %>"><%= featured.category_label %></span>
-              <span class="text-xs text-gray-400"><%= featured.reading_time %> min read</span>
-            </div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug"><%= featured.title %></h2>
-            <% if featured.excerpt.present? %>
-              <p class="mt-3 text-gray-500 line-clamp-3"><%= featured.excerpt %></p>
-            <% end %>
-            <div class="mt-4 flex items-center gap-4 text-sm text-gray-400">
-              <span><%= featured.published_at&.strftime("%b %d, %Y") %></span>
-              <% if featured.author.present? %>
-                <span>By <%= featured.author %></span>
-              <% end %>
-            </div>
-            <div class="mt-5">
-              <span class="inline-flex items-center text-sm font-semibold text-blue-600 group-hover:text-blue-700">
-                Read article
-                <svg class="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-              </span>
-            </div>
-          </div>
-        </div>
+    <!-- Category filters -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);">
+      <% all_active = params[:category].blank? %>
+      <%= link_to "All", articles_path,
+          style: "padding: 8px 18px; border-radius: 999px; font-size: 13px; text-decoration: none; #{all_active ? 'background: var(--ink); color: var(--paper); border: 1px solid var(--ink);' : 'background: var(--paper); color: var(--ink); border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);'}" %>
+      <% @categories.each do |cat| %>
+        <% active = params[:category] == cat %>
+        <% label = cat.humanize.titleize %>
+        <%= link_to label, articles_path(category: cat),
+            style: "padding: 8px 18px; border-radius: 999px; font-size: 13px; text-decoration: none; #{active ? 'background: var(--ink); color: var(--paper); border: 1px solid var(--ink);' : 'background: var(--paper); color: var(--ink); border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);'}" %>
       <% end %>
-    <% end %>
+    </div>
 
-    <!-- Article Grid -->
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      <% articles_to_show = params[:category].blank? ? @articles.offset(1) : @articles %>
-      <% articles_to_show.each do |article| %>
-        <%= link_to article_path(article), class: "group block bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" do %>
-          <% if article.featured_image_url.present? %>
-            <div class="aspect-video bg-gray-100 overflow-hidden">
-              <img src="<%= article.featured_image_url %>" alt="<%= article.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-            </div>
-          <% else %>
-            <div class="aspect-video bg-gradient-to-br <%= article.category_gradient_classes %> flex items-center justify-center">
-              <svg class="w-12 h-12 <%= article.category_icon_class %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-              </svg>
-            </div>
-          <% end %>
+    <% if @articles.empty? %>
+      <div style="text-align: center; padding: 80px 24px; background: var(--paper); border: 1px dashed color-mix(in oklab, var(--ink) 18%, transparent); border-radius: 8px;">
+        <span class="font-mono-label" style="color: var(--muted);">Empty</span>
+        <h3 class="font-display" style="font-size: 32px; margin-top: 8px;">No articles <em>yet</em>.</h3>
+        <p style="font-family: 'Fraunces', serif; font-style: italic; color: var(--muted); margin-top: 8px;">Check back soon for career tips and resume advice.</p>
+      </div>
+    <% else %>
 
-          <div class="p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold <%= article.category_badge_classes %>"><%= article.category_label %></span>
-              <span class="text-xs text-gray-400"><%= article.reading_time %> min read</span>
-            </div>
-            <h2 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug"><%= article.title %></h2>
-            <% if article.excerpt.present? %>
-              <p class="mt-2 text-sm text-gray-500 line-clamp-3"><%= article.excerpt %></p>
+      <!-- Featured -->
+      <% featured = @articles.first %>
+      <% if params[:category].blank? %>
+        <%= link_to article_path(featured), style: "display: block; margin-bottom: 56px; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 8px; overflow: hidden; text-decoration: none; color: var(--ink); transition: border-color .15s, transform .15s;", onmouseover: "this.style.borderColor='var(--ink)'", onmouseout: "this.style.borderColor='color-mix(in oklab, var(--ink) 14%, transparent)'" do %>
+          <div style="display: grid; grid-template-columns: 1fr 1fr;" class="featured-grid">
+            <% if featured.featured_image_url.present? %>
+              <div style="aspect-ratio: 4/3; background: var(--paper-2); overflow: hidden;">
+                <img src="<%= featured.featured_image_url %>" alt="<%= featured.title %>" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+            <% else %>
+              <div style="aspect-ratio: 4/3; background: var(--ink); display: flex; align-items: center; justify-content: center;">
+                <span class="font-display" style="font-size: 80px; color: var(--accent); font-style: italic;"><%= featured.category_label.first.upcase %></span>
+              </div>
             <% end %>
-            <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
-              <span><%= article.published_at&.strftime("%b %d, %Y") %></span>
-              <% if article.author.present? %>
-                <span>By <%= article.author %></span>
+            <div style="padding: 40px 36px; display: flex; flex-direction: column; justify-content: center;">
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+                <span class="font-mono-label" style="color: var(--accent);"><%= featured.category_label %></span>
+                <span class="font-mono-label" style="color: var(--muted);"><%= featured.reading_time %> min read</span>
+              </div>
+              <h2 class="font-display" style="font-size: clamp(28px, 3vw, 40px); line-height: 1.05;"><%= featured.title %></h2>
+              <% if featured.excerpt.present? %>
+                <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 17px; color: var(--muted); margin-top: 14px; line-height: 1.5;"><%= featured.excerpt.truncate(180) %></p>
               <% end %>
+              <div style="display: flex; align-items: center; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--muted);">
+                <span><%= featured.published_at&.strftime("%b %d, %Y") %></span>
+                <% if featured.author.present? %><span>By <%= featured.author %></span><% end %>
+              </div>
+              <div style="margin-top: 24px;">
+                <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 1px;">
+                  Read article →
+                </span>
+              </div>
             </div>
           </div>
         <% end %>
       <% end %>
-    </div>
-  <% end %>
 
-  <!-- CTA -->
-  <% unless user_signed_in? %>
-    <div class="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 sm:p-12 text-center">
-      <h2 class="text-2xl font-bold text-white mb-3">Ready to optimize your resume?</h2>
-      <p class="text-blue-100 mb-6 max-w-lg mx-auto">Put these tips into action. Use AI to craft the perfect resume and land more interviews.</p>
-      <div class="flex flex-col sm:flex-row justify-center gap-3">
-        <%= link_to "Get Started Free", new_user_registration_path, class: "inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all" %>
-        <%= link_to "Check ATS Score", ats_checker_path, class: "inline-flex items-center justify-center px-8 py-3 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all" %>
+      <!-- Article grid -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;" class="article-grid">
+        <% articles_to_show = params[:category].blank? ? @articles.offset(1) : @articles %>
+        <% articles_to_show.each do |article| %>
+          <%= link_to article_path(article), style: "display: block; background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 8px; overflow: hidden; text-decoration: none; color: var(--ink); transition: all .15s;", onmouseover: "this.style.borderColor='var(--ink)'; this.style.transform='translateY(-2px)'", onmouseout: "this.style.borderColor='color-mix(in oklab, var(--ink) 12%, transparent)'; this.style.transform='translateY(0)'" do %>
+            <% if article.featured_image_url.present? %>
+              <div style="aspect-ratio: 16/9; background: var(--paper-2); overflow: hidden;">
+                <img src="<%= article.featured_image_url %>" alt="<%= article.title %>" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+            <% else %>
+              <div style="aspect-ratio: 16/9; background: var(--ink); display: flex; align-items: center; justify-content: center;">
+                <span class="font-display" style="font-size: 56px; color: var(--accent); font-style: italic;"><%= article.category_label.first.upcase %></span>
+              </div>
+            <% end %>
+
+            <div style="padding: 22px 22px 24px;">
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                <span class="font-mono-label" style="color: var(--accent);"><%= article.category_label %></span>
+                <span class="font-mono-label" style="color: var(--muted);"><%= article.reading_time %> min</span>
+              </div>
+              <h2 class="font-display" style="font-size: 21px; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><%= article.title %></h2>
+              <% if article.excerpt.present? %>
+                <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 14px; color: var(--muted); margin-top: 10px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;"><%= article.excerpt %></p>
+              <% end %>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 18px; font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;">
+                <span><%= article.published_at&.strftime("%b %d, %Y") %></span>
+                <% if article.author.present? %><span>By <%= article.author %></span><% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
       </div>
-    </div>
-  <% end %>
+    <% end %>
+
+    <!-- CTA -->
+    <% unless user_signed_in? %>
+      <div style="margin-top: 80px; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 64px 48px; text-align: center;">
+        <span class="font-mono-label" style="color: var(--accent);">Apply the tips</span>
+        <h2 class="font-display" style="font-size: clamp(36px, 5vw, 64px); line-height: 1; color: var(--paper); margin-top: 14px;">
+          Ready to <em>optimize</em> your resume?
+        </h2>
+        <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 19px; color: color-mix(in oklab, var(--paper) 70%, transparent); max-width: 48ch; margin: 18px auto 32px; line-height: 1.4;">
+          Put these tips into action. Use AI to craft the perfect resume and land more interviews.
+        </p>
+        <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+          <%= link_to "Get started — free", new_user_registration_path, class: "btn-accent" %>
+          <%= link_to "Check ATS score", ats_checker_path, class: "btn-outline", style: "color: var(--paper); border-color: color-mix(in oklab, var(--paper) 35%, transparent);" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
+
+<style>
+  @media (max-width: 960px){
+    .article-grid{grid-template-columns: repeat(2, 1fr) !important;}
+    .featured-grid{grid-template-columns: 1fr !important;}
+  }
+  @media (max-width: 600px){
+    .article-grid{grid-template-columns: 1fr !important;}
+  }
+</style>

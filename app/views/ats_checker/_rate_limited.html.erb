@@ -1,45 +1,37 @@
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fade-up">
-  <div class="text-center">
-    <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-      <svg class="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-      </svg>
-    </div>
-    <h3 class="text-lg font-semibold text-gray-900 mb-2">You've Used Your Free Check</h3>
-    <p class="text-sm text-gray-600 max-w-sm mx-auto">Create a free account to check more resumes, get AI-powered optimization, and download ATS-friendly versions.</p>
+<div style="background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 8px; padding: 36px 32px;" class="animate-fade-up">
+  <div style="text-align: center;">
+    <span class="font-mono-label" style="color: var(--accent);">Limit reached</span>
+    <h3 class="font-display" style="font-size: 32px; line-height: 1.05; margin-top: 8px;">You've used your <em>free check</em>.</h3>
+    <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: var(--muted); font-size: 16px; max-width: 38ch; margin: 14px auto 28px; line-height: 1.45;">
+      Create a free account to check more resumes, get AI-powered optimization, and download ATS-friendly versions.
+    </p>
 
-    <div class="mt-6 space-y-3">
-      <%= link_to new_user_registration_path, class: "block w-full py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-md hover:shadow-lg transition-all text-center" do %>
-        Create Free Account
-        <svg class="w-4 h-4 ml-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+    <%= link_to new_user_registration_path, class: "btn-ink", style: "width: 100%; justify-content: center; padding: 16px 24px;" do %>
+      Create free account
+      <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <% end %>
+
+    <p style="font-size: 13px; color: var(--muted); margin-top: 14px;">
+      Already have an account?
+      <%= link_to "Sign in", new_user_session_path, style: "color: var(--ink); border-bottom: 1px solid var(--ink); text-decoration: none; padding-bottom: 1px; margin-left: 4px;" %>
+    </p>
+  </div>
+
+  <!-- Perks -->
+  <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);">
+    <span class="font-mono-label" style="display: block; margin-bottom: 16px;">What you get</span>
+    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+      <% [
+        "Unlimited ATS score checks",
+        "2 free AI resume optimizations",
+        "AI cover letter generator",
+        "PDF & DOCX downloads"
+      ].each do |perk| %>
+        <li style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; font-size: 14px; color: var(--ink); font-family: 'Fraunces', serif; font-weight: 300; font-variation-settings: 'opsz' 24;">
+          <span class="font-mono-label" style="color: var(--accent);">✓</span>
+          <span><%= perk %></span>
+        </li>
       <% end %>
-
-      <p class="text-xs text-gray-500">
-        Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-blue-600 hover:underline font-medium" %>
-      </p>
-    </div>
-
-    <!-- Perks -->
-    <div class="mt-6 pt-5 border-t border-gray-100 text-left">
-      <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">What you get with a free account:</p>
-      <ul class="space-y-2">
-        <li class="flex items-center gap-2 text-sm text-gray-600">
-          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-          Unlimited ATS score checks
-        </li>
-        <li class="flex items-center gap-2 text-sm text-gray-600">
-          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-          2 free AI resume optimizations
-        </li>
-        <li class="flex items-center gap-2 text-sm text-gray-600">
-          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-          AI cover letter generator
-        </li>
-        <li class="flex items-center gap-2 text-sm text-gray-600">
-          <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-          PDF & DOCX downloads
-        </li>
-      </ul>
-    </div>
+    </ul>
   </div>
 </div>

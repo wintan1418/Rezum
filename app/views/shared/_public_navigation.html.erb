@@ -1,58 +1,73 @@
-<nav class="bg-white border-b border-gray-200 sticky top-0 z-40" data-controller="mobile-menu">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
+<nav class="sticky top-0 z-40" data-controller="mobile-menu" style="background: color-mix(in oklab, var(--paper) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);">
+  <div class="max-w-7xl mx-auto" style="padding: 0 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 64px;">
+
       <!-- Logo -->
-      <%= link_to root_path, class: "flex items-center space-x-2" do %>
-        <img src="/icon.svg" alt="RezumFit" class="w-8 h-8 rounded-lg shadow-sm">
-        <span class="text-xl font-bold text-gray-900 hidden sm:block">RezumFit</span>
+      <%= link_to root_path, style: "display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink);" do %>
+        <span style="width: 22px; height: 22px; border: 1.5px solid var(--ink); border-radius: 50%; position: relative; display: inline-block;">
+          <span style="position: absolute; inset: 4px; background: var(--ink); border-radius: 50%; clip-path: polygon(0 0,100% 0,100% 60%,40% 60%,40% 100%,0 100%); display: block;"></span>
+        </span>
+        <span class="hidden sm:block" style="font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; letter-spacing: -0.02em; font-variation-settings: 'opsz' 24;">RezumFit</span>
       <% end %>
 
-      <!-- Desktop Links -->
-      <div class="hidden md:flex items-center space-x-6">
-        <%= link_to "Home", root_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
-        <%= link_to "Free ATS Checker", ats_checker_path, class: "text-sm font-medium #{controller_name == 'ats_checker' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'} transition-colors" %>
-        <%= link_to "Blog", articles_path, class: "text-sm font-medium #{controller_name == 'articles' ? 'text-blue-600' : 'text-gray-600 hover:text-gray-900'} transition-colors" %>
-      </div>
-
-      <!-- Right: Auth -->
-      <div class="hidden md:flex items-center space-x-3">
-        <% if user_signed_in? %>
-          <%= link_to "Dashboard", dashboard_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
-          <% if current_user.admin? %>
-            <%= link_to "Admin", admin_root_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors" %>
-          <% end %>
-        <% else %>
-          <%= link_to "Sign In", new_user_session_path, class: "text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 transition-colors" %>
-          <%= link_to new_user_registration_path, class: "text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all" do %>
-            Get Started Free
+      <!-- Desktop links -->
+      <div class="hidden md:flex" style="align-items: center; gap: 28px;">
+        <% [
+          [root_path, "Home", "home"],
+          [ats_checker_path, "ATS Checker", "ats_checker"],
+          [articles_path, "Blog", "articles"]
+        ].each do |path, label, ctrl| %>
+          <% active = controller_name == ctrl %>
+          <%= link_to path, style: "font-size: 14px; text-decoration: none; padding: 4px 0; color: #{active ? 'var(--ink)' : 'color-mix(in oklab, var(--ink) 65%, transparent)'}; #{active ? 'border-bottom: 1.5px solid var(--accent);' : ''}" do %>
+            <%= label %>
           <% end %>
         <% end %>
       </div>
 
-      <!-- Mobile Hamburger -->
-      <button type="button" data-action="click->mobile-menu#toggle" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100">
-        <svg data-mobile-menu-target="openIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Right: auth -->
+      <div class="hidden md:flex" style="align-items: center; gap: 14px;">
+        <% if user_signed_in? %>
+          <%= link_to "Dashboard", dashboard_path, style: "font-size: 14px; color: color-mix(in oklab, var(--ink) 65%, transparent); text-decoration: none;" %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin", admin_root_path, style: "font-size: 14px; color: color-mix(in oklab, var(--ink) 65%, transparent); text-decoration: none;" %>
+          <% end %>
+        <% else %>
+          <%= link_to "Sign in", new_user_session_path, style: "font-size: 14px; color: var(--ink); text-decoration: none;" %>
+          <%= link_to "Start free", new_user_registration_path, class: "btn-ink", style: "padding: 9px 18px; font-size: 14px;" %>
+        <% end %>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button type="button" data-action="click->mobile-menu#toggle" class="md:hidden" style="padding: 8px; background: transparent; border: none; color: var(--ink); cursor: pointer;">
+        <svg data-mobile-menu-target="openIcon" style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
-        <svg data-mobile-menu-target="closeIcon" class="hidden w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg data-mobile-menu-target="closeIcon" class="hidden" style="width: 22px; height: 22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </div>
   </div>
 
-  <!-- Mobile Menu -->
-  <div data-mobile-menu-target="menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
-    <div class="px-4 py-4 space-y-2">
-      <%= link_to "Home", root_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-      <%= link_to "Free ATS Checker", ats_checker_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'ats_checker' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}" %>
-      <%= link_to "Blog", articles_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium #{controller_name == 'articles' ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:bg-gray-50'}" %>
-      <div class="pt-3 border-t border-gray-100 space-y-2">
+  <!-- Mobile menu -->
+  <div data-mobile-menu-target="menu" class="hidden md:hidden" style="background: var(--paper); border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);">
+    <div style="padding: 16px 20px;">
+      <% [
+        [root_path, "Home", "home"],
+        [ats_checker_path, "ATS Checker", "ats_checker"],
+        [articles_path, "Blog", "articles"]
+      ].each do |path, label, ctrl| %>
+        <% active = controller_name == ctrl %>
+        <%= link_to path, style: "display: block; padding: 11px 12px; font-size: 14px; text-decoration: none; color: #{active ? 'var(--ink)' : 'color-mix(in oklab, var(--ink) 70%, transparent)'}; #{active ? 'border-left: 2px solid var(--accent); padding-left: 10px;' : ''}" do %>
+          <%= label %>
+        <% end %>
+      <% end %>
+      <div style="border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); padding-top: 12px; margin-top: 12px; display: flex; flex-direction: column; gap: 6px;">
         <% if user_signed_in? %>
-          <%= link_to "Dashboard", dashboard_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+          <%= link_to "Dashboard", dashboard_path, style: "padding: 11px 12px; font-size: 14px; color: var(--ink); text-decoration: none;" %>
         <% else %>
-          <%= link_to "Sign In", new_user_session_path, class: "block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-          <%= link_to "Get Started Free", new_user_registration_path, class: "block px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 text-center" %>
+          <%= link_to "Sign in", new_user_session_path, style: "padding: 11px 12px; font-size: 14px; color: var(--ink); text-decoration: none;" %>
+          <%= link_to "Start free", new_user_registration_path, class: "btn-ink", style: "justify-content: center; margin: 4px 12px 0;" %>
         <% end %>
       </div>
     </div>

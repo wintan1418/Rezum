@@ -1,131 +1,121 @@
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fade-up" data-controller="score-gauge email-gate">
+<% score = results[:overall_score] %>
+<% score_color = score >= 75 ? "var(--accent)" : score >= 50 ? "var(--ink)" : "var(--ink)" %>
+<% score_label = score >= 75 ? "ATS-friendly" : score >= 50 ? "Needs work" : "Significant fixes needed" %>
 
-  <!-- Score Gauge -->
-  <div class="text-center mb-8">
-    <div class="relative inline-flex items-center justify-center w-36 h-36">
-      <svg class="w-36 h-36 transform -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" stroke-width="8"/>
+<div style="background: var(--paper); border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 8px; padding: 32px;" class="animate-fade-up" data-controller="score-gauge email-gate">
+
+  <!-- Score gauge -->
+  <div style="text-align: center; margin-bottom: 28px;">
+    <div style="position: relative; display: inline-flex; align-items: center; justify-content: center; width: 168px; height: 168px;">
+      <svg style="width: 168px; height: 168px; transform: rotate(-90deg);" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="color-mix(in oklab, var(--ink) 10%, transparent)" stroke-width="6"/>
         <circle cx="50" cy="50" r="45" fill="none"
-                stroke="<%= results[:overall_score] >= 75 ? '#22c55e' : results[:overall_score] >= 50 ? '#eab308' : '#ef4444' %>"
-                stroke-width="8" stroke-linecap="round"
+                stroke="<%= score_color %>"
+                stroke-width="6" stroke-linecap="round"
                 stroke-dasharray="283"
-                stroke-dashoffset="<%= 283 - (283 * results[:overall_score] / 100.0) %>"
+                stroke-dashoffset="<%= 283 - (283 * score / 100.0) %>"
                 data-score-gauge-target="circle"
-                data-final-offset="<%= 283 - (283 * results[:overall_score] / 100.0) %>"
+                data-final-offset="<%= 283 - (283 * score / 100.0) %>"
                 style="stroke-dashoffset: 283; transition: stroke-dashoffset 1.5s ease-out;"/>
       </svg>
-      <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <span class="text-3xl font-bold text-gray-900" data-score-gauge-target="number" data-final-score="<%= results[:overall_score] %>">0</span>
-        <span class="text-xs text-gray-500 font-medium">/100</span>
+      <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <span style="font-family: 'Fraunces', serif; font-size: 56px; font-weight: 400; letter-spacing: -0.04em; line-height: 0.9; color: var(--ink); font-variation-settings: 'opsz' 144;" data-score-gauge-target="number" data-final-score="<%= score %>">0</span>
+        <span class="font-mono-label" style="margin-top: 4px; color: var(--muted);">/ 100</span>
       </div>
     </div>
 
-    <% if results[:overall_score] >= 75 %>
-      <p class="mt-3 text-sm font-semibold text-green-600">Great! Your resume is ATS-friendly</p>
-    <% elsif results[:overall_score] >= 50 %>
-      <p class="mt-3 text-sm font-semibold text-yellow-600">Needs improvement — some issues detected</p>
-    <% else %>
-      <p class="mt-3 text-sm font-semibold text-red-600">Low score — significant improvements needed</p>
-    <% end %>
+    <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; font-size: 17px; color: var(--muted); margin-top: 16px; font-variation-settings: 'opsz' 24;">
+      <%= score_label %>.
+    </p>
   </div>
 
-  <!-- Sub-scores (always visible) -->
-  <div class="grid grid-cols-2 gap-4 mb-6">
-    <div class="bg-gray-50 rounded-xl p-4 text-center">
-      <p class="text-2xl font-bold text-gray-900"><%= results[:format_score] %></p>
-      <p class="text-xs text-gray-500 font-medium mt-1">Format Score</p>
+  <!-- Sub-scores -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); border-radius: 6px; overflow: hidden; margin-bottom: 24px;">
+    <div style="padding: 18px 20px; background: var(--paper);">
+      <span class="font-mono-label">Format</span>
+      <div style="font-family: 'Fraunces', serif; font-size: 36px; font-weight: 400; letter-spacing: -0.03em; line-height: 0.95; font-variation-settings: 'opsz' 96; margin-top: 8px;"><%= results[:format_score] %></div>
     </div>
-    <div class="bg-gray-50 rounded-xl p-4 text-center">
-      <p class="text-2xl font-bold text-gray-900"><%= results[:content_score] %></p>
-      <p class="text-xs text-gray-500 font-medium mt-1">Content Score</p>
+    <div style="padding: 18px 20px; background: var(--paper); border-left: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);">
+      <span class="font-mono-label">Content</span>
+      <div style="font-family: 'Fraunces', serif; font-size: 36px; font-weight: 400; letter-spacing: -0.03em; line-height: 0.95; font-variation-settings: 'opsz' 96; margin-top: 8px;"><%= results[:content_score] %></div>
     </div>
   </div>
 
-  <!-- Issues Found (always visible — this is the pain) -->
+  <!-- Issues found -->
   <% if results[:issues].present? %>
-    <div class="mb-5">
-      <h4 class="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
-        <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-        <%= results[:issues].length %> Issues Found
-      </h4>
-      <div class="flex flex-wrap gap-2">
+    <div style="margin-bottom: 24px;">
+      <span class="font-mono-label" style="color: var(--accent); display: block; margin-bottom: 12px;"><%= results[:issues].length %> issues found</span>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px;">
         <% results[:issues].each do |issue| %>
-          <span class="inline-block px-3 py-1 text-xs font-medium bg-red-50 text-red-700 border border-red-200 rounded-full"><%= issue %></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 5px 10px; background: var(--ink); color: var(--paper); border-radius: 999px; letter-spacing: 0.04em;"><%= issue %></span>
         <% end %>
       </div>
     </div>
   <% end %>
 
   <!-- ============================================ -->
-  <!-- EMAIL GATE: Detailed report locked behind email -->
+  <!-- EMAIL GATE -->
   <!-- ============================================ -->
   <% unless user_signed_in? %>
-    <!-- Email Gate Overlay -->
-    <div data-email-gate-target="gate" class="relative">
-      <!-- Blurred preview of what's behind -->
-      <div class="relative overflow-hidden rounded-xl" style="max-height: 180px;">
-        <div class="blur-sm opacity-40 pointer-events-none select-none">
+    <div data-email-gate-target="gate" style="position: relative;">
+      <!-- Blurred preview -->
+      <div style="position: relative; overflow: hidden; border-radius: 6px; max-height: 180px;">
+        <div style="filter: blur(4px); opacity: 0.4; pointer-events: none; user-select: none;">
           <% if results[:strengths].present? %>
-            <div class="mb-4">
-              <h4 class="text-sm font-semibold text-gray-900 mb-2">Strengths</h4>
-              <div class="flex flex-wrap gap-2">
+            <div style="margin-bottom: 16px;">
+              <span class="font-mono-label">Strengths</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
                 <% results[:strengths].first(3).each do |s| %>
-                  <span class="inline-block px-3 py-1 text-xs bg-green-50 text-green-700 rounded-full"><%= s %></span>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 5px 10px; border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 999px;"><%= s %></span>
                 <% end %>
               </div>
             </div>
           <% end %>
           <% if results[:improvements].present? %>
             <div>
-              <h4 class="text-sm font-semibold text-gray-900 mb-2">How to fix these issues</h4>
-              <ol class="space-y-2">
+              <span class="font-mono-label">How to fix</span>
+              <ol style="list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 8px;">
                 <% results[:improvements].first(3).each_with_index do |imp, i| %>
-                  <li class="text-sm text-gray-700"><%= i+1 %>. <%= imp %></li>
+                  <li style="font-family: 'Fraunces', serif; font-size: 14px; font-weight: 300;"><%= i+1 %>. <%= imp %></li>
                 <% end %>
               </ol>
             </div>
           <% end %>
         </div>
-        <div class="absolute inset-0 bg-gradient-to-b from-white/30 to-white"></div>
+        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, color-mix(in oklab, var(--paper) 30%, transparent), var(--paper));"></div>
       </div>
 
-      <!-- Email capture form -->
-      <div class="mt-4 bg-gray-50 rounded-2xl border border-gray-200 p-6 text-center">
-        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-          </svg>
-        </div>
-        <h4 class="text-base font-bold text-gray-900 mb-1">Get your full ATS report</h4>
-        <p class="text-sm text-gray-600 mb-4">Enter your email to see your strengths, detailed improvements, and how to fix every issue.</p>
+      <!-- Email capture -->
+      <div style="margin-top: 16px; background: var(--ink); color: var(--paper); border-radius: 8px; padding: 28px 24px; text-align: center;">
+        <span class="font-mono-label" style="color: var(--accent);">Unlock report</span>
+        <h4 class="font-display" style="font-size: 24px; line-height: 1.05; color: var(--paper); margin-top: 8px;">Get your full <em>ATS report</em>.</h4>
+        <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: color-mix(in oklab, var(--paper) 70%, transparent); font-size: 14px; margin: 10px 0 20px; max-width: 36ch; margin-left: auto; margin-right: auto;">
+          Enter your email to see your strengths, detailed improvements, and how to fix every issue.
+        </p>
 
-        <div class="flex flex-col sm:flex-row gap-2 max-w-sm mx-auto">
+        <div style="display: flex; gap: 8px; max-width: 380px; margin: 0 auto; flex-wrap: wrap;">
           <input type="email" data-email-gate-target="email" placeholder="you@email.com"
-            class="flex-1 rounded-xl border border-gray-200 bg-white shadow-sm px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-          <button type="button" data-action="click->email-gate#unlock"
-            class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl shadow-sm transition-all cursor-pointer whitespace-nowrap">
-            Show My Report
+            style="flex: 1; min-width: 180px; padding: 12px 14px; background: color-mix(in oklab, var(--paper) 8%, var(--ink)); border: 1px solid color-mix(in oklab, var(--paper) 18%, transparent); border-radius: 6px; color: var(--paper); font-family: 'Inter Tight', system-ui, sans-serif; font-size: 14px; outline: none;">
+          <button type="button" data-action="click->email-gate#unlock" class="btn-accent" style="padding: 12px 20px; font-size: 13px; flex-shrink: 0;">
+            Show report
           </button>
         </div>
-        <p class="mt-2 text-xs text-gray-400">Free. No spam. Unsubscribe anytime.</p>
+        <p class="font-mono-label" style="margin-top: 14px; color: color-mix(in oklab, var(--paper) 50%, transparent);">Free · No spam · Unsubscribe anytime</p>
       </div>
     </div>
   <% end %>
 
   <!-- ============================================ -->
-  <!-- FULL REPORT (hidden behind gate for guests, always visible for signed-in) -->
+  <!-- FULL REPORT -->
   <!-- ============================================ -->
   <div data-email-gate-target="content" class="<%= user_signed_in? ? '' : 'hidden' %>">
     <!-- Strengths -->
     <% if results[:strengths].present? %>
-      <div class="mb-5">
-        <h4 class="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-          Strengths
-        </h4>
-        <div class="flex flex-wrap gap-2">
+      <div style="margin-bottom: 24px;">
+        <span class="font-mono-label" style="color: var(--accent); display: block; margin-bottom: 12px;">Strengths</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
           <% results[:strengths].each do |s| %>
-            <span class="inline-block px-3 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200 rounded-full"><%= s %></span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 5px 10px; border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent); border-radius: 999px; color: var(--ink);">✓ <%= s %></span>
           <% end %>
         </div>
       </div>
@@ -133,16 +123,13 @@
 
     <!-- Improvements -->
     <% if results[:improvements].present? %>
-      <div class="mb-6">
-        <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-          How To Fix These Issues
-        </h4>
-        <ol class="space-y-2">
+      <div style="margin-bottom: 28px;">
+        <span class="font-mono-label" style="color: var(--accent); display: block; margin-bottom: 16px;">How to fix these issues</span>
+        <ol style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
           <% results[:improvements].each_with_index do |imp, i| %>
-            <li class="flex items-start gap-2.5 text-sm text-gray-700">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5"><%= i + 1 %></span>
-              <span><%= imp %></span>
+            <li style="display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: start;">
+              <span class="font-mono-label" style="color: var(--accent); padding-top: 4px;"><%= sprintf("%02d", i+1) %></span>
+              <span style="font-family: 'Fraunces', serif; font-size: 15px; font-weight: 300; line-height: 1.5; font-variation-settings: 'opsz' 24;"><%= imp %></span>
             </li>
           <% end %>
         </ol>
@@ -150,51 +137,46 @@
     <% end %>
 
     <!-- CTA -->
-    <div class="border-t border-gray-100 pt-6 mt-6">
-      <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-center text-white">
+    <div style="border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent); padding-top: 28px; margin-top: 8px;">
+      <div style="background: var(--ink); color: var(--paper); border-radius: 8px; padding: 36px 32px; text-align: center;">
         <% issue_count = results[:issues]&.length || 0 %>
         <% improvement_count = results[:improvements]&.length || 0 %>
 
-        <% if results[:overall_score] < 75 %>
-          <p class="text-3xl font-extrabold mb-2"><%= issue_count + improvement_count %> issues found</p>
-          <p class="text-blue-100 mb-5">Our AI can fix all of them with one click — and boost your score above 80%.</p>
+        <% if score < 75 %>
+          <p class="font-display" style="font-size: 40px; line-height: 1.05; color: var(--paper); margin: 0;">
+            <em style="font-style: italic; color: var(--accent);"><%= issue_count + improvement_count %></em> issues found.
+          </p>
+          <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: color-mix(in oklab, var(--paper) 70%, transparent); font-size: 16px; margin: 12px 0 24px;">Our AI can fix them all in one pass — and boost your score above 80%.</p>
         <% else %>
-          <p class="text-xl font-bold mb-2">Good score! Let's make it even better.</p>
-          <p class="text-blue-100 mb-5">Optimize for a specific job posting and hit 95%+ ATS compatibility.</p>
+          <p class="font-display" style="font-size: 36px; line-height: 1.05; color: var(--paper); margin: 0;">
+            Good score. Make it <em style="font-style: italic; color: var(--accent);">better</em>.
+          </p>
+          <p style="font-family: 'Fraunces', serif; font-style: italic; font-weight: 300; color: color-mix(in oklab, var(--paper) 70%, transparent); font-size: 16px; margin: 12px 0 24px;">Optimize for a specific job posting and hit 95%+ ATS compatibility.</p>
         <% end %>
 
-        <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
           <% if user_signed_in? %>
-            <%= link_to new_resume_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
-              Fix My Resume Now
-              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            <%= link_to new_resume_path, class: "btn-accent" do %>
+              Fix my resume
+              <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             <% end %>
           <% else %>
-            <%= link_to new_user_registration_path, class: "inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-blue-700 bg-white hover:bg-gray-100 rounded-xl shadow-lg transition-all" do %>
-              Fix All Issues — Free Account
-              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            <%= link_to new_user_registration_path, class: "btn-accent" do %>
+              Fix all issues — free account
+              <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             <% end %>
           <% end %>
         </div>
 
-        <div class="flex items-center justify-center gap-4 text-xs text-blue-200">
-          <span class="flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            2 free credits
-          </span>
-          <span class="flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            No credit card
-          </span>
-          <span class="flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            30 seconds
-          </span>
+        <div style="display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 22px;">
+          <% ["2 free credits", "No credit card", "30 seconds"].each do |perk| %>
+            <span class="font-mono-label" style="color: color-mix(in oklab, var(--paper) 60%, transparent);">✓ <%= perk %></span>
+          <% end %>
         </div>
 
         <% unless user_signed_in? %>
-          <p class="mt-3 text-xs text-blue-200">
-            Already have an account? <%= link_to "Sign in", new_user_session_path, class: "text-white underline font-medium" %>
+          <p style="font-size: 13px; color: color-mix(in oklab, var(--paper) 70%, transparent); margin-top: 18px;">
+            Already have an account? <%= link_to "Sign in", new_user_session_path, style: "color: var(--paper); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px;" %>
           </p>
         <% end %>
       </div>
