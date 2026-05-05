@@ -140,6 +140,15 @@
         <div class="mt-10 pt-6 hairline">
           <%= yield(:footer_links) %>
         </div>
+
+        <!-- Slim brand footer -->
+        <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+          <span class="font-mono-label" style="color: var(--muted);">© <%= Date.current.year %> RezumFit</span>
+          <div style="display: flex; gap: 16px;">
+            <%= link_to "Terms", terms_path, style: "font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-decoration: none;" %>
+            <%= link_to "Privacy", privacy_path, style: "font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-decoration: none;" %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
