@@ -170,8 +170,10 @@ html:has(.editorial), body:has(.editorial){overflow-x:clip}
 .editorial .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:0.04em;text-transform:uppercase}
 .editorial .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
 
-/* NAV */
-.editorial nav.top{position:sticky;top:0;z-index:50;background:color-mix(in oklab, var(--paper) 88%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid color-mix(in oklab, var(--ink) 8%, transparent)}
+/* NAV — position:fixed (bulletproof; sticky breaks if any ancestor has overflow) */
+.editorial nav.top{position:fixed;top:0;left:0;right:0;z-index:60;background:color-mix(in oklab, var(--paper) 88%, transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid color-mix(in oklab, var(--ink) 8%, transparent)}
+/* Hero clears the fixed nav. Padding tightens on smaller widths (smaller nav). */
+.editorial header.hero{padding-top:128px !important}
 .editorial nav.top .row{display:flex;align-items:center;justify-content:space-between;height:64px}
 .editorial nav.top .mark{display:flex;align-items:center;gap:10px}
 .editorial nav.top .mark .glyph{width:22px;height:22px;border:1.5px solid var(--ink);border-radius:50%;position:relative}
@@ -221,29 +223,116 @@ html:has(.editorial), body:has(.editorial){overflow-x:clip}
 .editorial nav.top .mark span{transition:font-size .25s ease}
 .editorial nav.top.scrolled .mark span{font-size:18px}
 
-/* Floating direction arrow — Down at top, Up after scrolling */
-.editorial .scroll-top{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px) scale(0.85);pointer-events:none;transition:opacity .3s ease, transform .4s cubic-bezier(.16,1,.3,1), background .2s ease;box-shadow:0 14px 32px -8px rgba(20,23,28,0.45), 0 0 0 1px color-mix(in oklab, var(--paper) 8%, transparent) inset}
+/* Floating direction arrow — single SVG rotating 180° between states */
+.editorial .scroll-top{position:fixed;bottom:24px;right:24px;width:54px;height:54px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px) scale(0.85);pointer-events:none;transition:opacity .3s ease, transform .4s cubic-bezier(.16,1,.3,1), background .25s ease, box-shadow .25s ease;box-shadow:0 14px 32px -8px rgba(20,23,28,0.45)}
 .editorial .scroll-top.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
 .editorial .scroll-top:hover{background:var(--accent);box-shadow:0 18px 36px -8px rgba(37,64,255,0.5)}
 .editorial .scroll-top.show:hover{transform:translateY(-3px) scale(1.06)}
 .editorial .scroll-top:active{transform:translateY(0) scale(0.94) !important}
-.editorial .scroll-top svg{width:20px;height:20px;transition:transform .35s cubic-bezier(.16,1,.3,1)}
-.editorial .scroll-top.dir-up:hover svg{transform:translateY(-3px)}
-.editorial .scroll-top:not(.dir-up):hover svg{transform:translateY(3px)}
-/* Subtle bobbing when in down-direction state at top */
-.editorial .scroll-top:not(.dir-up):not(:hover) svg{animation:arrow-bob 2.4s ease-in-out infinite}
-@keyframes arrow-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
 
-/* Section reveal animations — fade-up as they enter viewport */
+/* Single arrow icon — defaults pointing UP (path goes M12 19V5 = up arrow).
+   When NOT scrolled, rotate 180° to point DOWN; when scrolled, return to UP. */
+.editorial .scroll-top .arrow-icon{width:22px;height:22px;transform:rotate(180deg);transition:transform .5s cubic-bezier(.65,0,.35,1)}
+.editorial .scroll-top.dir-up .arrow-icon{transform:rotate(0deg)}
+/* Continuous bob ONLY when pointing down */
+.editorial .scroll-top:not(.dir-up):not(:hover) .arrow-icon{animation:arrow-bob 1.8s ease-in-out infinite}
+@keyframes arrow-bob{
+  0%,100%{transform:rotate(180deg) translateY(0)}
+  50%{transform:rotate(180deg) translateY(-4px)}
+}
+
+/* === Section reveal — STAGGERED child animation as user scrolls === */
 .editorial section.reveal,
-.editorial header.hero.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1)}
-.editorial section.reveal.visible,
-.editorial header.hero.reveal.visible{opacity:1;transform:translateY(0)}
-/* Hero reveals immediately on first paint without scroll */
-.editorial header.hero.reveal{transition-delay:0s}
+.editorial header.hero.reveal{position:relative}
+
+/* Default state: all direct children + key descendants invisible & shifted */
+.editorial section.reveal > .wrap > *,
+.editorial section.reveal .sect-head,
+.editorial section.reveal .stat,
+.editorial section.reveal .step,
+.editorial section.reveal .plan,
+.editorial section.reveal .artifact,
+.editorial section.reveal .artifact-side > *,
+.editorial section.reveal .testimonial > *,
+.editorial section.reveal .closing > *,
+.editorial section.reveal blockquote,
+.editorial section.reveal table,
+.editorial section.reveal .ba-grid > *,
+.editorial section.reveal .vs-grid > *,
+.editorial section.reveal .roi-grid > *,
+.editorial section.reveal .pd-stats > *,
+.editorial section.reveal .pd-cards > *,
+.editorial header.hero.reveal > .wrap > *{
+  opacity:0;
+  transform:translateY(36px);
+  transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+}
+
+/* Visible state: trigger stagger */
+.editorial section.reveal.visible > .wrap > *,
+.editorial section.reveal.visible .sect-head,
+.editorial section.reveal.visible .stat,
+.editorial section.reveal.visible .step,
+.editorial section.reveal.visible .plan,
+.editorial section.reveal.visible .artifact,
+.editorial section.reveal.visible .artifact-side > *,
+.editorial section.reveal.visible .testimonial > *,
+.editorial section.reveal.visible blockquote,
+.editorial section.reveal.visible table,
+.editorial section.reveal.visible .ba-grid > *,
+.editorial section.reveal.visible .vs-grid > *,
+.editorial section.reveal.visible .roi-grid > *,
+.editorial section.reveal.visible .pd-stats > *,
+.editorial section.reveal.visible .pd-cards > *,
+.editorial header.hero.reveal.visible > .wrap > *{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Stagger delay via nth-child indexing */
+.editorial section.reveal.visible .sect-head{transition-delay:.05s}
+.editorial section.reveal.visible .step:nth-child(1),
+.editorial section.reveal.visible .stat:nth-child(1),
+.editorial section.reveal.visible .plan:nth-child(1),
+.editorial section.reveal.visible .ba-grid > *:nth-child(1),
+.editorial section.reveal.visible .vs-grid > *:nth-child(1),
+.editorial section.reveal.visible .roi-grid > *:nth-child(1),
+.editorial section.reveal.visible .pd-stats > *:nth-child(1),
+.editorial section.reveal.visible .pd-cards > *:nth-child(1){transition-delay:.15s}
+.editorial section.reveal.visible .step:nth-child(2),
+.editorial section.reveal.visible .stat:nth-child(2),
+.editorial section.reveal.visible .plan:nth-child(2),
+.editorial section.reveal.visible .ba-grid > *:nth-child(2),
+.editorial section.reveal.visible .vs-grid > *:nth-child(2),
+.editorial section.reveal.visible .roi-grid > *:nth-child(2),
+.editorial section.reveal.visible .pd-stats > *:nth-child(2),
+.editorial section.reveal.visible .pd-cards > *:nth-child(2){transition-delay:.25s}
+.editorial section.reveal.visible .step:nth-child(3),
+.editorial section.reveal.visible .stat:nth-child(3),
+.editorial section.reveal.visible .plan:nth-child(3),
+.editorial section.reveal.visible .roi-grid > *:nth-child(3),
+.editorial section.reveal.visible .pd-stats > *:nth-child(3),
+.editorial section.reveal.visible .pd-cards > *:nth-child(3){transition-delay:.35s}
+.editorial section.reveal.visible .step:nth-child(4),
+.editorial section.reveal.visible .stat:nth-child(4),
+.editorial section.reveal.visible .plan:nth-child(4),
+.editorial section.reveal.visible .pd-stats > *:nth-child(4){transition-delay:.45s}
+.editorial section.reveal.visible .step:nth-child(5),
+.editorial section.reveal.visible .stat:nth-child(5){transition-delay:.55s}
+.editorial section.reveal.visible .step:nth-child(6){transition-delay:.65s}
+.editorial section.reveal.visible .step:nth-child(7){transition-delay:.75s}
+.editorial section.reveal.visible .step:nth-child(8){transition-delay:.85s}
+.editorial section.reveal.visible .step:nth-child(9){transition-delay:.95s}
+
+/* Hero stagger: eyebrow → headline → lede → actions → marquee */
+.editorial header.hero.reveal.visible > .wrap > *:nth-child(1){transition-delay:.05s}
+.editorial header.hero.reveal.visible > .wrap > *:nth-child(2){transition-delay:.2s}
+.editorial header.hero.reveal.visible > .wrap > *:nth-child(3){transition-delay:.35s}
+.editorial header.hero.reveal.visible > .wrap > *:nth-child(4){transition-delay:.5s}
+
 @media (prefers-reduced-motion: reduce){
-  .editorial section.reveal,
-  .editorial header.hero.reveal{opacity:1 !important;transform:none !important;transition:none !important}
+  .editorial section.reveal *,
+  .editorial header.hero.reveal *{opacity:1 !important;transform:none !important;transition:none !important}
   .editorial .scroll-top svg{animation:none !important}
 }
 
@@ -449,7 +538,7 @@ html{scroll-behavior:smooth}
 /* RESPONSIVE — tablet (768px and below) */
 @media (max-width: 768px){
   .editorial{--pad:20px}
-  .editorial .hero{padding:48px 0 32px}
+  .editorial .hero{padding:96px 0 32px !important}
   .editorial .hero h1{font-size:clamp(40px, 11vw, 96px) !important;line-height:1 !important}
   .editorial .hero h1 .ampline{padding-left:0 !important}
   .editorial .hero .sub,
@@ -497,7 +586,7 @@ html{scroll-behavior:smooth}
 /* RESPONSIVE — small phones (480px and below) */
 @media (max-width: 480px){
   .editorial{--pad:16px}
-  .editorial .hero{padding:32px 0 24px}
+  .editorial .hero{padding:80px 0 24px !important}
   .editorial .hero-eyebrow{font-size:10px;padding:6px 12px;margin-bottom:24px}
   .editorial .hero h1{font-size:clamp(36px, 12vw, 72px) !important}
   .editorial .hero .lede{font-size:18px !important}

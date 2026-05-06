@@ -8,7 +8,7 @@ import { Controller } from "@hotwired/stimulus"
 //    - After scrolling → arrow points UP, scrolls back to top
 // 3. Section reveal animations: lazy IntersectionObserver fades sections in
 export default class extends Controller {
-  static targets = ["topBtn", "topIcon", "downIcon"]
+  static targets = ["topBtn"]
   static values = { threshold: { type: Number, default: 240 } }
 
   connect() {
@@ -30,13 +30,10 @@ export default class extends Controller {
     // Tighten nav once user passes the hero
     this.element.classList.toggle("scrolled", past)
 
-    // Floating arrow: always visible. Direction flips by scroll position.
+    // Floating arrow: always visible, rotates 180° between scroll states
     if (this.hasTopBtnTarget) {
       this.topBtnTarget.classList.add("show")
-      const isPastTop = y > 200
-      this.topBtnTarget.classList.toggle("dir-up", isPastTop)
-      if (this.hasTopIconTarget) this.topIconTarget.classList.toggle("hidden", !isPastTop)
-      if (this.hasDownIconTarget) this.downIconTarget.classList.toggle("hidden", isPastTop)
+      this.topBtnTarget.classList.toggle("dir-up", y > 200)
     }
   }
 
