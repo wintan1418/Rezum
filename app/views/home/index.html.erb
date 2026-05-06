@@ -69,9 +69,10 @@
       </button>
     </div>
 
-    <!-- Back-to-top floating arrow -->
-    <button type="button" class="scroll-top" data-editorial-nav-target="topBtn" data-action="click->editorial-nav#scrollTop" aria-label="Back to top">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <!-- Floating direction arrow: Down at top of page, Up once scrolled -->
+    <button type="button" class="scroll-top" data-editorial-nav-target="topBtn" data-action="click->editorial-nav#scrollDirection" aria-label="Scroll">
+      <svg data-editorial-nav-target="topIcon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7"/></svg>
+      <svg data-editorial-nav-target="downIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M19 12l-7 7-7-7"/></svg>
     </button>
 
     <!-- Mobile menu panel -->

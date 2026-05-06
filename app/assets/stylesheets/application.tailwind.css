@@ -19,6 +19,10 @@
   --accent-soft:#DCE0FF;
   --graphite:#3A3F49;
 }
+/* Page-level horizontal overflow guard — applied to html/body so it doesn't
+   create a scrolling-context ancestor that would break position:sticky. */
+html:has(.editorial), body:has(.editorial){overflow-x:clip}
+
 .editorial{
   --max:1440px;
   --pad:48px;
@@ -32,7 +36,6 @@
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
-  overflow-x:hidden;
 }
 .editorial *{box-sizing:border-box;min-width:0}
 .editorial img,.editorial svg{max-width:100%}
@@ -218,13 +221,31 @@
 .editorial nav.top .mark span{transition:font-size .25s ease}
 .editorial nav.top.scrolled .mark span{font-size:18px}
 
-/* Back-to-top floating button */
-.editorial .scroll-top{position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px) scale(0.85);pointer-events:none;transition:opacity .25s ease, transform .35s cubic-bezier(.16,1,.3,1), background .2s ease;box-shadow:0 12px 28px -8px rgba(20,23,28,0.4)}
+/* Floating direction arrow — Down at top, Up after scrolling */
+.editorial .scroll-top{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px) scale(0.85);pointer-events:none;transition:opacity .3s ease, transform .4s cubic-bezier(.16,1,.3,1), background .2s ease;box-shadow:0 14px 32px -8px rgba(20,23,28,0.45), 0 0 0 1px color-mix(in oklab, var(--paper) 8%, transparent) inset}
 .editorial .scroll-top.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
-.editorial .scroll-top:hover{background:var(--accent);transform:translateY(-2px) scale(1.05)}
-.editorial .scroll-top:active{transform:translateY(0) scale(0.95)}
-.editorial .scroll-top svg{width:18px;height:18px;transition:transform .25s ease}
-.editorial .scroll-top:hover svg{transform:translateY(-2px)}
+.editorial .scroll-top:hover{background:var(--accent);box-shadow:0 18px 36px -8px rgba(37,64,255,0.5)}
+.editorial .scroll-top.show:hover{transform:translateY(-3px) scale(1.06)}
+.editorial .scroll-top:active{transform:translateY(0) scale(0.94) !important}
+.editorial .scroll-top svg{width:20px;height:20px;transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.editorial .scroll-top.dir-up:hover svg{transform:translateY(-3px)}
+.editorial .scroll-top:not(.dir-up):hover svg{transform:translateY(3px)}
+/* Subtle bobbing when in down-direction state at top */
+.editorial .scroll-top:not(.dir-up):not(:hover) svg{animation:arrow-bob 2.4s ease-in-out infinite}
+@keyframes arrow-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+
+/* Section reveal animations — fade-up as they enter viewport */
+.editorial section.reveal,
+.editorial header.hero.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1)}
+.editorial section.reveal.visible,
+.editorial header.hero.reveal.visible{opacity:1;transform:translateY(0)}
+/* Hero reveals immediately on first paint without scroll */
+.editorial header.hero.reveal{transition-delay:0s}
+@media (prefers-reduced-motion: reduce){
+  .editorial section.reveal,
+  .editorial header.hero.reveal{opacity:1 !important;transform:none !important;transition:none !important}
+  .editorial .scroll-top svg{animation:none !important}
+}
 
 /* Hero scroll-down hint */
 .editorial .scroll-hint{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:64px;color:var(--muted);animation:hint-bob 2.6s ease-in-out infinite}
