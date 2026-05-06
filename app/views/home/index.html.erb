@@ -32,7 +32,7 @@
   <!-- ============================================================
        NAV
        ============================================================ -->
-  <nav class="top" data-controller="mobile-menu">
+  <nav class="top" data-controller="mobile-menu editorial-nav">
     <div class="wrap row">
       <%= link_to root_path, class: "mark", aria: { label: "RezumFit" } do %>
         <span class="glyph"></span>
@@ -56,12 +56,23 @@
         <% end %>
       </div>
 
-      <!-- Hamburger (mobile only) -->
-      <button type="button" class="nav-burger" data-action="click->mobile-menu#toggle" aria-label="Open menu">
-        <svg data-mobile-menu-target="openIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
-        <svg data-mobile-menu-target="closeIcon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      <!-- Hamburger (mobile only) — CSS-morphing 3 lines → X -->
+      <button type="button" class="nav-burger" data-action="click->mobile-menu#toggle" aria-label="Toggle menu">
+        <span class="burger-bars" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <!-- Stimulus targets — kept hidden, used only for state tracking -->
+        <span data-mobile-menu-target="openIcon" class="sr-only">Open menu</span>
+        <span data-mobile-menu-target="closeIcon" class="sr-only hidden">Close menu</span>
       </button>
     </div>
+
+    <!-- Back-to-top floating arrow -->
+    <button type="button" class="scroll-top" data-editorial-nav-target="topBtn" data-action="click->editorial-nav#scrollTop" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
 
     <!-- Mobile menu panel -->
     <div class="nav-mobile hidden" data-mobile-menu-target="menu">
@@ -114,6 +125,12 @@
           <span class="mono" style="color:var(--muted)">No credit card · Free report in &lt; 30s · GPT-4 + Claude + Gemini</span>
         </div>
       </div>
+
+      <!-- Scroll-down hint -->
+      <a href="#features" class="scroll-hint" aria-label="Scroll to features">
+        <span class="mono">Scroll</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M19 12l-7 7-7-7"/></svg>
+      </a>
     </div>
 
     <!-- Trusted by — companies our users target -->

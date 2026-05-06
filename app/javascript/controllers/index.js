@@ -22,6 +22,9 @@ application.register("hello", HelloController)
 import MobileMenuController from "./mobile_menu_controller"
 application.register("mobile-menu", MobileMenuController)
 
+import EditorialNavController from "./editorial_nav_controller"
+application.register("editorial-nav", EditorialNavController)
+
 import NavbarScrollController from "./navbar_scroll_controller"
 application.register("navbar-scroll", NavbarScrollController)
 
