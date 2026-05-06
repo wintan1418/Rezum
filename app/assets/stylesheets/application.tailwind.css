@@ -240,6 +240,11 @@ html:has(.editorial), body:has(.editorial){overflow-x:clip}
   0%,100%{transform:rotate(180deg) translateY(0)}
   50%{transform:rotate(180deg) translateY(-4px)}
 }
+/* Smaller + further from edge on mobile so it doesn't fight with the hamburger */
+@media (max-width: 768px){
+  .editorial .scroll-top{width:44px;height:44px;bottom:16px;right:16px}
+  .editorial .scroll-top .arrow-icon{width:18px;height:18px}
+}
 
 /* === Section reveal — STAGGERED child animation as user scrolls === */
 .editorial section.reveal,
