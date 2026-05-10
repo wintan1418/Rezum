@@ -53,9 +53,8 @@ class OptimizeResumeJob < ApplicationJob
 
       # Deduct 2 credits for resume optimization
       # Skip if resume is locked (LinkedIn/wizard) — credits charged on unlock instead
-      if resume.expires_at.nil? && user.free? && user.credits_remaining > 0
-        credits_to_deduct = [ 2, user.credits_remaining ].min
-        user.decrement!(:credits_remaining, credits_to_deduct)
+      if resume.expires_at.nil? && user.free?
+        user.deduct_credits!(CreditPolicy::RESUME_OPTIMIZATION)
       end
 
       # Auto-trigger ATS analysis if job description is present

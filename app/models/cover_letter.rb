@@ -79,6 +79,14 @@ class CoverLetter < ApplicationRecord
     end
   end
 
+  def greeting
+    hiring_manager_name.present? ? "Dear #{hiring_manager_name}," : "Dear Hiring Manager,"
+  end
+
+  def body_content
+    content.to_s.strip
+  end
+
   private
 
   def content_should_be_validated?

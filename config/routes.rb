@@ -6,8 +6,8 @@ Rails.application.routes.draw do
     omniauth_callbacks: "users/omniauth_callbacks"
   }
 
-  # Mount Sidekiq web interface (protected by authentication)
-  authenticate :user do
+  # Mount Sidekiq web interface (admin-only)
+  authenticate :user, ->(user) { user.admin? } do
     mount Sidekiq::Web => "/sidekiq"
   end
 
@@ -98,6 +98,7 @@ Rails.application.routes.draw do
 
       resources :cover_letters, except: [ :index ] do
         member do
+          post :regenerate
           post :generate_variations
           get :preview
           get :download

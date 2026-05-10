@@ -85,7 +85,7 @@ class ResumesController < ApplicationController
   end
 
   def optimize
-    unless current_user.can_generate?
+    unless current_user.can_generate?(CreditPolicy::RESUME_OPTIMIZATION)
       redirect_to @resume, alert: "Insufficient credits. Please upgrade your plan."
       return
     end

@@ -3,10 +3,10 @@ class AiService
   include ActiveModel::Attributes
 
   # Available AI Models
-  GPT_4_MODEL = "gpt-4o".freeze
-  GPT_4_MINI_MODEL = "gpt-4o-mini".freeze
-  CLAUDE_SONNET = "claude-sonnet-4-6".freeze
-  GEMINI_PRO = "gemini-2.0-flash".freeze
+  GPT_4_MODEL = ENV.fetch("OPENAI_PRIMARY_MODEL", "gpt-4o").freeze
+  GPT_4_MINI_MODEL = ENV.fetch("OPENAI_FAST_MODEL", "gpt-4o-mini").freeze
+  CLAUDE_SONNET = ENV.fetch("ANTHROPIC_PRIMARY_MODEL", "claude-3-5-sonnet-latest").freeze
+  GEMINI_PRO = ENV.fetch("GOOGLE_PRIMARY_MODEL", "gemini-2.0-flash").freeze
 
   attribute :user_id, :integer
   attribute :user_country, :string

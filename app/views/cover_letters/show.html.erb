@@ -129,7 +129,7 @@
               </noscript>
             <% end %>
             
-            <% unless @cover_letter.generated? %>
+            <% if @cover_letter.generated? %>
               <%= link_to generate_variations_resume_cover_letter_path(@resume, @cover_letter), data: { turbo_method: :post },
                   class: "inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all" do %>
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

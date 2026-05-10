@@ -4,7 +4,7 @@ class PitchDecksController < ApplicationController
   before_action :check_pitch_deck_access!, only: [:create]
 
   def index
-    @pitch_decks = PitchDeck.where(user: current_user).recent
+    @pitch_decks = current_user.pitch_decks.recent
   end
 
   def new
@@ -65,8 +65,8 @@ class PitchDecksController < ApplicationController
     case format
     when "pptx"
       file = service.to_pptx
-      send_file file.path,
-        filename: "#{@pitch_deck.company_name.parameterize}-pitch-deck.pptx",
+      send_data File.binread(file.path),
+        filename: "pitch-deck.pptx",
         type: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     else
       redirect_to @pitch_deck, alert: "Unsupported format."
@@ -81,7 +81,7 @@ class PitchDecksController < ApplicationController
   private
 
   def set_pitch_deck
-    @pitch_deck = PitchDeck.find(params[:id])
+    @pitch_deck = current_user.pitch_decks.find(params[:id])
   end
 
   def pitch_deck_params
@@ -104,7 +104,7 @@ class PitchDecksController < ApplicationController
 
   def check_pitch_deck_access!
     return if current_user.has_premium_subscription?
-    return if current_user.credits_remaining >= PitchDeck::CREDITS_COST
+    return if current_user.can_generate?(PitchDeck::CREDITS_COST)
 
     redirect_to billing_index_path, alert: "You need #{PitchDeck::CREDITS_COST} credits or a Premium subscription to generate a pitch deck."
   end
@@ -112,7 +112,7 @@ class PitchDecksController < ApplicationController
   def charge_credits!
     return if current_user.has_premium_subscription?
 
-    PitchDeck::CREDITS_COST.times { current_user.deduct_credit! }
+    current_user.deduct_credits!(PitchDeck::CREDITS_COST)
     @pitch_deck.update!(credits_charged: PitchDeck::CREDITS_COST)
   end
 end

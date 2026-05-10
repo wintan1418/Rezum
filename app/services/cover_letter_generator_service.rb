@@ -8,7 +8,7 @@ class CoverLetterGeneratorService < AiService
   attribute :length, :string, default: "medium"
 
   validates :resume_content, presence: true, length: { minimum: 100 }
-  validates :job_description, presence: true, length: { minimum: 50 }
+  validates :job_description, length: { minimum: 50 }, allow_blank: true
   validates :company_name, presence: true, length: { minimum: 2 }
   validates :target_role, presence: true, length: { minimum: 2 }
   validates :tone, inclusion: { in: %w[professional friendly confident casual enthusiastic] }
@@ -17,37 +17,37 @@ class CoverLetterGeneratorService < AiService
   def generate
     messages = build_generation_messages
 
-    # Use Claude for more creative writing, OpenAI as fallback
-    provider = determine_best_provider
-    model = provider == :anthropic ? CLAUDE_SONNET : GPT_4_MODEL
+    selected_provider = preferred_provider
+    model = model_for_provider(selected_provider)
 
-    generate_completion(
+    content = generate_completion(
       messages: messages,
       model: model,
       max_tokens: token_limit_for_length,
       temperature: temperature_for_tone,
-      provider: provider
+      provider: selected_provider
     )
+    sanitize_body_only(content)
   end
 
   def generate_variations(count: 3)
     variations = []
 
     count.times do |i|
-      # Alternate between providers for variety
-      current_provider = i.even? ? :openai : :anthropic
+      current_provider = preferred_provider
 
       messages = build_variation_messages(i + 1)
 
       variation = with_provider(current_provider).generate_completion(
         messages: messages,
+        model: model_for_provider(current_provider),
         max_tokens: token_limit_for_length,
         temperature: temperature_for_tone + (i * 0.1) # Slight temperature variation
       )
 
       variations << {
         version: i + 1,
-        content: variation,
+        content: sanitize_body_only(variation),
         provider: current_provider,
         tone: tone,
         length: length
@@ -98,15 +98,20 @@ class CoverLetterGeneratorService < AiService
       1. Write in a #{tone} tone that feels authentic and engaging
       2. Create a #{length} length cover letter (#{word_count_for_length} words)
       3. Match the candidate's authentic voice and experience from their resume
-      4. Incorporate specific details from the job description naturally
+      4. Incorporate specific details from the job description naturally when one is provided
       5. Highlight 2-3 most relevant achievements with quantified impact
       6. Include a compelling opening that grabs attention
       7. End with a confident call-to-action
       8. Ensure ATS compatibility with relevant keywords
       9. Follow #{regional_context} business letter conventions
       10. Never fabricate experience or skills not in the original resume
+      11. Use only company facts present in the job posting or resume. Do not invent company mission, products, news, culture, awards, or values.
 
-      Format as a complete, ready-to-send cover letter with proper structure.
+      OUTPUT CONTRACT:
+      - Return ONLY the body paragraphs of the cover letter.
+      - Do NOT include sender contact details, date, recipient address, subject/Re line, greeting, "Dear...", sign-off, "Sincerely", or the candidate's name.
+      - Do NOT wrap the output in markdown or code fences.
+      - Paragraphs only; no bullet lists unless the job posting explicitly asks for a bullet-style response.
     PROMPT
   end
 
@@ -119,24 +124,24 @@ class CoverLetterGeneratorService < AiService
       CANDIDATE'S RESUME:
       #{resume_content}
 
-      JOB POSTING:
-      #{job_description}
+      #{job_description_section}
 
       POSITION: #{target_role} at #{company_name}
-      GREETING: #{hiring_manager_greeting}
+      GREETING CONTEXT: #{hiring_manager_greeting}
       TONE: #{tone.capitalize}
       LENGTH: #{length.capitalize} (#{word_count_for_length} words)
 
       Create a compelling cover letter that:
       1. Opens with a strong, attention-grabbing first paragraph
-      2. Demonstrates clear understanding of the role and company
+      2. Demonstrates clear understanding of the role#{job_description.present? ? " and the provided job posting" : " using only the resume, target role, and company name provided"}
       3. Highlights the candidate's most relevant experience and achievements
-      4. Shows genuine enthusiasm for the opportunity
+      4. Shows genuine enthusiasm without inventing company-specific facts
       5. Includes specific examples with quantified results where possible
-      6. Addresses key requirements from the job posting
+      6. Addresses key requirements from the job posting when provided
       7. Concludes with a confident call-to-action
 
       The cover letter should feel personal, authentic, and tailored specifically to this opportunity.
+      Return body paragraphs only. The application will add the greeting, date, contact details, and signature.
     PROMPT
   end
 
@@ -189,16 +194,66 @@ class CoverLetterGeneratorService < AiService
     ]
   end
 
-  def determine_best_provider
-    # Use Claude for creative writing, OpenAI for structured content
-    case tone
-    when "creative", "enthusiastic", "friendly"
-      :anthropic
-    when "professional", "confident"
-      :openai
+  def job_description_section
+    if job_description.present?
+      "JOB POSTING:\n#{job_description}"
     else
-      :openai
+      "JOB POSTING: Not provided. Write a strong general cover letter for the target role without pretending to know specific job requirements."
     end
+  end
+
+  def preferred_provider
+    provider.presence&.to_sym || :openai
+  end
+
+  def model_for_provider(provider_name)
+    case provider_name.to_sym
+    when :anthropic
+      CLAUDE_SONNET
+    when :google
+      GEMINI_PRO
+    else
+      GPT_4_MODEL
+    end
+  end
+
+  def sanitize_body_only(content)
+    lines = content.to_s
+      .sub(/\A\s*```(?:text|markdown|plain)?\s*\n?/, "")
+      .sub(/\n?\s*```\s*\z/, "")
+      .lines
+      .map(&:rstrip)
+
+    lines = lines.drop_while { |line| removable_letter_line?(line) || line.strip.blank? }
+    if (closing_index = lines.rindex { |line| closing_line?(line) })
+      lines = lines.first(closing_index)
+    end
+    lines = lines.reverse.drop_while { |line| removable_letter_line?(line) || line.strip.blank? }.reverse
+    lines.join("\n").strip
+  end
+
+  def removable_letter_line?(line)
+    text = line.to_s.strip
+    return true if text.blank?
+    return true if text.match?(/\A(dear\s+.+,|to\s+whom\s+it\s+may\s+concern,?)\z/i)
+    return true if closing_line?(text)
+    return true if text.match?(/\A(re|subject):\s+/i)
+    return true if text.match?(/\A#{Regexp.escape(company_name.to_s)}\z/i)
+    return true if text.match?(/\A#{Regexp.escape(target_role.to_s)}\s+position\z/i)
+    return true if parseable_date_line?(text)
+
+    false
+  end
+
+  def parseable_date_line?(text)
+    Date.parse(text)
+    text.length <= 30
+  rescue ArgumentError
+    false
+  end
+
+  def closing_line?(line)
+    line.to_s.strip.match?(/\A(sincerely|best regards|kind regards|regards|thank you),?\z/i)
   end
 
   def word_count_for_length

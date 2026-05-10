@@ -57,6 +57,12 @@ class UserTest < ActiveSupport::TestCase
     assert @user.can_generate?
   end
 
+  test "can_generate? requires enough credits for requested cost" do
+    @user.update!(credits_remaining: 1)
+    assert @user.can_generate?(CreditPolicy::COVER_LETTER)
+    assert_not @user.can_generate?(CreditPolicy::RESUME_OPTIMIZATION)
+  end
+
   test "can_generate? without credits and no subscription" do
     assert_not @broke.can_generate?
   end
@@ -75,6 +81,12 @@ class UserTest < ActiveSupport::TestCase
 
   test "deduct_credit! returns false when no credits and no subscription" do
     assert_not @broke.deduct_credit!
+  end
+
+  test "deduct_credits! does not partially charge when balance is too low" do
+    @user.update!(credits_remaining: 1)
+    assert_not @user.deduct_credits!(CreditPolicy::RESUME_OPTIMIZATION)
+    assert_equal 1, @user.reload.credits_remaining
   end
 
   test "total_spent sums successful payments" do

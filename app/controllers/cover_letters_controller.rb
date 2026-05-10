@@ -1,7 +1,7 @@
 class CoverLettersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_resume, except: [ :index ]
-  before_action :set_cover_letter, only: [ :show, :edit, :update, :destroy, :generate_variations, :preview, :download ]
+  before_action :set_cover_letter, only: [ :show, :edit, :update, :destroy, :regenerate, :generate_variations, :preview, :download ]
 
   def index
     @cover_letters = current_user.cover_letters.recent.includes(:resume)
@@ -32,12 +32,12 @@ class CoverLettersController < ApplicationController
     @cover_letter.job_description = params[:job_description].presence || @resume.job_description
 
     if @cover_letter.save
-      unless current_user.can_generate?
+      unless current_user.can_generate?(CreditPolicy::COVER_LETTER)
         redirect_to [ @resume, @cover_letter ], alert: "Insufficient credits. Please upgrade your plan."
         return
       end
 
-      @cover_letter.update!(status: "generating", provider: params[:provider] || "openai")
+      @cover_letter.update!(status: "generating", provider: selected_provider)
 
       GenerateCoverLetterJob.perform_later(@cover_letter.id, current_user.id)
       ahoy.track "cover_letter_generate", cover_letter_id: @cover_letter.id, resume_id: @resume.id
@@ -65,17 +65,29 @@ class CoverLettersController < ApplicationController
   end
 
   def generate_variations
-    unless current_user.can_generate?
+    count = params[:count]&.to_i || 3
+    count = [ count, 5 ].min # Max 5 variations
+
+    unless current_user.can_generate?(count * CreditPolicy::COVER_LETTER)
       redirect_to [ @resume, @cover_letter ], alert: "Insufficient credits. Please upgrade your plan."
       return
     end
 
-    count = params[:count]&.to_i || 3
-    count = [ count, 5 ].min # Max 5 variations
-
     GenerateCoverLetterVariationsJob.perform_later(@cover_letter.id, current_user.id, count)
 
     redirect_to [ @resume, @cover_letter ], notice: "Generating #{count} variations! This will take 1-2 minutes."
+  end
+
+  def regenerate
+    unless current_user.can_generate?(CreditPolicy::COVER_LETTER)
+      redirect_to [ @resume, @cover_letter ], alert: "Insufficient credits. Please upgrade your plan."
+      return
+    end
+
+    @cover_letter.update!(status: "generating", provider: selected_provider)
+    GenerateCoverLetterJob.perform_later(@cover_letter.id, current_user.id)
+
+    redirect_to [ @resume, @cover_letter ], notice: "Cover letter generation restarted."
   end
 
   def preview
@@ -83,9 +95,19 @@ class CoverLettersController < ApplicationController
   end
 
   def download
-    filename = "#{@cover_letter.company_name.parameterize}-cover-letter.pdf"
-    pdf = build_pdf_document
-    send_data pdf, filename: filename, type: "application/pdf", disposition: "attachment"
+    format = params[:format].presence || "pdf"
+    filename = "#{@cover_letter.company_name.parameterize}-cover-letter"
+
+    case format.to_s
+    when "pdf"
+      send_data build_pdf_document, filename: "#{filename}.pdf", type: "application/pdf", disposition: "attachment"
+    when "docx"
+      send_data build_docx_document, filename: "#{filename}.docx", type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", disposition: "attachment"
+    when "txt"
+      send_data build_cover_letter_text, filename: "#{filename}.txt", type: "text/plain", disposition: "attachment"
+    else
+      redirect_to [ @resume, @cover_letter ], alert: "Invalid format requested."
+    end
   end
 
   private
@@ -108,6 +130,12 @@ class CoverLettersController < ApplicationController
       :company_name, :hiring_manager_name, :target_role,
       :tone, :length, :content, :provider
     )
+  end
+
+  def selected_provider
+    provider = params[:provider].presence || params.dig(:cover_letter, :provider).presence || @cover_letter&.provider.presence || "openai"
+    provider = "openai" if provider == "anthropic" && !current_user.has_premium_subscription?
+    provider
   end
 
   def calculate_response_rate
@@ -133,7 +161,9 @@ class CoverLettersController < ApplicationController
     lines << @cover_letter.company_name
     lines << "Re: #{@cover_letter.target_role} Position" if @cover_letter.target_role.present?
     lines << ""
-    lines << @cover_letter.content.to_s
+    lines << @cover_letter.greeting
+    lines << ""
+    lines << @cover_letter.body_content
     lines << ""
     lines << "Sincerely,"
     lines << ""
@@ -173,6 +203,8 @@ class CoverLettersController < ApplicationController
     pdf.move_down 20
 
     # Content
+    pdf.text @cover_letter.greeting, size: 12
+    pdf.move_down 12
     pdf.text letter_content, size: 12, leading: 3, align: :justify if letter_content.present?
 
     pdf.move_down 30
@@ -183,5 +215,37 @@ class CoverLettersController < ApplicationController
     pdf.text user_name, size: 12, style: :bold
 
     pdf.render
+  end
+
+  def build_docx_document
+    require "zip"
+
+    paragraphs = build_cover_letter_text.split("\n").map do |line|
+      escaped = line.to_s.encode(xml: :text)
+      if escaped.blank?
+        '<w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>'
+      else
+        "<w:p><w:pPr><w:spacing w:after=\"80\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">#{escaped}</w:t></w:r></w:p>"
+      end
+    end.join
+
+    Zip::OutputStream.write_buffer do |zip|
+      zip.put_next_entry("[Content_Types].xml")
+      zip.write '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+                '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' \
+                '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' \
+                '<Default Extension="xml" ContentType="application/xml"/>' \
+                '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' \
+                "</Types>"
+      zip.put_next_entry("_rels/.rels")
+      zip.write '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+                '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' \
+                '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' \
+                "</Relationships>"
+      zip.put_next_entry("word/document.xml")
+      zip.write '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' \
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' \
+                "<w:body>#{paragraphs}</w:body></w:document>"
+    end.string
   end
 end

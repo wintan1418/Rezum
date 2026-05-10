@@ -96,8 +96,8 @@ class User < ApplicationRecord
     trial? && trial_ends_at&.future?
   end
 
-  def can_generate?
-    credits_remaining > 0 || has_active_subscription? || trial_active?
+  def can_generate?(cost = CreditPolicy::COVER_LETTER)
+    CreditPolicy.can_generate?(self, cost)
   end
 
   # Subscription methods
@@ -212,12 +212,11 @@ class User < ApplicationRecord
   end
 
   def deduct_credit!
-    return false if credits_remaining <= 0 && !has_active_subscription?
+    deduct_credits!(1)
+  end
 
-    if credits_remaining > 0
-      decrement!(:credits_remaining, 1)
-    end
-    true
+  def deduct_credits!(amount)
+    CreditPolicy.deduct!(self, amount)
   end
 
   def total_spent

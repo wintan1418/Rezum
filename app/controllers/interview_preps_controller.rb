@@ -16,8 +16,8 @@ class InterviewPrepsController < ApplicationController
   def create
     @interview_prep = current_user.interview_preps.build(interview_prep_params)
 
-    unless current_user.has_active_subscription? || current_user.credits_remaining >= 3
-      redirect_to new_interview_prep_path, alert: "You need at least 3 credits for Interview Prep. You have #{current_user.credits_remaining}."
+    unless current_user.can_generate?(CreditPolicy::INTERVIEW_PREP)
+      redirect_to new_interview_prep_path, alert: "You need at least #{CreditPolicy::INTERVIEW_PREP} credits for Interview Prep. You have #{current_user.credits_remaining}."
       return
     end
 

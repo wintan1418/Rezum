@@ -110,6 +110,8 @@ class BillingController < ApplicationController
       {
         currency: "NGN",
         symbol: "\u20A6",
+        charge_currency: "NGN",
+        charge_note: "Paystack processes payments in NGN.",
         tiers: [
           { credits: 5,   amount_kobo: 1_500_00,  display: "1,500",  per_credit: "300", label: "Starter", badge: "Try It" },
           { credits: 10,  amount_kobo: 5_000_00,  display: "5,000",  per_credit: "500", label: "Standard" },
@@ -123,6 +125,8 @@ class BillingController < ApplicationController
         currency: "NGN",
         symbol: "$",
         display_currency: "USD",
+        charge_currency: "NGN",
+        charge_note: "USD prices are estimates for cardholders outside Nigeria. Paystack securely processes the equivalent amount in NGN, and your bank handles the card conversion.",
         tiers: [
           { credits: 5,   amount_kobo: 1_650_00,  display: "3",   per_credit: "0.60", label: "Starter", badge: "Try It" },
           { credits: 10,  amount_kobo: 5_500_00,  display: "5",   per_credit: "0.50", label: "Standard" },

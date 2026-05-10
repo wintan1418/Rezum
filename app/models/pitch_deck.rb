@@ -12,7 +12,7 @@ class PitchDeck < ApplicationRecord
   scope :by_status, ->(s) { where(status: s) }
   scope :completed, -> { where(status: "completed") }
 
-  CREDITS_COST = 30
+  CREDITS_COST = CreditPolicy::PITCH_DECK
 
   SLIDE_TYPES = %w[
     cover problem solution why_now market product

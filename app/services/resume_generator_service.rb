@@ -75,7 +75,7 @@ class ResumeGeneratorService < AiService
       **Experience Bullets:** Transform raw responsibilities into achievement-oriented bullets:
       - Use Google's XYZ formula: "Accomplished [X] as measured by [Y] by doing [Z]"
       - Start every bullet with a strong, UNIQUE action verb — never repeat the same verb across the resume
-      - 80% of bullets should contain a quantified metric (number, percentage, dollar amount, timeframe, team size)
+      - Use quantified metrics only when the user provided them or they are directly stated in the input
       - Each bullet: 15-30 words, one achievement per bullet
       - 3-5 bullets per role, most impactful first
       - NEVER use: "Responsible for," "Helped with," "Worked on," "Assisted," "Participated in"
@@ -88,10 +88,10 @@ class ResumeGeneratorService < AiService
       Analysis: Diagnosed, Forecasted, Identified, Quantified, Evaluated
 
       **Quantification Techniques:**
-      When the user provides vague descriptions, quantify using context clues:
-      - "managed a team" → estimate scope from company/role context, but mark clearly
-      - If you CANNOT reasonably infer a number, use scope language instead: "Led cross-functional team" or "Managed enterprise client portfolio"
-      - Use scale indicators: daily/weekly/monthly volume, budget ranges, geographic scope, number of stakeholders
+      When the user provides vague descriptions:
+      - Ask the output to use scope language instead of invented numbers
+      - Use phrases like "cross-functional", "multi-stakeholder", "customer-facing", "high-volume", or "deadline-driven" only when supported by the role description
+      - Preserve exact numbers, percentages, budgets, tools, and timeframes when the user provides them
       - NEVER fabricate specific numbers that aren't supported by the provided information
 
       **Skills Section:**
@@ -103,7 +103,7 @@ class ResumeGeneratorService < AiService
       - NEVER add skills, tools, companies, job titles, degrees, or certifications the user didn't provide
       - NEVER invent specific metrics (e.g., "increased sales by 47%") unless the user explicitly stated it
       - You MAY polish language, reorder for impact, and add reasonable context
-      - You MAY infer approximate scope from role/company context (e.g., a "Marketing Manager" likely managed campaigns)
+      - Do NOT infer approximate scope from role/company context
       - When in doubt, keep it factual and use qualitative language over fabricated numbers
 
       ## OUTPUT FORMAT
@@ -180,7 +180,7 @@ class ResumeGeneratorService < AiService
     # Strip any markdown code fences
     cleaned = raw.gsub(/\A\s*```(?:json)?\s*\n?/, "").gsub(/\n?\s*```\s*\z/, "").strip
 
-    sections = JSON.parse(cleaned)
+    sections = parse_json_sections(cleaned)
 
     sections.map do |section|
       {
@@ -191,7 +191,51 @@ class ResumeGeneratorService < AiService
   rescue JSON::ParserError => e
     Rails.logger.error "ResumeGeneratorService JSON parse error: #{e.message}"
     Rails.logger.error "Raw response: #{raw}"
-    build_fallback_sections
+    repair_ai_response(raw) || build_fallback_sections
+  end
+
+  def parse_json_sections(cleaned)
+    JSON.parse(cleaned)
+  rescue JSON::ParserError
+    extracted = cleaned[/\[[\s\S]*\]/]
+    raise unless extracted
+
+    JSON.parse(extracted)
+  end
+
+  def repair_ai_response(raw)
+    repaired = generate_completion(
+      messages: [
+        {
+          role: "system",
+          content: "You repair malformed JSON. Return only a valid JSON array. Do not add markdown, commentary, or code fences."
+        },
+        {
+          role: "user",
+          content: <<~PROMPT
+            Convert this malformed resume response into the exact JSON array schema requested.
+            Preserve only factual content from the response. Do not invent missing details.
+
+            MALFORMED RESPONSE:
+            #{raw}
+          PROMPT
+        }
+      ],
+      model: GPT_4_MINI_MODEL,
+      max_tokens: 2500,
+      temperature: 0
+    )
+
+    cleaned = repaired.gsub(/\A\s*```(?:json)?\s*\n?/, "").gsub(/\n?\s*```\s*\z/, "").strip
+    parse_json_sections(cleaned).map do |section|
+      {
+        type: section["type"],
+        content: section["content"]
+      }
+    end
+  rescue StandardError => e
+    Rails.logger.error "ResumeGeneratorService JSON repair failed: #{e.message}"
+    nil
   end
 
   def build_fallback_sections

@@ -1,0 +1,29 @@
+taylor_deck:
+  user: taylor
+  company_name: Taylor Labs
+  tagline: Better job search tooling
+  industry: HR Tech
+  stage: seed
+  funding_ask: "$500K"
+  status: draft
+  template: sequoia
+  color_scheme: professional
+  inputs: {}
+  credits_charged: 0
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= Time.current %>
+
+pro_deck:
+  user: pro_user
+  company_name: Pro Ventures
+  tagline: AI career intelligence
+  industry: SaaS
+  stage: seed
+  funding_ask: "$1M"
+  status: draft
+  template: sequoia
+  color_scheme: professional
+  inputs: {}
+  credits_charged: 0
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= Time.current %>

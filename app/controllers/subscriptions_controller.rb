@@ -9,6 +9,7 @@ class SubscriptionsController < ApplicationController
     @subscription = current_user.subscriptions.build
     @is_ngn = ngn_user?(current_user)
     @symbol = @is_ngn ? "\u20A6" : "$"
+    @charge_note = @is_ngn ? "Paystack processes payments in NGN." : "USD prices are estimates for cardholders outside Nigeria. Paystack securely processes the equivalent amount in NGN, and your bank handles the card conversion."
     @plans = plans_for_user
   end
 

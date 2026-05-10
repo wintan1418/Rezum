@@ -42,3 +42,19 @@ broke_user:
   confirmed_at: <%= 7.days.ago %>
   created_at: <%= 7.days.ago %>
   updated_at: <%= Time.current %>
+
+admin_user:
+  first_name: Admin
+  last_name: User
+  email: admin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  credits_remaining: 50
+  experience_level: 3
+  language: en
+  currency: NGN
+  referral_code: ADMN0001
+  onboarding_completed: true
+  admin: true
+  confirmed_at: <%= 90.days.ago %>
+  created_at: <%= 90.days.ago %>
+  updated_at: <%= Time.current %>

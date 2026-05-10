@@ -30,10 +30,8 @@ class GenerateLinkedinOptimizationJob < ApplicationJob
       status: "optimized"
     )
 
-    # Deduct 2 credits for LinkedIn optimization
-    if user.free? && user.credits_remaining > 0
-      credits_to_deduct = [ 2, user.credits_remaining ].min
-      user.decrement!(:credits_remaining, credits_to_deduct)
+    if user.free?
+      user.deduct_credits!(CreditPolicy::LINKEDIN_OPTIMIZATION)
     end
   rescue => e
     Rails.logger.error "LinkedIn optimization failed: #{e.message}"

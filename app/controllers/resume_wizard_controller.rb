@@ -1,5 +1,5 @@
 class ResumeWizardController < ApplicationController
-  CREDIT_COST = 10
+  CREDIT_COST = CreditPolicy::RESUME_WIZARD_UNLOCK
 
   before_action :authenticate_user!
 
@@ -70,7 +70,7 @@ class ResumeWizardController < ApplicationController
     end
 
     # Deduct credits and unlock
-    current_user.decrement!(:credits_remaining, CREDIT_COST)
+    current_user.deduct_credits!(CREDIT_COST)
     @resume.update!(expires_at: nil)
 
     redirect_to preview_resume_wizard_path(@resume), notice: "Resume unlocked! #{CREDIT_COST} credits used. You can now download and edit it."

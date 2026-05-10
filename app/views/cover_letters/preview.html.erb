@@ -135,6 +135,7 @@
   
   <div class="content">
     <% if @cover_letter.content.present? %>
+      <p class="greeting"><%= @cover_letter.greeting %></p>
       <%= simple_format(@cover_letter.content, class: "cover-letter-text") %>
     <% else %>
       <p><em>Cover letter content is being generated...</em></p>

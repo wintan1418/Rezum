@@ -35,8 +35,8 @@ class GenerateCoverLetterJob < ApplicationJob
       )
 
       # Deduct credits for pay-per-use users
-      if user.free? && user.credits_remaining > 0
-        user.decrement!(:credits_remaining)
+      if user.free?
+        user.deduct_credits!(CreditPolicy::COVER_LETTER)
       end
 
       # Broadcast update to any connected browsers

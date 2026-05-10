@@ -15,7 +15,7 @@ class LinkedinOptimizationsController < ApplicationController
   def create
     @linkedin_optimization = current_user.linkedin_optimizations.build(linkedin_optimization_params)
 
-    unless current_user.can_generate?
+    unless current_user.can_generate?(CreditPolicy::LINKEDIN_OPTIMIZATION)
       redirect_to new_linkedin_optimization_path, alert: "Insufficient credits. Please upgrade your plan."
       return
     end
