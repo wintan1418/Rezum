@@ -52,8 +52,8 @@
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-bold text-gray-900">Headline Options</h2>
           <div data-controller="clipboard">
-            <button data-action="click->clipboard#copy" data-clipboard-target="source" data-clipboard-text="<%= @linkedin_optimization.optimized_headline %>" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
-              <span data-clipboard-target="label">Copy All</span>
+            <button data-action="click->clipboard#copy" data-clipboard-text="<%= @linkedin_optimization.optimized_headline %>" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+              <span data-clipboard-target="feedback">Copy All</span>
             </button>
           </div>
         </div>
@@ -72,7 +72,7 @@
               </div>
               <div data-controller="clipboard">
                 <button data-action="click->clipboard#copy" data-clipboard-text="<%= headline.strip %>" class="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-600 hover:text-blue-800 whitespace-nowrap">
-                  <span data-clipboard-target="label">Copy</span>
+                  <span data-clipboard-target="feedback">Copy</span>
                 </button>
               </div>
             </div>
@@ -88,7 +88,7 @@
           <h2 class="text-lg font-bold text-gray-900">About Section</h2>
           <div data-controller="clipboard">
             <button data-action="click->clipboard#copy" data-clipboard-text="<%= @linkedin_optimization.optimized_about %>" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
-              <span data-clipboard-target="label">Copy</span>
+              <span data-clipboard-target="feedback">Copy</span>
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@
           <h2 class="text-lg font-bold text-gray-900">Experience Bullets</h2>
           <div data-controller="clipboard">
             <button data-action="click->clipboard#copy" data-clipboard-text="<%= @linkedin_optimization.optimized_experience %>" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
-              <span data-clipboard-target="label">Copy</span>
+              <span data-clipboard-target="feedback">Copy</span>
             </button>
           </div>
         </div>
