@@ -46,6 +46,11 @@ class AnalyzeAtsScoreJob < ApplicationJob
   private
 
   def extract_score_from_analysis(analysis)
+    # Preferred: the exact machine-readable line the prompt pins to English,
+    # which stays stable even when the rest of the analysis is not in English
+    exact_match = analysis.match(/OVERALL ATS SCORE:\s*(\d{1,3})/i)
+    return [ exact_match[1].to_i, 100 ].min if exact_match
+
     # Extract numeric score from AI analysis
     # Look for patterns like "Score: 85", "ATS Score (0-100): 72", etc.
     score_match = analysis.match(/(?:score|ats).*?(\d{1,3})/i)

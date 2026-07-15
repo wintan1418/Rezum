@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_10_142426) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_15_192952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -147,6 +147,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_10_142426) do
     t.string "provider"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "language", default: "en", null: false
     t.index ["resume_id"], name: "index_cover_letters_on_resume_id"
     t.index ["user_id", "status"], name: "index_cover_letters_on_user_id_and_status"
     t.index ["user_id"], name: "index_cover_letters_on_user_id"

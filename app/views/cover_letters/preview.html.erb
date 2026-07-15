@@ -143,7 +143,7 @@
   </div>
   
   <div class="closing">
-    Sincerely,<br>
+    <%= @cover_letter.closing %><br>
     <div class="signature">
       <%= current_user.full_name.present? ? current_user.full_name : current_user.email %>
     </div>

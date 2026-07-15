@@ -31,6 +31,7 @@ class GenerateCoverLetterJob < ApplicationJob
       # Update cover letter with results
       cover_letter.update!(
         content: generated_content,
+        language: service.detected_language || "en",
         status: "generated"
       )
 

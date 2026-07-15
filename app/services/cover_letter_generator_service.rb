@@ -14,6 +14,10 @@ class CoverLetterGeneratorService < AiService
   validates :tone, inclusion: { in: %w[professional friendly confident casual enthusiastic] }
   validates :length, inclusion: { in: %w[short medium long] }
 
+  # ISO 639-1 code of the language the AI reports writing the letter in.
+  # Populated by sanitize_body_only; defaults to "en".
+  attr_reader :detected_language
+
   def generate
     messages = build_generation_messages
 
@@ -48,6 +52,7 @@ class CoverLetterGeneratorService < AiService
       variations << {
         version: i + 1,
         content: sanitize_body_only(variation),
+        language: detected_language,
         provider: current_provider,
         tone: tone,
         length: length
@@ -111,7 +116,8 @@ class CoverLetterGeneratorService < AiService
       11. Use only company facts present in the job posting or resume. Do not invent company mission, products, news, culture, awards, or values.
 
       OUTPUT CONTRACT:
-      - Return ONLY the body paragraphs of the cover letter.
+      - The FIRST line of your response must be exactly "LANGUAGE: <code>" where <code> is the two-letter ISO 639-1 code of the language you wrote the letter in (e.g. "LANGUAGE: fr"). Then a blank line, then the letter body.
+      - After that line, return ONLY the body paragraphs of the cover letter.
       - Do NOT include sender contact details, date, recipient address, subject/Re line, greeting, "Dear...", sign-off, "Sincerely", or the candidate's name.
       - Do NOT wrap the output in markdown or code fences.
       - Paragraphs only; no bullet lists unless the job posting explicitly asks for a bullet-style response.
@@ -221,11 +227,17 @@ class CoverLetterGeneratorService < AiService
   end
 
   def sanitize_body_only(content)
-    lines = content.to_s
+    text = content.to_s
       .sub(/\A\s*```(?:text|markdown|plain)?\s*\n?/, "")
       .sub(/\n?\s*```\s*\z/, "")
-      .lines
-      .map(&:rstrip)
+
+    @detected_language = "en"
+    text = text.sub(/\A\s*LANGUAGE:\s*([a-z]{2})\b[^\n]*\n?/i) do
+      @detected_language = Regexp.last_match(1).downcase
+      ""
+    end
+
+    lines = text.lines.map(&:rstrip)
 
     lines = lines.drop_while { |line| removable_letter_line?(line) || line.strip.blank? }
     if (closing_index = lines.rindex { |line| closing_line?(line) })

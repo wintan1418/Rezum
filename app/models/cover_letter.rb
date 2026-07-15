@@ -80,7 +80,26 @@ class CoverLetter < ApplicationRecord
   end
 
   def greeting
-    hiring_manager_name.present? ? "Dear #{hiring_manager_name}," : "Dear Hiring Manager,"
+    name = hiring_manager_name.presence
+    case language
+    when "fr" then name ? "Bonjour #{name}," : "Madame, Monsieur,"
+    when "es" then name ? "Estimado/a #{name}:" : "Estimado/a responsable de selección:"
+    when "de" then name ? "Sehr geehrte(r) #{name}," : "Sehr geehrte Damen und Herren,"
+    when "pt" then name ? "Prezado(a) #{name}," : "Prezado(a) responsável pelo recrutamento,"
+    when "it" then name ? "Gentile #{name}," : "Gentile responsabile delle assunzioni,"
+    else name ? "Dear #{name}," : "Dear Hiring Manager,"
+    end
+  end
+
+  def closing
+    case language
+    when "fr" then "Cordialement,"
+    when "es" then "Atentamente,"
+    when "de" then "Mit freundlichen Grüßen,"
+    when "pt" then "Atenciosamente,"
+    when "it" then "Cordiali saluti,"
+    else "Sincerely,"
+    end
   end
 
   def body_content

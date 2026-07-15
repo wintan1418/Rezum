@@ -165,7 +165,7 @@ class CoverLettersController < ApplicationController
     lines << ""
     lines << @cover_letter.body_content
     lines << ""
-    lines << "Sincerely,"
+    lines << @cover_letter.closing
     lines << ""
     lines << user_name
 
@@ -210,7 +210,7 @@ class CoverLettersController < ApplicationController
     pdf.move_down 30
 
     # Closing
-    pdf.text "Sincerely,", size: 12
+    pdf.text @cover_letter.closing, size: 12
     pdf.move_down 30
     pdf.text user_name, size: 12, style: :bold
 

@@ -109,6 +109,8 @@ class AtsCheckerController < ApplicationController
       - No personal pronouns (I, me, my)
       - No spelling or grammar red flags
 
+      LANGUAGE: Write the strengths, issues, and improvements in the same language as the resume, so the candidate can read them. The format labels below (OVERALL ATS SCORE, FORMAT SCORE, CONTENT SCORE, STRENGTHS, ISSUES, IMPROVEMENTS) must stay EXACTLY in English — they are machine-parsed.
+
       Respond in EXACTLY this format:
 
       OVERALL ATS SCORE: [0-100]

@@ -339,7 +339,9 @@ class ResumeOptimizerService < AiService
 
           TARGET ROLE: #{target_role}
 
-          Provide a comprehensive ATS compatibility analysis:
+          Provide a comprehensive ATS compatibility analysis.
+
+          LANGUAGE: Write the entire analysis in the same language as the RESUME above (section titles included), so the candidate can read it. EXCEPTION: the very first line of your response must be exactly "OVERALL ATS SCORE: [number]" in English — it is machine-parsed. Repeat keywords exactly as they appear in the job description without translating them.
 
           1. **OVERALL ATS SCORE: [0-100]**
              Calculate based on: keyword match (40%), experience relevance (25%), section structure (10%), education fit (10%), recency (10%), soft skills (5%)

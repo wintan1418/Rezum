@@ -38,6 +38,7 @@ class GenerateCoverLetterVariationsJob < ApplicationJob
           tone: cover_letter.tone,
           length: cover_letter.length,
           content: variation[:content],
+          language: variation[:language] || "en",
           job_description: cover_letter.job_description,
           status: "generated",
           provider: variation[:provider].to_s
