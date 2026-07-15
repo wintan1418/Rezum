@@ -43,3 +43,7 @@
 *.sqlite3
 *.sqlite3-journal
 config/cloudinary.yml
+
+# Yarn Berry state (regenerated locally)
+/.yarn/
+/.yarnrc.yml
