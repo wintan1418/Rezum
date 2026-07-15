@@ -53,6 +53,8 @@ class ResumeOptimizerService < AiService
     <<~PROMPT
       You are an elite resume optimization specialist who has helped 10,000+ professionals land interviews at top companies. You combine deep expertise in ATS engineering, recruiter psychology, and career strategy.
 
+      #{language_preservation_rule(source: "the ORIGINAL RESUME")}
+
       ## YOUR KNOWLEDGE BASE
 
       **ATS Systems:** You understand how Workday, Greenhouse, Lever, iCIMS, and Taleo parse resumes. You know that 99.7% of recruiters use keyword filters and that resumes need 75-80% keyword match to pass screening. You optimize for both exact-match keywords (critical for older systems like Taleo) and semantic matching (for modern systems like Workday).
@@ -105,7 +107,7 @@ class ResumeOptimizerService < AiService
          - Do NOT stuff buzzwords or use corporate jargon unnaturally
 
       8. **Formatting:**
-         - Use standard section headers: "Professional Summary," "Professional Experience," "Skills," "Education," "Certifications"
+         - Use standard section headers in the resume's language (English: "Professional Summary," "Professional Experience," "Skills," "Education," "Certifications" — or their standard equivalents when the resume is in another language)
          - Keep consistent date format throughout (Mon YYYY - Mon YYYY)
          - 3-5 bullets per recent role, 2-3 for older roles
          - Most impactful bullet first within each role
@@ -158,6 +160,7 @@ class ResumeOptimizerService < AiService
 
         5. EDUCATION & CERTIFICATIONS: Highlight coursework, certifications, or achievements relevant to the target role.
 
+        Write the optimized resume in the SAME LANGUAGE as the ORIGINAL RESUME above, even if the job description is in a different language.
         Output ONLY the final optimized resume. No commentary.
       PROMPT
     else
@@ -187,6 +190,7 @@ class ResumeOptimizerService < AiService
 
         5. EDUCATION & CERTIFICATIONS: Highlight relevant coursework, certifications, or achievements.
 
+        Write the optimized resume in the SAME LANGUAGE as the ORIGINAL RESUME above.
         Output ONLY the final optimized resume. No commentary.
       PROMPT
     end

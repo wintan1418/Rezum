@@ -86,6 +86,9 @@ class CoverLetterGeneratorService < AiService
     <<~PROMPT
       You are an expert cover letter writer and career consultant with 15+ years of experience helping professionals secure interviews and job offers.
 
+      #{language_preservation_rule(source: "the candidate's resume and the job posting")}
+      - When the resume and job posting are in different languages, follow the language of the job posting (the letter addresses that employer).
+
       Your expertise includes:
       - #{regional_context} business communication standards
       - Industry-specific language and terminology
@@ -236,6 +239,7 @@ class CoverLetterGeneratorService < AiService
     text = line.to_s.strip
     return true if text.blank?
     return true if text.match?(/\A(dear\s+.+,|to\s+whom\s+it\s+may\s+concern,?)\z/i)
+    return true if text.match?(/\A(madame,?\s*monsieur,?|madame\s+.+,|monsieur\s+.+,|bonjour,?|estimad[oa]s?\s+.+[,:]|sehr\s+geehrte.+,|gentile\s+.+,|prezad[oa]s?\s+.+[,:])\z/i)
     return true if closing_line?(text)
     return true if text.match?(/\A(re|subject):\s+/i)
     return true if text.match?(/\A#{Regexp.escape(company_name.to_s)}\z/i)
@@ -253,7 +257,10 @@ class CoverLetterGeneratorService < AiService
   end
 
   def closing_line?(line)
-    line.to_s.strip.match?(/\A(sincerely|best regards|kind regards|regards|thank you),?\z/i)
+    text = line.to_s.strip
+    return true if text.match?(/\A(sincerely|best regards|kind regards|regards|thank you),?\z/i)
+
+    text.match?(/\A((bien\s+)?cordialement|salutations\s+distingu[ée]es|atentamente|un\s+saludo|saludos(\s+cordiales)?|atenciosamente|mit\s+freundlichen\s+gr[üu][ßs]en|cordiali\s+saluti|distinti\s+saluti),?\z/i)
   end
 
   def word_count_for_length

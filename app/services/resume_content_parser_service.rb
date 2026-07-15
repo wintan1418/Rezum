@@ -1,18 +1,21 @@
 class ResumeContentParserService
+  # Patterns include French, Spanish, German, Portuguese, and Italian header
+  # equivalents so AI output that preserves the resume's original language
+  # still parses into structured sections.
   SECTION_PATTERNS = {
-    "summary" => /\A\s*(summary|profile|objective|about\s*me|professional\s*summary|career\s*summary|personal\s*statement)\s*\z/i,
-    "experience" => /\A\s*(experience|work\s*history|employment|professional\s*experience|work\s*experience|career\s*history)\s*\z/i,
-    "education" => /\A\s*(education|academic|qualifications|degrees?|schooling)\s*\z/i,
-    "skills" => /\A\s*(skills|technical\s*skills|core\s*competencies|competencies|proficiencies|expertise|technologies)\s*\z/i,
-    "certifications" => /\A\s*(certifications?|licenses?|accreditations?|credentials?)\s*\z/i,
-    "projects" => /\A\s*(projects?|portfolio|key\s*projects|selected\s*projects)\s*\z/i,
-    "languages" => /\A\s*(languages?|language\s*skills)\s*\z/i,
-    "awards" => /\A\s*(awards?|honors?|achievements?|recognition)\s*\z/i,
-    "location" => /\A\s*(location|address|contact\s*info)\s*\z/i
+    "summary" => /\A\s*(summary|profile|objective|about\s*me|professional\s*summary|career\s*summary|personal\s*statement|profil(\s*professionnel)?|r[ée]sum[ée](\s*professionnel)?|[àa]\s*propos(\s*de\s*moi)?|objectif(\s*professionnel)?|pr[ée]sentation|perfil(\s*profesional|\s*profissional)?|resumen(\s*profesional)?|extracto|acerca\s*de\s*m[íi]|resumo(\s*profissional)?|sobre\s*mim|zusammenfassung|kurzprofil|berufsprofil|[üu]ber\s*mich|profilo(\s*professionale)?|riepilogo|sommario|obiettivo)\s*\z/i,
+    "experience" => /\A\s*(experience|work\s*history|employment|professional\s*experience|work\s*experience|career\s*history|exp[ée]riences?(\s*professionnelles?)?|parcours\s*professionnel|experiencia(\s*profesional|\s*laboral)?|historial\s*laboral|trayectoria(\s*profesional)?|experi[êe]ncia(\s*profissional)?|berufserfahrung|berufliche\s*erfahrung|arbeitserfahrung|beruflicher\s*werdegang|esperienza(\s*professionale|\s*lavorativa)?|esperienze\s*lavorative)\s*\z/i,
+    "education" => /\A\s*(education|academic|qualifications|degrees?|schooling|formations?(\s*acad[ée]mique)?|[ée]tudes|dipl[ôo]mes?|scolarit[ée]|educaci[óo]n|formaci[óo]n(\s*acad[ée]mica)?|estudios|educa[çc][ãa]o|forma[çc][ãa]o(\s*acad[êe]mica)?|escolaridade|ausbildung|bildung|studium|akademische\s*ausbildung|istruzione|formazione|educazione|studi)\s*\z/i,
+    "skills" => /\A\s*(skills|technical\s*skills|core\s*competencies|competencies|proficiencies|expertise|technologies|comp[ée]tences(\s*techniques)?|savoir-faire|aptitudes|habilidades(\s*t[ée]cnicas)?|competencias|conocimientos|compet[êe]ncias|f[äa]higkeiten|kenntnisse|kompetenzen|technische\s*f[äa]higkeiten|competenze(\s*tecniche)?|abilit[àa])\s*\z/i,
+    "certifications" => /\A\s*(certifications?|licenses?|accreditations?|credentials?|certificats?|licences?|habilitations?|certificaciones|certificados?|licencias|certifica[çc][õo]es|licen[çc]as|zertifikate|zertifizierungen|lizenzen|certificazioni|certificati)\s*\z/i,
+    "projects" => /\A\s*(projects?|portfolio|key\s*projects|selected\s*projects|projets?|proyectos?|projetos?|projekte|progetti)\s*\z/i,
+    "languages" => /\A\s*(languages?|language\s*skills|langues|idiomas?|l[íi]nguas?|sprachen|sprachkenntnisse|lingue)\s*\z/i,
+    "awards" => /\A\s*(awards?|honors?|achievements?|recognition|prix|distinctions?|r[ée]compenses?|premios?|reconocimientos?|logros|pr[êe]mios?|conquistas|auszeichnungen|erfolge|premi|riconoscimenti)\s*\z/i,
+    "location" => /\A\s*(location|address|contact\s*info|coordonn[ée]es|contacto?|datos\s*de\s*contacto|kontakt(daten)?|contatti)\s*\z/i
   }.freeze
 
   BULLET_RE = /\A[\u2022\u2023\u25E6\u2043\u2219*•\-]\s+/
-  DATE_RE = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|present|current|\d{4})\b/i
+  DATE_RE = /\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|present|current|pr[ée]sent|actuel(?:lement)?|aujourd'hui|actualidad|presente|atual(?:mente)?|heute|derzeit|\d{4})\b/i
   COMPANY_RE = /\b(inc\.?|llc|ltd\.?|corp\.?|co\.?|gmbh|plc|remote|usa|uk|canada|nigeria|freelance)\b|\(.+\)/i
   TITLE_RE = /\b(engineer|developer|manager|director|analyst|designer|specialist|coordinator|consultant|lead|senior|junior|intern|associate|architect|administrator|officer|executive|president|vp|head\s+of|trainer|annotator|scientist|researcher|editor|writer|strategist|recruiter|qa|tester|devops|sre|cto|ceo|cfo)\b/i
   DEGREE_RE = /\b(bachelor|master|mba|ph\.?d|b\.?s\.?c?|m\.?s\.?c?|b\.?a\.?|m\.?a\.?|associate|diploma|certificate|degree|bsc|msc)\b/i
@@ -90,8 +93,10 @@ class ResumeContentParserService
 
     return nil if cleaned.blank?
 
+    # Regexp /i doesn't case-fold accented characters (É → é), so match
+    # against Unicode-downcased text for non-English headers.
     SECTION_PATTERNS.each do |type, pattern|
-      return type if cleaned.match?(pattern) || stripped.match?(pattern)
+      return type if cleaned.downcase.match?(pattern) || stripped.downcase.match?(pattern)
     end
 
     nil

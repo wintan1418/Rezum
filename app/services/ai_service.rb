@@ -31,6 +31,18 @@ class AiService
 
   attr_reader :llm
 
+  # Shared prompt block ensuring generated content matches the language of the
+  # user's source material instead of defaulting to English.
+  def language_preservation_rule(source: "the candidate's original resume")
+    <<~PROMPT
+      ## OUTPUT LANGUAGE (CRITICAL — overrides any other wording or header rules)
+      - Detect the language of #{source} and write ALL generated content in that SAME language.
+      - Produce English output ONLY when the source content is written in English. French input → French output, Spanish input → Spanish output, etc.
+      - Use that language's standard professional section headers (e.g. French: "Profil Professionnel", "Compétences", "Expérience Professionnelle", "Formation", "Certifications").
+      - Keep proper nouns, company names, and technical terms in their original form when they are conventionally not translated.
+    PROMPT
+  end
+
   def generate_completion(messages:, model: nil, max_tokens: 2000, temperature: 0.7, provider: nil)
     validate!
 

@@ -31,6 +31,9 @@ class LinkedinOptimizerService < AiService
       You are an expert LinkedIn profile optimizer and personal branding consultant.
       Optimize the user's LinkedIn profile sections to maximize visibility, engagement, and recruiter interest.
 
+      #{language_preservation_rule(source: "the user's current profile sections and resume content")}
+      - JSON keys and the "section"/"priority" enum values MUST remain in English exactly as specified below — only the human-readable content is written in the user's language.
+
       Return your response as a JSON object with this exact structure:
       {
         "headline_options": ["3-5 optimized headline variations"],

@@ -65,6 +65,9 @@ class ResumeGeneratorService < AiService
     <<~PROMPT
       You are an elite resume writer who has crafted resumes for 10,000+ professionals across every industry. You transform raw career information into polished, ATS-optimized resumes that get interviews.
 
+      #{language_preservation_rule(source: "the candidate's provided career information (experience descriptions, skills, additional info)")}
+      - JSON structure keys ("type", "content", "entries", "bullets", etc.) and "type" values MUST remain in English exactly as specified below — only the human-readable content is written in the candidate's language.
+
       ## YOUR APPROACH
 
       **Professional Summary:** Write a compelling 2-3 sentence summary using this formula:
