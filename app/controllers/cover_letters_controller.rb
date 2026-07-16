@@ -4,27 +4,42 @@ class CoverLettersController < ApplicationController
   before_action :set_cover_letter, only: [ :show, :edit, :update, :destroy, :regenerate, :generate_variations, :preview, :download ]
 
   def index
-    @cover_letters = current_user.cover_letters.recent.includes(:resume)
-    @sent_count = @cover_letters.where(status: "sent").count
-    @response_rate = calculate_response_rate
+    @cover_letters = current_user.cover_letters.recent.includes(:resume, :variations)
     @companies_count = @cover_letters.where.not(company_name: [ nil, "" ]).distinct.count(:company_name)
   end
 
   def show
     @word_count = @cover_letter.word_count
     @read_time = @cover_letter.estimated_read_time
+    @variations = @cover_letter.variations.recent
+    @parent = @cover_letter.variation_of
   end
 
   def new
-    @cover_letter = @resume.cover_letters.build(
-      target_role: @resume.target_role,
-      tone: "professional",
-      length: "medium"
-    )
+    if @resume
+      @cover_letter = @resume.cover_letters.build(
+        target_role: @resume.target_role,
+        tone: "professional",
+        length: "medium"
+      )
+    else
+      load_resumes_for_picker
+      @cover_letter = CoverLetter.new(tone: "professional", length: "medium")
+    end
   end
 
   def create
-    @cover_letter = @resume.cover_letters.build(cover_letter_params)
+    @resume ||= find_resume_from_form
+
+    if @resume.nil?
+      load_resumes_for_picker
+      @cover_letter = CoverLetter.new(cover_letter_params.except(:resume_id))
+      @cover_letter.errors.add(:base, "Please choose a resume for this cover letter.")
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    @cover_letter = @resume.cover_letters.build(cover_letter_params.except(:resume_id))
     @cover_letter.user = current_user
     @cover_letter.status = "draft"
 
@@ -52,7 +67,7 @@ class CoverLettersController < ApplicationController
   end
 
   def update
-    if @cover_letter.update(cover_letter_params)
+    if @cover_letter.update(cover_letter_params.except(:resume_id))
       redirect_to [ @resume, @cover_letter ], notice: "Cover letter updated successfully."
     else
       render :edit, status: :unprocessable_entity
@@ -128,21 +143,27 @@ class CoverLettersController < ApplicationController
   def cover_letter_params
     params.require(:cover_letter).permit(
       :company_name, :hiring_manager_name, :target_role,
-      :tone, :length, :content, :provider
+      :tone, :length, :content, :provider, :resume_id
     )
+  end
+
+  # Standalone (non-nested) create: the resume comes from the form's picker.
+  # Scoped to current_user so a foreign resume_id raises RecordNotFound.
+  def find_resume_from_form
+    resume_id = params.dig(:cover_letter, :resume_id)
+    return nil if resume_id.blank?
+    current_user.resumes.find(resume_id)
+  end
+
+  def load_resumes_for_picker
+    @resumes = current_user.resumes.optimized.recent
+    @resumes = current_user.resumes.recent if @resumes.empty?
   end
 
   def selected_provider
     provider = params[:provider].presence || params.dig(:cover_letter, :provider).presence || @cover_letter&.provider.presence || "openai"
     provider = "openai" if provider == "anthropic" && !current_user.has_premium_subscription?
     provider
-  end
-
-  def calculate_response_rate
-    # This is a placeholder - you would track actual responses
-    return nil if @cover_letters.empty?
-    # For now, return nil to show the dash
-    nil
   end
 
   def build_cover_letter_text

@@ -1,6 +1,9 @@
 class CoverLetter < ApplicationRecord
   belongs_to :user
   belongs_to :resume
+  belongs_to :variation_of, class_name: "CoverLetter", optional: true
+  has_many :variations, class_name: "CoverLetter", foreign_key: :variation_of_id,
+                        dependent: :nullify, inverse_of: :variation_of
 
   validates :company_name, presence: true, length: { minimum: 2 }
   validates :target_role, presence: true, length: { minimum: 2 }

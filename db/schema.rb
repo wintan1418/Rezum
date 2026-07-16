@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_15_192952) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_16_100527) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -148,9 +148,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_192952) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "language", default: "en", null: false
+    t.bigint "variation_of_id"
     t.index ["resume_id"], name: "index_cover_letters_on_resume_id"
     t.index ["user_id", "status"], name: "index_cover_letters_on_user_id_and_status"
     t.index ["user_id"], name: "index_cover_letters_on_user_id"
+    t.index ["variation_of_id"], name: "index_cover_letters_on_variation_of_id"
   end
 
   create_table "hire_messages", force: :cascade do |t|
@@ -344,6 +346,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_192952) do
     t.string "template", default: "professional"
     t.datetime "expires_at"
     t.text "ats_analysis"
+    t.jsonb "keyword_match_data"
     t.index ["user_id", "status"], name: "index_resumes_on_user_id_and_status"
     t.index ["user_id"], name: "index_resumes_on_user_id"
   end
@@ -453,6 +456,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_192952) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "conversations", "users"
+  add_foreign_key "cover_letters", "cover_letters", column: "variation_of_id"
   add_foreign_key "cover_letters", "resumes"
   add_foreign_key "cover_letters", "users"
   add_foreign_key "interview_preps", "job_applications"

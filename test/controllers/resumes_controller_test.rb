@@ -106,4 +106,59 @@ class ResumesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_resume_path(empty_resume)
     assert_match(/no content/i, flash[:alert])
   end
+
+  test "tailor renders for optimized resume with job description" do
+    get tailor_resume_path(@optimized)
+    assert_response :success
+  end
+
+  test "tailor redirects for non-optimized resume" do
+    get tailor_resume_path(@resume)
+    assert_redirected_to resume_path(@resume)
+  end
+
+  test "apply_bullet inserts under role anchor and recomputes match" do
+    @optimized.update!(
+      optimized_content: "Jane Doe\n\nEXPERIENCE\nProduct Manager | Acme | 2020-2024\n- Shipped roadmap features\n\nSKILLS\nAgile, Roadmap",
+      keyword_match_data: {
+        "keywords" => [
+          { "term" => "stakeholder management", "category" => "required_hard_skills" },
+          { "term" => "Agile", "category" => "required_hard_skills" }
+        ],
+        "matched" => [], "missing" => [], "match_rate" => 0
+      }
+    )
+
+    post apply_bullet_resume_path(@optimized), params: {
+      bullet: "Led stakeholder management across 4 teams",
+      role: "Product Manager | Acme | 2020-2024"
+    }, as: :json
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    @optimized.reload
+
+    assert_includes @optimized.optimized_content, "- Led stakeholder management across 4 teams"
+    role_line = @optimized.optimized_content.index("Product Manager | Acme")
+    bullet_line = @optimized.optimized_content.index("Led stakeholder management")
+    assert role_line < bullet_line, "bullet should be inserted after its role header"
+    assert_equal 100, body["match_rate"], "both keywords now present -> 100% match"
+    assert_equal 2, body["matched"].size
+  end
+
+  test "apply_bullet appends when anchor missing and rejects blank bullet" do
+    @optimized.update!(optimized_content: "Jane Doe\nEXPERIENCE\n- Did things")
+
+    post apply_bullet_resume_path(@optimized), params: { bullet: "Improved metrics", role: "Nonexistent Role" }, as: :json
+    assert_response :success
+    assert @optimized.reload.optimized_content.end_with?("- Improved metrics")
+
+    post apply_bullet_resume_path(@optimized), params: { bullet: "", role: "" }, as: :json
+    assert_response :unprocessable_entity
+  end
+
+  test "suggest_bullets rejects blank keyword" do
+    post suggest_bullets_resume_path(@optimized), params: { keyword: "" }, as: :json
+    assert_response :unprocessable_entity
+  end
 end

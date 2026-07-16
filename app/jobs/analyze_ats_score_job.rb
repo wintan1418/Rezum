@@ -31,12 +31,23 @@ class AnalyzeAtsScoreJob < ApplicationJob
       score = extract_score_from_analysis(ats_analysis)
       raise StandardError, "ATS analysis contained no parseable score" if score.nil?
 
-      # Update resume with ATS score and full analysis
-      resume.update!(
+      # Update resume with ATS score, full analysis, and the deterministic
+      # match data (powers the Tailoring Studio gap table)
+      update_attrs = {
         ats_score: score,
         ats_analysis: ats_analysis,
         status: "optimized" # Return to optimized status
-      )
+      }
+      if keyword_match.present?
+        update_attrs[:keyword_match_data] = {
+          "keywords" => keyword_match[:keywords].map { |e| e.transform_keys(&:to_s) },
+          "matched" => keyword_match[:matched].map { |e| e.transform_keys(&:to_s) },
+          "missing" => keyword_match[:missing].map { |e| e.transform_keys(&:to_s) },
+          "match_rate" => keyword_match[:match_rate],
+          "computed_at" => Time.current.iso8601
+        }
+      end
+      resume.update!(update_attrs)
 
       Rails.logger.info "ATS score analyzed for resume #{resume.id}: #{score}/100"
 
@@ -60,7 +71,7 @@ class AnalyzeAtsScoreJob < ApplicationJob
     KeywordMatchService.new(
       resume_text: resume.optimized_content,
       keywords: keywords
-    ).match
+    ).match.merge(keywords: keywords)
   rescue StandardError => e
     Rails.logger.warn "Keyword match computation failed for resume #{resume.id}: #{e.message}"
     nil

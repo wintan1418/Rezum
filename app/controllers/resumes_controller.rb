@@ -1,6 +1,6 @@
 class ResumesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_resume, only: [ :show, :edit, :update, :destroy, :optimize, :ats_score, :keywords, :download ]
+  before_action :set_resume, only: [ :show, :edit, :update, :destroy, :optimize, :ats_score, :download, :tailor, :suggest_bullets, :apply_bullet ]
 
   def index
     @resumes = current_user.resumes.recent.includes(:cover_letters)
@@ -123,24 +123,61 @@ class ResumesController < ApplicationController
     redirect_to @resume, notice: "ATS analysis started! Results will be available shortly."
   end
 
-  def keywords
-    return unless @resume.job_description.present?
+  # Tailoring Studio: keyword gap table + click-a-keyword bullet suggestions
+  # with a live, deterministically computed match rate.
+  def tailor
+    unless @resume.optimized?
+      redirect_to @resume, alert: "Optimize your resume first to open the Tailoring Studio."
+      return
+    end
+
+    if @resume.job_description.blank?
+      redirect_to edit_resume_path(@resume), alert: "Add a job description first — the Tailoring Studio matches your resume against it."
+      nil
+    end
+  end
+
+  def suggest_bullets
+    keyword = params[:keyword].to_s.strip
+    if keyword.blank? || !@resume.optimized?
+      render json: { error: "Missing keyword or resume not optimized." }, status: :unprocessable_entity
+      return
+    end
 
     service = ResumeOptimizerService.new(
-      content: @resume.original_content,
+      content: @resume.optimized_content,
       job_description: @resume.job_description,
+      target_role: @resume.target_role,
       user_id: current_user.id,
       user_country: current_user.country_code
     )
 
-    begin
-      keywords = service.extract_keywords
-      @keywords_array = keywords.split(",").map(&:strip)
+    render json: service.suggest_bullets_for_keyword(keyword)
+  rescue StandardError => e
+    Rails.logger.error "Bullet suggestion failed for resume #{@resume.id}: #{e.message}"
+    render json: { error: "Suggestion generation failed. Please try again." }, status: :service_unavailable
+  end
 
-      render json: { keywords: @keywords_array }
-    rescue AiServiceError => e
-      render json: { error: e.message }, status: :unprocessable_entity
+  def apply_bullet
+    bullet = params[:bullet].to_s.strip
+    role_anchor = params[:role].to_s.strip
+
+    if bullet.blank? || !@resume.optimized?
+      render json: { error: "Missing bullet or resume not optimized." }, status: :unprocessable_entity
+      return
     end
+
+    @resume.update!(optimized_content: insert_bullet(@resume.optimized_content, bullet, role_anchor))
+    @resume.rebuild_sections_from_optimized!
+    match = @resume.recompute_keyword_match!
+
+    render json: {
+      match_rate: @resume.keyword_match_rate,
+      matched: @resume.matched_keywords,
+      missing: @resume.missing_keywords,
+      content: @resume.optimized_content,
+      recomputed: match.present?
+    }
   end
 
   def download
@@ -245,6 +282,23 @@ class ResumesController < ApplicationController
   end
 
   private
+
+  # Inserts the bullet at the end of the block that starts with the role's
+  # header line; appends to the end of the resume if the anchor isn't found.
+  def insert_bullet(content, bullet, role_anchor)
+    insertion = "- #{bullet}"
+    lines = content.lines
+
+    if role_anchor.present? && (idx = lines.index { |l| l.strip == role_anchor })
+      insert_at = idx + 1
+      insert_at += 1 while insert_at < lines.length && lines[insert_at].strip.present?
+      lines[insert_at - 1] = "#{lines[insert_at - 1].chomp}\n"
+      lines.insert(insert_at, "#{insertion}\n")
+      lines.join
+    else
+      "#{content.rstrip}\n#{insertion}\n"
+    end
+  end
 
   def set_resume
     @resume = current_user.resumes.find(params[:id])

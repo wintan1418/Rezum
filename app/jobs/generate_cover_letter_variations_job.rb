@@ -41,7 +41,8 @@ class GenerateCoverLetterVariationsJob < ApplicationJob
           language: variation[:language] || "en",
           job_description: cover_letter.job_description,
           status: "generated",
-          provider: variation[:provider].to_s
+          provider: variation[:provider].to_s,
+          variation_of: cover_letter
         )
 
         Rails.logger.info "Cover letter variation #{index + 1} created as #{variation_letter.id}"

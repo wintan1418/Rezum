@@ -1,221 +1,118 @@
 <div id="resume_content">
   <% if resume.processing? %>
-    <!-- Processing State with Auto-refresh -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6"
+    <!-- Processing -->
+    <div class="card-paper" style="padding: 40px; text-align: center;"
          data-controller="auto-refresh"
          data-auto-refresh-url-value="<%= resume_path(resume) %>"
          data-auto-refresh-interval-value="3000">
-      <div class="flex items-center">
-        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600 mr-3"></div>
-        <div>
-          <h3 class="text-lg font-medium text-yellow-800">Optimizing Your Resume...</h3>
-          <p class="mt-1 text-sm text-yellow-700">
-            Our AI is analyzing and optimizing your resume. This usually takes 30-60 seconds.
-          </p>
-          <p class="mt-1 text-xs text-yellow-600">
-            <span class="inline-flex items-center">
-              <svg class="animate-pulse w-3 h-3 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                <circle cx="10" cy="10" r="10"/>
-              </svg>
-              Auto-updating...
-            </span>
-          </p>
-        </div>
+      <span class="font-mono-label" style="color: var(--accent);">Optimizing</span>
+      <p class="font-display" style="font-size: 24px; margin-top: 12px;">
+        Rewriting your resume <em>against the job.</em>
+      </p>
+      <p style="color: var(--muted); font-size: 14px; margin-top: 12px;">
+        Keyword integration, achievement bullets, and a fact-check pass. Usually 30–60 seconds — this page updates itself.
+      </p>
+      <div style="margin: 24px auto 0; width: 160px; height: 2px; background: var(--paper-2); overflow: hidden; border-radius: 999px;">
+        <div style="width: 40%; height: 100%; background: var(--accent); animation: tailor-slide 1.2s ease-in-out infinite alternate;"></div>
       </div>
+      <style>@keyframes tailor-slide { from { transform: translateX(-40px); } to { transform: translateX(160px); } }</style>
     </div>
+
   <% elsif resume.failed? %>
-    <!-- Failed State -->
-    <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-      <div class="flex items-center">
-        <svg class="h-6 w-6 text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-        </svg>
-        <div>
-          <h3 class="text-lg font-medium text-red-800">Optimization Failed</h3>
-          <p class="mt-1 text-sm text-red-700">
-            We encountered an error while optimizing your resume. Please try again.
-          </p>
-          <div class="mt-3">
-            <%= link_to optimize_resume_path(resume), data: { turbo_method: :post },
-                class: "inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all" do %>
-              Try Again
-            <% end %>
-          </div>
-        </div>
-      </div>
+    <!-- Failed -->
+    <div class="card-paper" style="padding: 32px; border-left: 3px solid var(--accent);">
+      <span class="font-mono-label">Optimization failed</span>
+      <p style="font-size: 15px; margin: 10px 0 18px; color: var(--graphite);">
+        Something went wrong while optimizing. Your original resume is untouched — try again.
+      </p>
+      <%= button_to "Try again", optimize_resume_path(resume), method: :post, class: "btn-ink" %>
     </div>
-  <% elsif resume.optimized? && resume.optimized_content.present? %>
-    <!-- Before/After Comparison View -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100" data-controller="view-toggle">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <h3 class="text-lg font-medium text-gray-900">Before & After Comparison</h3>
-          <div class="flex items-center space-x-2">
-            <!-- View Mode Buttons -->
-            <div class="inline-flex rounded-lg border border-gray-200 p-0.5">
-              <button type="button" data-view-toggle-target="button" data-mode="side-by-side" data-action="click->view-toggle#switch"
-                class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-blue-600 text-white">
-                Side by Side
-              </button>
-              <button type="button" data-view-toggle-target="button" data-mode="full-width" data-action="click->view-toggle#switch"
-                class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-white text-gray-700">
-                Full Width
-              </button>
-              <button type="button" data-view-toggle-target="button" data-mode="diff" data-action="click->view-toggle#switch"
-                class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-white text-gray-700">
-                Diff View
-              </button>
-            </div>
 
-            <!-- Download Options -->
-            <div class="relative inline-block text-left" data-controller="dropdown">
-              <button type="button"
-                      class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-green-600 hover:bg-green-700 transition-all"
-                      data-action="click->dropdown#toggle" data-dropdown-target="button">
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Download
-              </button>
-              <div class="hidden absolute right-0 z-10 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black/5"
-                   data-dropdown-target="menu" data-action="click->dropdown#hide">
-                <div class="py-1">
-                  <%= link_to download_resume_path(resume, format: 'pdf'), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" do %>PDF<% end %>
-                  <%= link_to download_resume_path(resume, format: 'docx'), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" do %>DOCX<% end %>
-                  <%= link_to download_resume_path(resume, format: 'txt'), class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" do %>TXT<% end %>
-                </div>
-              </div>
-            </div>
-          </div>
+  <% elsif resume.optimized? && resume.optimized_content.present? %>
+    <!-- Before/After -->
+    <div class="card-paper" data-controller="view-toggle" style="background: #FBFBFC;">
+      <div style="padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);">
+        <span class="font-mono-label">Before & after</span>
+        <div style="display: inline-flex; border: 1px solid color-mix(in oklab, var(--ink) 15%, transparent); border-radius: 999px; padding: 3px;">
+          <button type="button" data-view-toggle-target="button" data-mode="side-by-side" data-action="click->view-toggle#switch"
+                  class="bg-blue-600 text-white" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Side by side</button>
+          <button type="button" data-view-toggle-target="button" data-mode="full-width" data-action="click->view-toggle#switch"
+                  class="bg-white text-gray-700" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Optimized only</button>
+          <button type="button" data-view-toggle-target="button" data-mode="diff" data-action="click->view-toggle#switch"
+                  class="bg-white text-gray-700" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Changes</button>
         </div>
       </div>
 
-      <div class="px-6 py-6">
-        <!-- Side by Side View (default) -->
+      <div style="padding: 24px;">
+        <!-- Side by side -->
         <div data-view-toggle-target="view" data-mode="side-by-side" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-gray-50 rounded-lg p-4">
-            <div class="flex items-center mb-3">
-              <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-              <h4 class="text-sm font-medium text-gray-700">Original Resume</h4>
-            </div>
-            <div class="prose prose-sm max-w-none text-xs">
-              <%= simple_format(resume.original_content, class: "whitespace-pre-wrap text-gray-700 leading-relaxed text-xs") %>
-            </div>
+          <div>
+            <span class="font-mono-label">Original</span>
+            <div style="margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--muted); white-space: pre-wrap; max-height: 560px; overflow-y: auto;"><%= resume.original_content %></div>
           </div>
-          <div class="bg-green-50 rounded-lg p-4">
-            <div class="flex items-center mb-3">
-              <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-              <h4 class="text-sm font-medium text-gray-700">Optimized Resume</h4>
-            </div>
-            <div class="prose prose-sm max-w-none text-xs">
-              <%= simple_format(resume.optimized_content, class: "whitespace-pre-wrap text-gray-800 leading-relaxed text-xs") %>
-            </div>
+          <div style="border-left: 2px solid var(--accent); padding-left: 20px;">
+            <span class="font-mono-label" style="color: var(--accent);">Optimized</span>
+            <div style="margin-top: 10px; font-size: 14px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; max-height: 560px; overflow-y: auto;"><%= resume.optimized_content %></div>
           </div>
         </div>
 
-        <!-- Full Width View -->
-        <div data-view-toggle-target="view" data-mode="full-width" class="hidden space-y-6">
-          <div class="bg-white border border-green-200 rounded-lg p-6">
-            <div class="flex items-center mb-4">
-              <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-              <h4 class="text-lg font-medium text-gray-900">Optimized Resume</h4>
-              <span class="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">AI Enhanced</span>
-            </div>
-            <div class="prose max-w-none">
-              <%= simple_format(resume.optimized_content, class: "whitespace-pre-wrap text-gray-900 leading-relaxed") %>
-            </div>
-          </div>
-          <details class="bg-gray-50 border border-gray-200 rounded-lg">
-            <summary class="px-6 py-4 cursor-pointer flex items-center">
-              <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-              <span class="text-sm font-medium text-gray-700">Original Resume</span>
-              <span class="ml-2 text-xs text-gray-500">(Click to expand)</span>
-            </summary>
-            <div class="px-6 pb-6">
-              <div class="prose max-w-none">
-                <%= simple_format(resume.original_content, class: "whitespace-pre-wrap text-gray-700 leading-relaxed") %>
-              </div>
-            </div>
+        <!-- Optimized only -->
+        <div data-view-toggle-target="view" data-mode="full-width" class="hidden">
+          <div style="font-size: 15px; line-height: 1.7; white-space: pre-wrap;"><%= resume.optimized_content %></div>
+          <details style="margin-top: 24px;">
+            <summary class="font-mono-label" style="cursor: pointer;">Show original</summary>
+            <div style="margin-top: 12px; font-size: 13px; line-height: 1.6; color: var(--muted); white-space: pre-wrap;"><%= resume.original_content %></div>
           </details>
         </div>
 
-        <!-- Diff View -->
+        <!-- Diff -->
         <div data-view-toggle-target="view" data-mode="diff" class="hidden">
-          <div class="bg-white border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center gap-4 mb-4 text-xs text-gray-500">
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-100 border border-green-300"></span> Added</span>
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-100 border border-red-300"></span> Removed</span>
-              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-gray-50 border border-gray-200"></span> Unchanged</span>
-            </div>
-            <div class="font-mono text-xs leading-relaxed">
-              <%= raw @diff_html %>
-            </div>
+          <div style="display: flex; gap: 16px; margin-bottom: 14px;" class="font-mono-label">
+            <span style="color: #067647;">■ Added</span>
+            <span style="color: #B42318;">■ Removed</span>
+            <span>■ Unchanged</span>
+          </div>
+          <div class="font-mono text-xs" style="line-height: 1.6; max-height: 640px; overflow-y: auto;">
+            <%= raw @diff_html %>
           </div>
         </div>
       </div>
     </div>
+
   <% else %>
-    <!-- Single Resume Content View (not yet optimized) -->
-    <% unless resume.processing? || resume.failed? %>
-      <!-- Optimization Prompt -->
-      <div class="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-5 mb-6">
-        <div class="flex items-start gap-4">
-          <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-sm font-semibold text-gray-900">Ready to optimize?</h3>
-            <p class="mt-1 text-sm text-gray-600">
-              <% if resume.job_description.blank? %>
-                Add a target job description first, then optimize to see a <strong>before/after diff view</strong>, ATS score analysis, and keyword matching.
-              <% else %>
-                Click <strong>Optimize Resume</strong> to get an AI-enhanced version with a <strong>before/after diff view</strong>, ATS score, and keyword analysis.
-              <% end %>
-            </p>
-            <div class="mt-3 flex items-center gap-3">
-              <% if resume.job_description.blank? %>
-                <%= link_to edit_resume_path(resume), class: "inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors" do %>
-                  <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                  </svg>
-                  Add Job Description
-                <% end %>
-              <% else %>
-                <%= link_to optimize_resume_path(resume), data: { turbo_method: :post }, class: "inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-600 to-blue-600 text-white text-xs font-semibold rounded-lg hover:from-green-700 hover:to-blue-700 transition-all" do %>
-                  <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                  </svg>
-                  Optimize Now
-                <% end %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Original Resume Content</h3>
-      </div>
-
-      <div class="px-6 py-6">
-        <% if resume.original_content.present? %>
-          <div class="prose max-w-none">
-            <%= simple_format(resume.original_content, class: "whitespace-pre-wrap text-gray-900 leading-relaxed") %>
-          </div>
+    <!-- Not yet optimized -->
+    <div class="card-ink" style="padding: 28px; margin-bottom: 24px;">
+      <span class="font-mono-label" style="color: var(--accent-soft);">Next step</span>
+      <p class="font-display" style="font-size: 22px; margin-top: 8px; color: var(--paper);">
+        <% if resume.job_description.blank? %>
+          Add the job description, <em style="color: var(--accent-soft);">then optimize.</em>
         <% else %>
-          <div class="text-center py-8">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No content available</h3>
-            <p class="mt-1 text-sm text-gray-500">Upload a file or paste resume text to get started.</p>
-          </div>
+          Ready to <em style="color: var(--accent-soft);">optimize.</em>
+        <% end %>
+      </p>
+      <p style="font-size: 14px; margin-top: 10px; color: color-mix(in oklab, var(--paper) 75%, transparent);">
+        <% if resume.job_description.blank? %>
+          We tailor every bullet to the posting, score it against ATS criteria, and show you exactly what changed.
+        <% else %>
+          You'll get tailored bullets, an ATS score, a keyword gap table, and a before/after view. Uses <%= CreditPolicy::RESUME_OPTIMIZATION %> credits.
+        <% end %>
+      </p>
+      <div style="margin-top: 18px;">
+        <% if resume.job_description.blank? %>
+          <%= link_to "Add job description", edit_resume_path(resume), class: "btn-accent" %>
+        <% else %>
+          <%= button_to "Optimize now", optimize_resume_path(resume), method: :post, class: "btn-accent" %>
         <% end %>
       </div>
+    </div>
+
+    <div class="card-paper" style="padding: 24px; background: #FBFBFC;">
+      <span class="font-mono-label">Original resume</span>
+      <% if resume.original_content.present? %>
+        <div style="margin-top: 14px; font-size: 14px; line-height: 1.65; white-space: pre-wrap;"><%= resume.original_content %></div>
+      <% else %>
+        <p style="margin-top: 14px; font-size: 14px; color: var(--muted);">No content yet — upload a file or paste your resume text.</p>
+      <% end %>
     </div>
   <% end %>
 </div>

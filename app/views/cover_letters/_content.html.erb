@@ -1,182 +1,94 @@
 <div id="cover_letter_content">
   <% if cover_letter.generating? %>
-    <!-- Generating State with Enhanced Animation -->
-    <div class="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-8 text-center"
+    <!-- Generating state -->
+    <div class="card-paper" style="padding: 56px 32px; text-align: center;"
          data-controller="auto-refresh generation-animation"
          data-auto-refresh-url-value="<%= resume_cover_letter_path(resume, cover_letter) %>"
          data-auto-refresh-interval-value="3000">
-      
-      <!-- Main Animation Container -->
-      <div class="relative mb-6">
-        <!-- Outer rotating ring -->
-        <div class="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-        
-        <!-- Inner pulsing dot -->
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div class="animate-pulse bg-gradient-to-r from-blue-500 to-purple-500 rounded-full h-6 w-6"></div>
-        </div>
-      </div>
-      
-      <!-- Animated Header -->
-      <h3 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
-        <span data-generation-animation-target="typewriter" class="typewriter">
-          Crafting Your Perfect Cover Letter...
-        </span>
+
+      <span class="font-mono-label" style="color: var(--accent);">Generating</span>
+
+      <h3 data-generation-animation-target="typewriter"
+          style="font-family:'Fraunces',Georgia,serif; font-style: italic; font-weight: 400; font-variation-settings:'opsz' 40; font-size: clamp(22px, 3vw, 28px); letter-spacing: -0.01em; line-height: 1.2; max-width: 480px; margin: 14px auto 32px;">
+        Writing your cover letter…
       </h3>
-      
-      <!-- Progress Steps -->
-      <div class="max-w-md mx-auto mb-6">
-        <div class="flex justify-between items-center text-sm">
-          <div class="flex flex-col items-center" data-generation-animation-target="step" data-step="1">
-            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mb-2 transition-all duration-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
-              </svg>
-            </div>
-            <span class="text-blue-600 font-medium">Analyzing</span>
-          </div>
-          
-          <div class="flex-1 h-0.5 bg-gray-200 mx-2">
-            <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
-          </div>
-          
-          <div class="flex flex-col items-center" data-generation-animation-target="step" data-step="2">
-            <div class="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center mb-2 animate-pulse transition-all duration-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-            </div>
-            <span class="text-purple-600 font-medium">Generating</span>
-          </div>
-          
-          <div class="flex-1 h-0.5 bg-gray-200 mx-2">
-            <div class="h-full bg-gray-200"></div>
-          </div>
-          
-          <div class="flex flex-col items-center" data-generation-animation-target="step" data-step="3">
-            <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center mb-2 transition-all duration-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
-            </div>
-            <span class="text-gray-500">Finalizing</span>
-          </div>
+
+      <!-- 3-step progress (targets required by generation_animation_controller) -->
+      <div style="display: flex; align-items: flex-start; justify-content: center; gap: 8px; max-width: 380px; margin: 0 auto 28px;">
+        <div data-generation-animation-target="step" data-step="1" style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;">
+          <div class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center transition-all duration-500" style="font-size: 11px;">1</div>
+          <span class="font-mono-label text-blue-600 font-medium">Analyzing</span>
+        </div>
+        <div class="hairline" style="flex: 1; margin-top: 12px;"></div>
+        <div data-generation-animation-target="step" data-step="2" style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;">
+          <div class="w-6 h-6 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center transition-all duration-500" style="font-size: 11px;">2</div>
+          <span class="font-mono-label text-gray-500">Writing</span>
+        </div>
+        <div class="hairline" style="flex: 1; margin-top: 12px;"></div>
+        <div data-generation-animation-target="step" data-step="3" style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;">
+          <div class="w-6 h-6 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center transition-all duration-500" style="font-size: 11px;">3</div>
+          <span class="font-mono-label text-gray-500">Finalizing</span>
         </div>
       </div>
-      
-      <!-- Dynamic Status Messages -->
-      <div class="mb-6">
-        <p class="text-lg text-gray-700 mb-2" data-generation-animation-target="statusText">
-          Analyzing your resume and job requirements...
-        </p>
-        <p class="text-sm text-gray-500" data-generation-animation-target="subText">
-          Our AI is reading through your experience to craft the perfect narrative
-        </p>
-      </div>
-      
-      <!-- Floating Elements for Visual Interest -->
-      <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-10 left-10 w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0s;"></div>
-        <div class="absolute top-20 right-16 w-1 h-1 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
-        <div class="absolute bottom-16 left-20 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
-        <div class="absolute bottom-10 right-10 w-1 h-1 bg-blue-300 rounded-full animate-bounce" style="animation-delay: 0.6s;"></div>
-      </div>
-      
-      <!-- Progress Indicator -->
-      <div class="mt-6">
-        <div class="flex justify-center items-center space-x-2 text-sm text-gray-600">
-          <div class="flex space-x-1">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0s;"></div>
-            <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
-            <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" style="animation-delay: 0.6s;"></div>
-          </div>
-          <span class="font-medium">Processing in real-time</span>
-        </div>
-        
-        <!-- Estimated time with countdown -->
-        <p class="mt-3 text-xs text-gray-500">
-          <span data-generation-animation-target="timer">Estimated time: 30-45 seconds</span>
-        </p>
-      </div>
+
+      <p data-generation-animation-target="statusText" style="font-size: 14px; color: var(--ink);">
+        Analyzing your resume and job requirements...
+      </p>
+      <p data-generation-animation-target="subText" style="font-size: 12.5px; color: var(--muted); margin-top: 4px;">
+        Reading through your experience to craft the right narrative
+      </p>
+
+      <p class="font-mono-label" style="margin-top: 24px;">
+        <span data-generation-animation-target="timer">Estimated time: 30–45 seconds</span>
+      </p>
     </div>
+
   <% elsif cover_letter.failed? %>
-    <!-- Failed State -->
-    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-      <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-red-800">Generation Failed</h3>
-      <p class="mt-2 text-sm text-red-700">
-        We encountered an error while generating your cover letter. Please try again.
+    <!-- Failed state -->
+    <div class="card-paper" style="padding: 48px 32px; text-align: center;">
+      <span class="font-mono-label" style="color: #B3261E;">Generation failed</span>
+      <h3 class="font-display" style="font-size: 26px; margin-top: 10px;">Something went wrong.</h3>
+      <p style="color: var(--muted); font-size: 15px; margin: 12px auto 24px; max-width: 400px;">
+        We hit an error while writing this letter. Your credit wasn't wasted — try again.
       </p>
-      <div class="mt-4">
-        <%= link_to regenerate_resume_cover_letter_path(resume, cover_letter), data: { turbo_method: :post },
-            class: "inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all" do %>
-          Try Again
-        <% end %>
-      </div>
+      <%= link_to "Try again", regenerate_resume_cover_letter_path(resume, cover_letter), data: { turbo_method: :post }, class: "btn-ink", style: "margin: 0 auto;" %>
     </div>
+
   <% elsif cover_letter.content.present? %>
-    <!-- Cover Letter Content -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-      <!-- Cover Letter Details -->
-      <div class="px-6 py-4 border-b border-gray-100">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <span class="font-medium text-gray-900">Company:</span>
-            <span class="text-gray-600"><%= cover_letter.company_name %></span>
-          </div>
-          <div>
-            <span class="font-medium text-gray-900">Role:</span>
-            <span class="text-gray-600"><%= cover_letter.target_role %></span>
-          </div>
-          <div>
-            <span class="font-medium text-gray-900">Tone:</span>
-            <span class="text-gray-600"><%= cover_letter.display_tone %></span>
-          </div>
-          <% if cover_letter.hiring_manager_name.present? %>
-            <div>
-              <span class="font-medium text-gray-900">Hiring Manager:</span>
-              <span class="text-gray-600"><%= cover_letter.hiring_manager_name %></span>
-            </div>
-          <% end %>
-          <div>
-            <span class="font-medium text-gray-900">Length:</span>
-            <span class="text-gray-600"><%= cover_letter.display_length %></span>
-          </div>
-          <div>
-            <span class="font-medium text-gray-900">AI Provider:</span>
-            <span class="text-gray-600"><%= cover_letter.provider&.humanize || 'OpenAI' %></span>
-          </div>
-        </div>
+    <!-- Letter -->
+    <div class="card-paper" data-controller="clipboard">
+      <!-- Meta row -->
+      <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 16px 28px; border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);">
+        <span class="font-mono-label"><%= cover_letter.company_name %></span>
+        <% if cover_letter.target_role.present? %>
+          <span class="font-mono-label"><%= cover_letter.target_role %></span>
+        <% end %>
+        <% if cover_letter.hiring_manager_name.present? %>
+          <span class="font-mono-label">To <%= cover_letter.hiring_manager_name %></span>
+        <% end %>
+        <span class="font-mono-label"><%= cover_letter.display_tone %></span>
+        <span class="font-mono-label"><%= cover_letter.display_length %></span>
+        <button type="button" data-action="clipboard#copy" class="font-mono-label"
+                style="margin-left: auto; background: none; border: none; cursor: pointer; color: var(--accent);">
+          <span data-clipboard-target="feedback">Copy text</span>
+        </button>
       </div>
-      
-      <!-- Cover Letter Text -->
-      <div class="px-6 py-8">
-        <div class="prose max-w-none">
-          <%= simple_format(cover_letter.content, class: "whitespace-pre-wrap text-gray-900 leading-relaxed") %>
-        </div>
+
+      <!-- Letter body -->
+      <div style="padding: 32px 28px;" data-clipboard-target="source">
+        <%= simple_format(cover_letter.content, style: "font-size: 16px; line-height: 1.7; color: var(--ink); margin-bottom: 1em;") %>
       </div>
     </div>
+
   <% else %>
-    <!-- Draft State -->
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900">Cover Letter Draft</h3>
-      <p class="mt-2 text-sm text-gray-600">
-        This cover letter hasn't been generated yet. Click "Generate Variations" to create your AI-powered cover letter.
+    <!-- Draft state -->
+    <div class="card-paper" style="padding: 48px 32px; text-align: center;">
+      <span class="font-mono-label">Draft</span>
+      <h3 class="font-display" style="font-size: 26px; margin-top: 10px;">Not written yet.</h3>
+      <p style="color: var(--muted); font-size: 15px; margin: 12px auto 24px; max-width: 400px;">
+        This cover letter is still a draft. Generate it to get a letter grounded in your resume.
       </p>
-      <div class="mt-4">
-        <%= link_to generate_variations_resume_cover_letter_path(resume, cover_letter), data: { turbo_method: :post },
-            class: "inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all" do %>
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
-          Generate Cover Letter
-        <% end %>
-      </div>
+      <%= link_to "Generate cover letter →", regenerate_resume_cover_letter_path(resume, cover_letter), data: { turbo_method: :post }, class: "btn-accent", style: "margin: 0 auto;" %>
     </div>
   <% end %>
 </div>

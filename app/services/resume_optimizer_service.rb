@@ -83,6 +83,57 @@ class ResumeOptimizerService < AiService
     []
   end
 
+  # Tailoring Studio: 3 grounded bullet options that work a missing keyword
+  # into the resume. Refuses to fabricate — if the resume shows no evidence
+  # for the keyword, it says so instead of inventing experience.
+  def suggest_bullets_for_keyword(keyword)
+    raw = generate_completion(
+      messages: [
+        { role: "system", content: <<~PROMPT },
+          You help candidates work a missing job-description keyword into their resume WITHOUT fabricating experience.
+
+          #{language_preservation_rule(source: "the RESUME")}
+
+          Given a resume, a job description, and one target keyword, decide:
+          - If the resume contains evidence the candidate has actually used or done this (even described in other words), write 3 alternative achievement bullets that naturally include the keyword. Each bullet: 15-30 words, strong unique action verb, one achievement, quantified ONLY with numbers present in the resume. For each bullet, name which existing role it belongs under (copy that role's header line from the resume exactly).
+          - If there is NO evidence, do not write bullets. Explain briefly what the candidate could honestly do instead (e.g. add it to skills only if they genuinely know it, or mention adjacent experience).
+
+          Never use AI-tell words: "delve," "pivotal," "spearheaded initiatives," "leverage."
+
+          Respond with JSON only:
+          {"supported": true/false, "note": "<one short sentence for the candidate>", "suggestions": [{"text": "<bullet>", "role": "<exact role header line from the resume>"}]}
+          When supported is false, "suggestions" must be [].
+        PROMPT
+        { role: "user", content: <<~PROMPT }
+          RESUME:
+          #{content}
+
+          JOB DESCRIPTION:
+          #{job_description}
+
+          TARGET KEYWORD: #{keyword}
+        PROMPT
+      ],
+      model: GPT_4_MODEL,
+      max_tokens: 600,
+      temperature: 0.5,
+      provider: :openai,
+      json: true
+    )
+
+    data = JSON.parse(raw)
+    {
+      supported: !!data["supported"],
+      note: data["note"].to_s,
+      suggestions: Array(data["suggestions"]).filter_map do |s|
+        { text: s["text"].to_s, role: s["role"].to_s } if s.is_a?(Hash) && s["text"].present?
+      end
+    }
+  rescue JSON::ParserError => e
+    Rails.logger.warn "Bullet suggestion returned invalid JSON: #{e.message}"
+    { supported: false, note: "Suggestion generation failed. Please try again.", suggestions: [] }
+  end
+
   private
 
   def build_optimization_messages

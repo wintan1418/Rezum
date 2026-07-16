@@ -96,3 +96,6 @@ application.register("toggle", ToggleController)
 
 import CurrencyToggleController from "./currency_toggle_controller"
 application.register("currency-toggle", CurrencyToggleController)
+
+import TailorStudioController from "./tailor_studio_controller"
+application.register("tailor-studio", TailorStudioController)

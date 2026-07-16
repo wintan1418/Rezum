@@ -49,7 +49,7 @@ class OptimizeResumeJob < ApplicationJob
       resume.update!(update_attrs)
 
       # Auto-parse optimized content into structured sections for template rendering
-      rebuild_sections_from_content(resume)
+      resume.rebuild_sections_from_optimized!
 
       # Deduct 2 credits for resume optimization
       # Skip if resume is locked (LinkedIn/wizard) — credits charged on unlock instead
@@ -89,30 +89,5 @@ class OptimizeResumeJob < ApplicationJob
     content = content.sub(/\n{2,}\*{2,}(?:Key |Note|Changes).*\z/mi, "")
 
     content.strip
-  end
-
-  def rebuild_sections_from_content(resume)
-    parser = ResumeContentParserService.new(resume.optimized_content)
-    parsed = parser.parse
-
-    # Only destroy existing sections if parsing produced real results
-    # (more than just a summary fallback)
-    if parsed.blank? || (parsed.length == 1 && parsed.first[:section_type] == "summary" && parsed.first[:content]["text"]&.length.to_i < 50)
-      Rails.logger.warn "Section parsing produced insufficient results for resume #{resume.id}, keeping existing sections"
-      return
-    end
-
-    resume.resume_sections.destroy_all
-
-    parsed.each do |section_data|
-      resume.resume_sections.create!(
-        section_type: section_data[:section_type],
-        content: section_data[:content],
-        position: section_data[:position],
-        visible: true
-      )
-    end
-  rescue => e
-    Rails.logger.warn "Auto-parsing sections after optimization failed: #{e.message}"
   end
 end

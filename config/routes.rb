@@ -84,8 +84,10 @@ Rails.application.routes.draw do
       member do
         post :optimize
         post :ats_score
-        get :keywords
         get :download
+        get :tailor
+        post :suggest_bullets
+        post :apply_bullet
       end
 
       resource :builder, controller: "resume_builder", only: [ :edit, :update ] do
@@ -106,7 +108,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :cover_letters, only: [ :index ]
+    resources :cover_letters, only: [ :index, :new, :create ]
 
     resources :job_applications do
       member do
