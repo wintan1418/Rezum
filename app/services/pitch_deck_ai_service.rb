@@ -81,7 +81,7 @@ class PitchDeckAiService
   def ai_generate(system_prompt, user_prompt)
     response = @client.chat(
       parameters: {
-        model: "gpt-4o",
+        model: AiService::GPT_4_MODEL,
         messages: [
           { role: "system", content: system_prompt },
           { role: "user", content: user_prompt }

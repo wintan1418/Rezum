@@ -1,7 +1,7 @@
 class ScrapedJobsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_premium!
-  before_action :set_scraped_job, only: [ :show, :update, :destroy ]
+  before_action :set_scraped_job, only: [ :show, :update, :destroy, :tailor_resume ]
 
   def index
     @settings = current_user.job_scraper_setting || current_user.build_job_scraper_setting
@@ -28,10 +28,37 @@ class ScrapedJobsController < ApplicationController
 
   def update
     if @scraped_job.update(scraped_job_params)
+      track_application! if @scraped_job.saved_change_to_status? && @scraped_job.status == "applied"
       redirect_back fallback_location: scraped_jobs_path, notice: "Job updated."
     else
       redirect_back fallback_location: scraped_jobs_path, alert: "Failed to update job."
     end
+  end
+
+  # Scraper → optimizer pipeline: spin up a resume draft pre-loaded with this
+  # job's description so the user lands one click from optimizing against it.
+  def tailor_resume
+    source = current_user.resumes.optimized.recent.first || current_user.resumes.recent.first
+
+    unless source
+      redirect_to new_resume_path, alert: "Upload a resume first, then tailor it to this job."
+      return
+    end
+
+    resume = current_user.resumes.create!(
+      original_content: source.optimized_content.presence || source.original_content,
+      target_role: @scraped_job.role.presence || source.target_role,
+      industry: source.industry,
+      experience_level: source.experience_level,
+      job_description: @scraped_job.description,
+      status: "draft",
+      template: source.template,
+      provider: "openai"
+    )
+
+    @scraped_job.update(status: "saved") if @scraped_job.status == "new"
+
+    redirect_to resume, notice: "Resume draft created for #{@scraped_job.company_name} — review and optimize."
   end
 
   def destroy
@@ -74,6 +101,27 @@ class ScrapedJobsController < ApplicationController
   end
 
   private
+
+  # Marking a scraped job "applied" drops it into the application tracker
+  # automatically so the kanban stays in sync without manual entry.
+  def track_application!
+    @scraped_job.update(applied_at: Time.current) if @scraped_job.applied_at.blank?
+
+    return if current_user.job_applications.exists?(
+      company_name: @scraped_job.company_name, role: @scraped_job.role
+    )
+
+    current_user.job_applications.create(
+      company_name: @scraped_job.company_name,
+      role: @scraped_job.role,
+      url: @scraped_job.url,
+      location: @scraped_job.location,
+      remote: @scraped_job.remote,
+      status: "applied",
+      applied_at: Date.current,
+      notes: "Added automatically from the job scraper."
+    )
+  end
 
   def set_scraped_job
     @scraped_job = current_user.scraped_jobs.find(params[:id])

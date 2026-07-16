@@ -167,45 +167,48 @@ class JobScraperService
   end
 
   def score_jobs(jobs)
-    resume_content = @user.resumes.order(updated_at: :desc).first&.original_content || ""
-    resume_keywords = extract_resume_keywords(resume_content)
+    profile = build_skill_profile
 
     jobs.map do |job|
-      score = calculate_match_score(job, resume_keywords)
-      job[:match_score] = score
+      job[:match_score] = calculate_match_score(job, profile)
       job
     end.sort_by { |j| -(j[:match_score] || 0) }
   end
 
-  def extract_resume_keywords(content)
-    return [] if content.blank?
-    # Extract meaningful words (4+ chars, not common words)
-    stop_words = %w[this that with from have been will would could should about their which through between before after during]
-    content.downcase.scan(/[a-z]{4,}/).uniq
-      .reject { |w| stop_words.include?(w) }
-      .first(100)
+  # Concrete skills only — resume skills sections, keywords the user's resume
+  # actually matched in past ATS analyses, and scraper-setting keywords.
+  # Replaces the old any-4-letter-word soup that inflated every score.
+  def build_skill_profile
+    skills = []
+
+    if (resume = @user.resumes.order(updated_at: :desc).first)
+      resume.resume_sections.where(section_type: "skills").each do |section|
+        skills.concat(Array(section.content_data["items"]))
+      end
+      skills.concat(Array(resume.keyword_match["matched"]).map { |entry| entry["term"] })
+    end
+
+    skills.concat(@settings&.keywords_list || [])
+    skills.map { |s| s.to_s.strip }.reject(&:blank?).uniq.first(60)
   end
 
-  def calculate_match_score(job, resume_keywords)
-    return 50 if resume_keywords.empty?
+  def calculate_match_score(job, profile)
+    job_text = "#{job[:role]} #{job[:description]}"
 
-    job_text = "#{job[:role]} #{job[:description]} #{job[:company_name]}".downcase
-    job_words = job_text.scan(/[a-z]{4,}/).uniq
+    base = if profile.any? && job_text.strip.present?
+      keywords = profile.map { |term| { term: term, category: "required_hard_skills" } }
+      hits = KeywordMatchService.new(resume_text: job_text, keywords: keywords).match[:matched].size
+      # Each concrete skill the posting mentions is a real signal; 5+ maxes out
+      [ hits * 15, 75 ].min
+    else
+      50
+    end
 
-    return 50 if job_words.empty?
-
-    matching = (resume_keywords & job_words).size
-    total = [ resume_keywords.size, job_words.size ].min
-    raw_score = (matching.to_f / total * 100).round
-
-    # Bonus for role match
     target_roles = @settings&.target_roles_list || []
     role_bonus = target_roles.any? { |r| job[:role]&.downcase&.include?(r.downcase) } ? 15 : 0
-
-    # Bonus for remote preference match
     remote_bonus = (@settings&.remote_only? && job[:remote]) ? 10 : 0
 
-    [ raw_score + role_bonus + remote_bonus, 100 ].min
+    (base + role_bonus + remote_bonus).clamp(0, 100)
   end
 
   def save_jobs(jobs)

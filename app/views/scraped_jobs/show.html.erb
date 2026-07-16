@@ -116,6 +116,11 @@
       <!-- Actions -->
       <div class="p-6 flex items-center justify-between">
         <div class="flex items-center gap-3">
+          <% if @scraped_job.description.present? %>
+            <%= button_to tailor_resume_scraped_job_path(@scraped_job), method: :post, class: "btn-accent", style: "padding: 10px 18px; font-size: 14px;" do %>
+              Tailor my resume to this job →
+            <% end %>
+          <% end %>
           <% case @scraped_job.status %>
           <% when 'new' %>
             <%= button_to scraped_job_path(@scraped_job), method: :patch, params: { scraped_job: { status: 'saved' } }, class: "inline-flex items-center px-4 py-2 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-lg text-sm font-medium hover:bg-yellow-100" do %>

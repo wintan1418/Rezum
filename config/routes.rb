@@ -126,6 +126,9 @@ Rails.application.routes.draw do
     end
 
     resources :scraped_jobs, only: [ :index, :show, :update, :destroy ] do
+      member do
+        post :tailor_resume
+      end
       collection do
         post :scrape_now
         get :settings

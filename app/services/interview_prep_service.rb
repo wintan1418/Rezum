@@ -17,7 +17,8 @@ class InterviewPrepService < AiService
       model: GPT_4_MODEL,
       max_tokens: 3000,
       temperature: 0.4,
-      provider: provider
+      provider: :openai,
+      json: true
     )
 
     parse_questions(response)
@@ -34,7 +35,8 @@ class InterviewPrepService < AiService
       model: GPT_4_MINI_MODEL,
       max_tokens: 1500,
       temperature: 0.4,
-      provider: provider
+      provider: :openai,
+      json: true
     )
 
     parse_company_questions(response)
@@ -47,15 +49,17 @@ class InterviewPrepService < AiService
       You are an expert interview coach with 20+ years of experience preparing candidates for job interviews.
       Generate likely interview questions with detailed STAR-method answer frameworks.
 
-      Return your response as a JSON array of objects with this exact structure:
-      [
-        {
-          "category": "behavioral|technical|situational|role_specific",
-          "question": "The interview question",
-          "why_asked": "Brief explanation of what the interviewer is evaluating",
-          "answer_framework": "A structured answer framework using the STAR method (Situation, Task, Action, Result) that the candidate can personalize"
-        }
-      ]
+      Return your response as a JSON object with this exact structure:
+      {
+        "questions": [
+          {
+            "category": "behavioral|technical|situational|role_specific",
+            "question": "The interview question",
+            "why_asked": "Brief explanation of what the interviewer is evaluating",
+            "answer_framework": "A structured answer framework using the STAR method (Situation, Task, Action, Result) that the candidate can personalize — reference the candidate's actual experience from their resume where provided"
+          }
+        ]
+      }
 
       Generate 10-12 questions covering all categories. Tailor questions to the specific role and industry.
       Return ONLY valid JSON, no markdown or extra text.
@@ -75,14 +79,16 @@ class InterviewPrepService < AiService
       You are an expert career coach. Generate insightful questions that a candidate should ask the interviewer.
       These should demonstrate genuine interest, strategic thinking, and help the candidate evaluate the opportunity.
 
-      Return your response as a JSON array of objects:
-      [
-        {
-          "category": "culture|growth|role|team|strategy",
-          "question": "The question to ask",
-          "purpose": "Why this question is valuable to ask"
-        }
-      ]
+      Return your response as a JSON object:
+      {
+        "questions": [
+          {
+            "category": "culture|growth|role|team|strategy",
+            "question": "The question to ask",
+            "purpose": "Why this question is valuable to ask"
+          }
+        ]
+      }
 
       Generate 5-8 questions. Return ONLY valid JSON, no markdown or extra text.
     PROMPT
@@ -96,15 +102,18 @@ class InterviewPrepService < AiService
   end
 
   def parse_questions(response)
-    JSON.parse(response)
-  rescue JSON::ParserError
-    # Try to extract JSON from markdown code blocks
-    json_match = response.match(/\[[\s\S]*\]/)
-    json_match ? JSON.parse(json_match[0]) : []
+    extract_questions_array(response)
   end
 
   def parse_company_questions(response)
-    JSON.parse(response)
+    extract_questions_array(response)
+  end
+
+  # JSON mode returns {"questions": [...]}; tolerate a bare array or
+  # markdown-wrapped JSON from non-JSON-mode providers.
+  def extract_questions_array(response)
+    parsed = JSON.parse(response)
+    parsed.is_a?(Hash) ? Array(parsed["questions"]) : Array(parsed)
   rescue JSON::ParserError
     json_match = response.match(/\[[\s\S]*\]/)
     json_match ? JSON.parse(json_match[0]) : []

@@ -18,10 +18,11 @@ class LinkedinOptimizerService < AiService
       model: GPT_4_MODEL,
       max_tokens: 3000,
       temperature: 0.4,
-      provider: provider
+      provider: :openai,
+      json: true
     )
 
-    parse_response(response)
+    apply_grounding_guard(parse_response(response))
   end
 
   private
@@ -48,12 +49,17 @@ class LinkedinOptimizerService < AiService
         ]
       }
 
+      LinkedIn-specific rules (these are hard platform constraints):
+      - Every headline option: 220 characters MAX. Lead with the target role/value, not "Aspiring" or buzzwords. Use " | " separators sparingly.
+      - About section: 2,600 characters max, BUT only the first ~3 lines show before "...see more" — the first sentence must hook (a concrete achievement, a sharp positioning statement, or a number). Write in FIRST person.
+      - Recruiter search works on exact keywords: include the target role's standard title and its common variants naturally.
+
       Guidelines:
       - Use industry keywords naturally for SEO
-      - Include quantifiable achievements where possible
+      - Include quantifiable achievements ONLY when the user's material provides the numbers — never invent metrics
       - Keep the tone professional but personable
-      - Optimize for ATS and recruiter searches
       - Make the About section tell a compelling career story
+      - NEVER use AI-tell words: "delve," "pivotal," "passionate about," "results-driven," "proven track record," "dynamic," "synergy"
       - Return ONLY valid JSON, no markdown or extra text.
     PROMPT
   end
@@ -72,5 +78,29 @@ class LinkedinOptimizerService < AiService
   rescue JSON::ParserError
     json_match = response.match(/\{[\s\S]*\}/)
     json_match ? JSON.parse(json_match[0]) : {}
+  end
+
+  # Hallucination guard: the About and Experience rewrites may only claim
+  # what the user's own material supports.
+  def apply_grounding_guard(data)
+    source = [
+      ("RESUME:\n#{resume_content}" if resume_content.present?),
+      ("CURRENT HEADLINE:\n#{current_headline}" if current_headline.present?),
+      ("CURRENT ABOUT:\n#{current_about}" if current_about.present?),
+      ("CURRENT EXPERIENCE:\n#{current_experience}" if current_experience.present?)
+    ].compact.join("\n\n")
+    return data if source.blank?
+
+    %w[about experience].each do |field|
+      next if data[field].blank?
+
+      data[field] = with_grounding_guard(
+        source: source,
+        generated: data[field],
+        style_note: "- This is a LinkedIn #{field} section: keep first person, structure, and language unchanged."
+      )
+    end
+
+    data
   end
 end

@@ -182,6 +182,13 @@
 
               <!-- Actions -->
               <div class="flex items-center gap-2 ml-4 flex-shrink-0">
+                <% if job.description.present? %>
+                  <%= button_to tailor_resume_scraped_job_path(job), method: :post, class: "p-2 text-gray-400 hover:text-white rounded-lg", style: "transition: all .15s;", onmouseover: "this.style.background='var(--accent)'", onmouseout: "this.style.background='transparent'", title: "Tailor my resume to this job" do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  <% end %>
+                <% end %>
                 <% if job.status == 'new' %>
                   <%= button_to scraped_job_path(job), method: :patch, params: { scraped_job: { status: 'saved' } }, class: "p-2 text-gray-400 hover:text-yellow-500 rounded-lg hover:bg-yellow-50", title: "Save" do %>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
