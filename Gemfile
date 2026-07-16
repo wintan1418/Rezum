@@ -102,3 +102,7 @@ end
 gem "dotenv-rails"
 
 gem "cloudinary", "~> 2.4"
+
+gem "sentry-ruby", "~> 6.6"
+gem "sentry-rails", "~> 6.6"
+gem "sentry-sidekiq", "~> 6.6"
