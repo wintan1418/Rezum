@@ -31,6 +31,10 @@
 
           <%= link_to "Edit", edit_resume_path(@resume), class: "btn-outline" %>
 
+          <% if @resume.resume_sections.visible.any? %>
+            <%= link_to "Design & preview", edit_resume_builder_path(@resume), class: "btn-outline" %>
+          <% end %>
+
           <div style="position: relative;" data-controller="dropdown">
             <button class="btn-outline" data-action="dropdown#toggle" type="button">
               Download

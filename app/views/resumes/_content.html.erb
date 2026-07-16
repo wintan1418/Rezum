@@ -32,7 +32,12 @@
     <!-- Before/After -->
     <div class="card-paper" data-controller="view-toggle" style="background: #FBFBFC;">
       <div style="padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);">
-        <span class="font-mono-label">Before & after</span>
+        <div style="display: flex; align-items: baseline; gap: 16px;">
+          <span class="font-mono-label">Before & after</span>
+          <% if resume.resume_sections.visible.any? %>
+            <%= link_to "Formatted preview ↗", preview_resume_builder_path(resume), target: "_blank", class: "font-mono-label", style: "color: var(--accent);" %>
+          <% end %>
+        </div>
         <div style="display: inline-flex; border: 1px solid color-mix(in oklab, var(--ink) 15%, transparent); border-radius: 999px; padding: 3px;">
           <button type="button" data-view-toggle-target="button" data-mode="side-by-side" data-action="click->view-toggle#switch"
                   class="bg-blue-600 text-white" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Side by side</button>
