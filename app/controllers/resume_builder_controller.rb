@@ -44,6 +44,18 @@ class ResumeBuilderController < ApplicationController
   end
 
   def preview
+    # Template switching directly from the preview toolbar
+    if params[:template].present? && ResumeTemplateService::TEMPLATES.include?(params[:template])
+      if ResumeTemplateService.accessible_templates(current_user).include?(params[:template])
+        @resume.update(template: params[:template])
+      else
+        @locked_template = params[:template]
+      end
+    end
+
+    @templates = ResumeTemplateService::TEMPLATES
+    @accessible_templates = ResumeTemplateService.accessible_templates(current_user)
+
     service = ResumeTemplateService.new(resume: @resume)
     @preview_html = service.render_html_preview
     render layout: false

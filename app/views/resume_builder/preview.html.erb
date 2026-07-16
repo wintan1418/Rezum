@@ -8,19 +8,22 @@
       background: #f1f5f9;
       min-height: 100vh;
       padding: 24px;
+      font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
     }
     .toolbar {
       max-width: 816px;
-      margin: 0 auto 16px;
+      margin: 0 auto 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     .toolbar a, .toolbar button {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 20px;
+      padding: 8px 16px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -29,22 +32,66 @@
       border: none;
       transition: all 0.15s;
     }
-    .btn-print {
-      background: #2563eb;
-      color: white;
-    }
-    .btn-print:hover { background: #1d4ed8; }
-    .btn-back {
+    .btn-primary { background: #2540FF; color: white; }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-plain {
       background: white;
       color: #374151;
       border: 1px solid #d1d5db;
     }
-    .btn-back:hover { background: #f9fafb; }
-    .template-label {
-      font-size: 12px;
-      color: #6b7280;
-      font-weight: 500;
+    .btn-plain:hover { background: #f9fafb; }
+    .templates {
+      max-width: 816px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
+    .templates .label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b7280;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .tpl {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      background: white;
+      transition: all 0.15s;
+    }
+    .tpl:hover { border-color: #6b7280; }
+    .tpl.active {
+      background: #2540FF;
+      border-color: #2540FF;
+      color: white;
+    }
+    .tpl .dot { width: 9px; height: 9px; border-radius: 999px; display: inline-block; }
+    .tpl.locked { color: #9ca3af; }
+    .locked-note {
+      max-width: 816px;
+      margin: 0 auto 16px;
+      padding: 12px 16px;
+      background: #14171C;
+      color: #EDEEF0;
+      border-radius: 8px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .locked-note a { color: #DCE0FF; font-weight: 600; }
     .resume-page {
       max-width: 816px;
       min-height: 1056px;
@@ -56,7 +103,7 @@
     }
     @media print {
       body { background: white; padding: 0; }
-      .toolbar { display: none; }
+      .toolbar, .templates, .locked-note { display: none; }
       .resume-page {
         box-shadow: none;
         border-radius: 0;
@@ -72,20 +119,46 @@
 </head>
 <body>
   <div class="toolbar">
-    <div>
-      <a href="<%= edit_resume_builder_path(@resume) %>" class="btn-back">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-        Back to Editor
+    <a href="<%= edit_resume_builder_path(@resume) %>" class="btn-plain">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      Back to editor
+    </a>
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+      <a href="<%= download_pdf_resume_builder_path(@resume) %>" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Download PDF
       </a>
-    </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <span class="template-label"><%= (@resume.template || 'professional').capitalize %> Template</span>
-      <button onclick="window.print()" class="btn-print">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-        Print / Save PDF
-      </button>
+      <a href="<%= download_resume_path(@resume, format: 'docx') %>" class="btn-plain">Word</a>
+      <a href="<%= download_resume_path(@resume, format: 'txt') %>" class="btn-plain">Text</a>
+      <button onclick="window.print()" class="btn-plain" title="Prints this on-screen preview via your browser">Print</button>
     </div>
   </div>
+
+  <div class="templates">
+    <span class="label">Template</span>
+    <% @templates.each do |tmpl| %>
+      <% meta = ResumeTemplateService::TEMPLATE_META[tmpl] %>
+      <% if @accessible_templates.include?(tmpl) %>
+        <a href="<%= preview_resume_builder_path(@resume, template: tmpl) %>" class="tpl <%= 'active' if @resume.template == tmpl %>">
+          <span class="dot" style="background: <%= meta[:accent] %>;"></span>
+          <%= meta[:label] %>
+        </a>
+      <% else %>
+        <a href="<%= preview_resume_builder_path(@resume, template: tmpl) %>" class="tpl locked" title="Available on paid plans">
+          <svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+          <%= meta[:label] %>
+        </a>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if @locked_template %>
+    <div class="locked-note">
+      <span>The <strong><%= @locked_template.capitalize %></strong> template is part of the paid plans — you're previewing <strong><%= (@resume.template || 'professional').capitalize %></strong>.</span>
+      <a href="<%= new_subscription_path %>">Upgrade →</a>
+    </div>
+  <% end %>
+
   <div class="resume-page">
     <%= raw @preview_html %>
   </div>

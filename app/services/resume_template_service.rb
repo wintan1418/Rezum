@@ -30,6 +30,8 @@ class ResumeTemplateService
     require "prawn"
 
     Prawn::Document.new(page_size: "LETTER", margin: [ 50, 50, 50, 50 ]) do |pdf|
+      # Serif templates preview in Georgia; Times-Roman is the PDF equivalent
+      pdf.font "Times-Roman" if %w[professional executive].include?(template)
       send("render_#{template}_pdf", pdf)
     end.render
   rescue => e
@@ -48,13 +50,18 @@ class ResumeTemplateService
     resume.user
   end
 
+  # The candidate's display name: first short line of the resume, falling
+  # back to the account name (never recurses — a long first line previously
+  # caused infinite recursion and a crashed preview).
   def resume_name
     content = resume.optimized_content.presence || resume.original_content
-    return resume_name if content.blank?
+    first_line = content.to_s.lines.map(&:strip).find(&:present?)
 
-    first_line = content.lines.map(&:strip).find(&:present?)
-    return resume_name if first_line.blank? || first_line.length > 60
-    first_line
+    if first_line.present? && first_line.length <= 60
+      first_line
+    else
+      user.full_name.presence || resume.target_role
+    end
   end
 
   def contact_parts
@@ -257,37 +264,33 @@ class ResumeTemplateService
     contact = contact_parts.join(" | ")
     pdf.text contact, size: 10, align: :center, color: "888888"
     pdf.move_down 10
-    pdf.stroke_color "2563EB"
-    pdf.stroke_horizontal_rule
-    pdf.stroke_color "000000"
+    pdf_rule(pdf, "2563EB")
     pdf.move_down 15
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: "2563EB") }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "2563EB", heading_rule: "D1D5DB") }
   end
 
   def render_modern_pdf(pdf)
     pdf.text resume_name, size: 28, style: :bold, color: "6366F1"
     pdf.text resume.target_role, size: 14, color: "6B7280"
     pdf.move_down 5
-    contact = contact_parts.join(" | ")
+    contact = contact_parts.join("  •  ")
     pdf.text contact, size: 9, color: "9CA3AF"
     pdf.move_down 20
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: "6366F1") }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "6366F1", heading_rule: "6366F1") }
   end
 
   def render_minimal_pdf(pdf)
     pdf.text resume_name, size: 20, style: :bold
-    pdf.text resume.target_role, size: 11, color: "666666"
-    contact = contact_parts.join(" | ")
-    pdf.text contact, size: 9, color: "999999"
+    pdf.text "#{resume.target_role}  —  #{contact_parts.join(' | ')}", size: 10, color: "6B7280"
     pdf.move_down 15
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: "059669") }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "059669", heading_rule: "E5E7EB") }
   end
 
   def render_creative_pdf(pdf)
     pdf.text resume_name, size: 26, style: :bold, color: "7C3AED"
     pdf.text resume.target_role, size: 14, color: "8B5CF6"
     pdf.move_down 5
-    contact = contact_parts.join(" | ")
+    contact = contact_parts.join("  •  ")
     pdf.text contact, size: 9, color: "6B7280"
     pdf.move_down 20
     sections.each { |s| render_section_pdf(pdf, s, heading_color: "7C3AED") }
@@ -297,38 +300,36 @@ class ResumeTemplateService
     pdf.text resume_name.upcase, size: 22, style: :bold, character_spacing: 2, align: :center
     pdf.move_down 5
     pdf.text resume.target_role, size: 12, align: :center, color: "444444"
-    contact = contact_parts.join(" | ")
+    contact = contact_parts.join("  •  ")
     pdf.text contact, size: 9, align: :center, color: "888888"
     pdf.move_down 10
-    pdf.stroke_color "B45309"
-    pdf.stroke_horizontal_rule
-    pdf.stroke_color "000000"
+    pdf_rule(pdf, "B45309")
+    pdf.move_down 2
+    pdf_rule(pdf, "B45309")
     pdf.move_down 15
-    sections.each { |s| render_section_pdf(pdf, s, heading_color: "B45309") }
+    sections.each { |s| render_section_pdf(pdf, s, heading_color: "B45309", heading_rule: "B45309") }
   end
 
   # ==================== SHARED PDF SECTION RENDERING ====================
 
-  def render_section_pdf(pdf, section, heading_color: "000000")
+  def render_section_pdf(pdf, section, heading_color: "000000", heading_rule: nil)
     data = section.content_data
 
     pdf.text section.section_label.upcase, size: 12, style: :bold, color: heading_color
-    pdf.move_down 5
+    if heading_rule
+      pdf.move_down 2
+      pdf_rule(pdf, heading_rule, width: 0.5)
+    end
+    pdf.move_down 6
 
     case section.section_type
     when "summary"
       pdf.text data["text"].to_s, size: 10, leading: 2, color: "333333"
     when "experience"
       Array(data["entries"]).each do |entry|
-        title = entry["title"].to_s
-        company = entry["company"].to_s
-        dates = entry["dates"].to_s
-
-        # Line 1: Title | Dates (bold)
-        line1 = [ title, dates ].reject(&:blank?).join("  |  ")
-        pdf.text line1, size: 11, style: :bold
-        # Line 2: Company (distinct, italic)
-        pdf.text company, size: 10, style: :bold_italic, color: "444444" if company.present?
+        # Title left, dates right-aligned \u2014 matches the on-screen preview
+        pdf_entry_header(pdf, entry["title"], entry["dates"])
+        pdf.text entry["company"].to_s, size: 10, style: :bold_italic, color: "444444" if entry["company"].present?
         pdf.move_down 2
         Array(entry["bullets"]).each do |bullet|
           pdf.text "  \u2022 #{bullet}", size: 10, leading: 2, color: "333333"
@@ -337,21 +338,14 @@ class ResumeTemplateService
       end
     when "education"
       Array(data["entries"]).each do |entry|
-        degree = entry["degree"].to_s
-        school = entry["school"].to_s
-        dates = entry["dates"].to_s
-
-        # Line 1: Degree | Dates (bold)
-        line1 = [ degree, dates ].reject(&:blank?).join("  |  ")
-        pdf.text line1, size: 11, style: :bold
-        # Line 2: School (distinct)
-        pdf.text school, size: 10, style: :italic, color: "444444" if school.present?
+        pdf_entry_header(pdf, entry["degree"], entry["dates"])
+        pdf.text entry["school"].to_s, size: 10, style: :italic, color: "444444" if entry["school"].present?
         pdf.text entry["details"].to_s, size: 10, color: "333333" if entry["details"].present?
         pdf.move_down 8
       end
     when "skills"
-      skills = Array(data["items"]).join(", ")
-      pdf.text skills, size: 10, color: "333333" if skills.present?
+      skills = Array(data["items"]).join("  \u2022  ")
+      pdf.text skills, size: 10, leading: 3, color: "333333" if skills.present?
     when "certifications", "awards", "languages"
       Array(data["items"]).each do |item|
         pdf.text "  \u2022 #{item}", size: 10, color: "333333"
@@ -365,6 +359,31 @@ class ResumeTemplateService
     end
 
     pdf.move_down 12
+  end
+
+  # Two-column entry header: bold title on the left, dates right-aligned in
+  # muted gray \u2014 mirrors the HTML preview layout.
+  def pdf_entry_header(pdf, left, right)
+    left = left.to_s
+    right = right.to_s
+    y = pdf.cursor
+    dates_width = 130
+
+    pdf.text_box left, at: [ 0, y ], width: pdf.bounds.width - dates_width - 8, height: 14,
+                       size: 11, style: :bold, overflow: :shrink_to_fit
+    if right.present?
+      pdf.text_box right, at: [ pdf.bounds.width - dates_width, y ], width: dates_width, height: 12,
+                          size: 9, style: :bold, align: :right, color: "6B7280"
+    end
+    pdf.move_down 15
+  end
+
+  def pdf_rule(pdf, color, width: 1)
+    pdf.stroke_color color
+    pdf.line_width width
+    pdf.stroke_horizontal_rule
+    pdf.stroke_color "000000"
+    pdf.line_width 1
   end
 
   def h(text)
