@@ -103,6 +103,8 @@ gem "dotenv-rails"
 
 gem "cloudinary", "~> 2.4"
 
+# stackprof must load before sentry-ruby (powers Sentry profiling)
+gem "stackprof", "~> 0.2.28"
 gem "sentry-ruby", "~> 6.6"
 gem "sentry-rails", "~> 6.6"
 gem "sentry-sidekiq", "~> 6.6"
