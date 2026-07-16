@@ -4,7 +4,7 @@ class AnalyzeAtsScoreJob < ApplicationJob
   retry_on StandardError, wait: :polynomially_longer, attempts: 3
   discard_on ActiveRecord::RecordNotFound
 
-  def perform(resume_id)
+  def perform(resume_id, charge: false)
     resume = Resume.find(resume_id)
 
     return unless resume.processing? && resume.optimized_content.present?
@@ -48,6 +48,9 @@ class AnalyzeAtsScoreJob < ApplicationJob
         }
       end
       resume.update!(update_attrs)
+
+      # Charged only for manually requested analyses; subscribers no-op
+      resume.user.deduct_credits!(CreditPolicy::ATS_SCORE) if charge && resume.user.free?
 
       Rails.logger.info "ATS score analyzed for resume #{resume.id}: #{score}/100"
 

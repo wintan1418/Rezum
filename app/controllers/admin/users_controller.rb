@@ -1,6 +1,12 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [ :show, :toggle_admin, :toggle_disable, :gift_credits ]
+    before_action :set_user, only: [ :show, :toggle_admin, :toggle_disable, :gift_credits, :grant_subscription, :revoke_subscription ]
+
+    COMPLIMENTARY_PLANS = {
+      "pro" => "price_monthly_pro",
+      "premium" => "price_monthly_premium"
+    }.freeze
+    COMPLIMENTARY_DURATIONS = [ 30, 90, 365 ].freeze
 
     def index
       @users = User.recent.includes(:subscriptions)
@@ -28,8 +34,47 @@ module Admin
     end
 
     def toggle_admin
+      if @user == current_user
+        return redirect_to admin_user_path(@user), alert: "You cannot change your own admin access."
+      end
+
       @user.update(admin: !@user.admin?)
       redirect_to admin_user_path(@user), notice: "#{@user.full_name} is now #{@user.admin? ? 'an admin' : 'a regular user'}."
+    end
+
+    # Complimentary access: creates a comp_ subscription so the user passes
+    # has_active_subscription?/has_premium_subscription? without touching
+    # Paystack. Granting again replaces any existing comp subscription.
+    def grant_subscription
+      plan_id = COMPLIMENTARY_PLANS[params[:plan].to_s]
+      days = params[:duration].to_i
+
+      unless plan_id && COMPLIMENTARY_DURATIONS.include?(days)
+        return redirect_to admin_user_path(@user), alert: "Pick a valid plan and duration."
+      end
+
+      cancel_complimentary_subscriptions!
+
+      @user.subscriptions.create!(
+        paystack_subscription_code: "comp_#{SecureRandom.hex(8)}",
+        status: "active",
+        plan_id: plan_id,
+        current_period_start: Time.current,
+        current_period_end: days.days.from_now
+      )
+
+      redirect_to admin_user_path(@user),
+        notice: "#{@user.full_name} is now on #{params[:plan].capitalize} (complimentary) for #{days} days."
+    end
+
+    def revoke_subscription
+      revoked = cancel_complimentary_subscriptions!
+
+      if revoked.positive?
+        redirect_to admin_user_path(@user), notice: "Complimentary access revoked for #{@user.full_name}."
+      else
+        redirect_to admin_user_path(@user), alert: "No complimentary subscription to revoke — paid subscriptions must be cancelled through Paystack."
+      end
     end
 
     def toggle_disable
@@ -57,6 +102,13 @@ module Admin
     end
 
     private
+
+    def cancel_complimentary_subscriptions!
+      @user.subscriptions
+           .where("paystack_subscription_code LIKE 'comp_%'")
+           .where(status: %w[active trialing])
+           .update_all(status: "canceled", current_period_end: Time.current, updated_at: Time.current)
+    end
 
     def set_user
       @user = User.find(params[:id])

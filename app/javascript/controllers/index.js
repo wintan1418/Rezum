@@ -99,3 +99,6 @@ application.register("currency-toggle", CurrencyToggleController)
 
 import TailorStudioController from "./tailor_studio_controller"
 application.register("tailor-studio", TailorStudioController)
+
+import PollResultController from "./poll_result_controller"
+application.register("poll-result", PollResultController)

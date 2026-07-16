@@ -1,0 +1,17 @@
+<div id="ats-results"
+     data-controller="poll-result"
+     data-poll-result-url-value="<%= ats_checker_result_path(token: token) %>"
+     data-poll-result-interval-value="2500"
+     class="card-paper" style="padding: 40px; text-align: center; margin-top: 24px;">
+  <span class="font-mono-label" style="color: var(--accent);">Analyzing</span>
+  <p class="font-display" style="font-size: 22px; margin-top: 10px;">
+    Reading your resume <em>like an ATS would.</em>
+  </p>
+  <p style="color: var(--muted); font-size: 14px; margin-top: 10px;">
+    Format checks, content checks, and a scored report. About 15–20 seconds.
+  </p>
+  <div style="margin: 22px auto 0; width: 160px; height: 2px; background: var(--paper-2); overflow: hidden; border-radius: 999px;">
+    <div style="width: 40%; height: 100%; background: var(--accent); animation: ats-slide 1.2s ease-in-out infinite alternate;"></div>
+  </div>
+  <style>@keyframes ats-slide { from { transform: translateX(-40px); } to { transform: translateX(160px); } }</style>
+</div>

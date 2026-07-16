@@ -21,6 +21,8 @@ Rails.application.routes.draw do
         patch :toggle_admin
         patch :toggle_disable
         post :gift_credits
+        post :grant_subscription
+        delete :revoke_subscription
       end
     end
     resources :conversations, only: [ :index, :show ] do
@@ -182,6 +184,7 @@ Rails.application.routes.draw do
   get "ats-checker", to: "ats_checker#show", as: :ats_checker
   post "ats-checker", to: "ats_checker#check", as: :ats_checker_check
   post "ats-checker/capture-email", to: "ats_checker#capture_email"
+  get "ats-checker/result", to: "ats_checker#result", as: :ats_checker_result
 
   # Blog (public)
   resources :articles, only: [ :index, :show ], path: "blog"

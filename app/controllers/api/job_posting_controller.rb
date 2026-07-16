@@ -1,3 +1,6 @@
+require "resolv"
+require "ipaddr"
+
 class Api::JobPostingController < ApplicationController
   before_action :authenticate_user!
   skip_before_action :verify_authenticity_token
@@ -32,12 +35,35 @@ class Api::JobPostingController < ApplicationController
 
   private
 
+  ALLOWED_PORTS = [ 80, 443 ].freeze
+
   def valid_url?(url)
     return false unless url.present?
 
     uri = URI.parse(url)
-    uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+    safe_uri?(uri)
   rescue URI::InvalidURIError
+    false
+  end
+
+  # SSRF guard: public HTTP(S) hosts on standard ports only. Every resolved
+  # address must be public — private, loopback, and link-local ranges are
+  # blocked so this endpoint can't probe the server's internal network.
+  def safe_uri?(uri)
+    return false unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+    return false if uri.host.blank? || uri.userinfo.present?
+    return false unless ALLOWED_PORTS.include?(uri.port)
+
+    addresses = Resolv.getaddresses(uri.host)
+    return false if addresses.empty?
+
+    addresses.all? do |address|
+      ip = IPAddr.new(address)
+      !(ip.private? || ip.loopback? || ip.link_local?)
+    rescue IPAddr::InvalidAddressError
+      false
+    end
+  rescue Resolv::ResolvError, SocketError
     false
   end
 
@@ -78,6 +104,9 @@ class Api::JobPostingController < ApplicationController
 
   def follow_redirects(uri, limit = 5)
     raise "Too many redirects" if limit == 0
+    # Each hop must pass the SSRF guard — a public URL redirecting to an
+    # internal address is the classic bypass.
+    raise "Blocked URL" unless safe_uri?(uri)
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = (uri.scheme == "https")

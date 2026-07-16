@@ -55,7 +55,12 @@ class SubscriptionsController < ApplicationController
     end
   end
 
-  # Paystack redirects here after subscription payment
+  ALLOWED_PLAN_IDS = %w[price_monthly_pro price_annual_pro price_monthly_premium price_annual_premium].freeze
+
+  # Paystack redirects here after subscription payment. This path only
+  # activates a subscription when Paystack's server-verified response gives
+  # us everything: success, this user's transaction, a recognized plan, and
+  # a real subscription code. Anything less waits for the signed webhook.
   def verify_subscription
     reference = params[:reference] || params[:trxref]
 
@@ -66,13 +71,22 @@ class SubscriptionsController < ApplicationController
     begin
       data = PaystackService.verify_transaction(reference)
 
-      if data["status"] == "success"
-        plan_id = data.dig("metadata", "plan_id") || "price_monthly_pro"
+      unless data["status"] == "success"
+        return redirect_to new_subscription_path, alert: "Payment was not successful. Status: #{data['status']}"
+      end
 
-        # Find or create the subscription
-        sub_code = data.dig("plan_object", "subscriptions", 0, "subscription_code") ||
-                   "sub_#{reference}"
+      # The transaction must belong to the signed-in user — a reference is
+      # guessable/replayable, an email match is not.
+      customer_email = data.dig("customer", "email").to_s.downcase
+      unless customer_email == current_user.email.downcase
+        Rails.logger.warn "Subscription verify: reference #{reference} customer mismatch for user #{current_user.id}"
+        return redirect_to new_subscription_path, alert: "Could not verify subscription. Please contact support."
+      end
 
+      plan_id = data.dig("metadata", "plan_id")
+      sub_code = data.dig("plan_object", "subscriptions", 0, "subscription_code")
+
+      if ALLOWED_PLAN_IDS.include?(plan_id) && sub_code.present?
         subscription = current_user.subscriptions.find_or_initialize_by(paystack_subscription_code: sub_code)
         subscription.assign_attributes(
           status: "active",
@@ -84,7 +98,9 @@ class SubscriptionsController < ApplicationController
 
         redirect_to subscription_path(subscription), notice: "Subscription activated successfully!"
       else
-        redirect_to new_subscription_path, alert: "Payment was not successful. Status: #{data['status']}"
+        # Payment is real but activation details are incomplete — the
+        # Paystack webhook (signed) will activate it within moments.
+        redirect_to billing_index_path, notice: "Payment received! Your subscription will activate in a few moments."
       end
     rescue => e
       Rails.logger.error "Subscription verification failed: #{e.message}"

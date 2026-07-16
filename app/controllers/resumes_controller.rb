@@ -116,9 +116,16 @@ class ResumesController < ApplicationController
       return
     end
 
+    unless current_user.can_generate?(CreditPolicy::ATS_SCORE)
+      redirect_to @resume, alert: "Insufficient credits for an ATS analysis. Please upgrade your plan."
+      return
+    end
+
     @resume.update!(status: "processing")
 
-    AnalyzeAtsScoreJob.perform_later(@resume.id)
+    # Manually requested analyses are charged; the one auto-chained after
+    # optimization is covered by the optimization credits
+    AnalyzeAtsScoreJob.perform_later(@resume.id, charge: true)
 
     redirect_to @resume, notice: "ATS analysis started! Results will be available shortly."
   end
