@@ -3,8 +3,8 @@ class AiService
   include ActiveModel::Attributes
 
   # Available AI Models
-  GPT_4_MODEL = ENV.fetch("OPENAI_PRIMARY_MODEL", "gpt-4o").freeze
-  GPT_4_MINI_MODEL = ENV.fetch("OPENAI_FAST_MODEL", "gpt-4o-mini").freeze
+  GPT_4_MODEL = ENV.fetch("OPENAI_PRIMARY_MODEL", "gpt-4.1").freeze
+  GPT_4_MINI_MODEL = ENV.fetch("OPENAI_FAST_MODEL", "gpt-4.1-mini").freeze
   CLAUDE_SONNET = ENV.fetch("ANTHROPIC_PRIMARY_MODEL", "claude-3-5-sonnet-latest").freeze
   GEMINI_PRO = ENV.fetch("GOOGLE_PRIMARY_MODEL", "gemini-2.0-flash").freeze
 
@@ -43,7 +43,7 @@ class AiService
     PROMPT
   end
 
-  def generate_completion(messages:, model: nil, max_tokens: 2000, temperature: 0.7, provider: nil)
+  def generate_completion(messages:, model: nil, max_tokens: 2000, temperature: 0.7, provider: nil, json: false)
     validate!
 
     # Use specified provider or fall back to instance provider
@@ -52,7 +52,7 @@ class AiService
 
     if @use_openai_gem || current_provider == :openai
       # Use OpenAI gem directly as fallback
-      response = generate_with_openai_gem(messages, model, max_tokens, temperature)
+      response = generate_with_openai_gem(messages, model, max_tokens, temperature, json: json)
     else
       # Use RubyLLM
       response = llm.complete(
@@ -72,6 +72,78 @@ class AiService
   rescue StandardError => e
     Rails.logger.error "AI Service Error: #{e.message}"
     raise StandardError.new("Something went wrong. Please try again.")
+  end
+
+  # Post-generation hallucination guard: returns claims in `generated` that
+  # are not supported by `source`. Empty array means fully grounded.
+  # Never raises — a guard failure must not break generation.
+  def grounding_violations(source:, generated:)
+    raw = generate_completion(
+      messages: [
+        { role: "system", content: <<~PROMPT },
+          You are a strict fact-checker for career documents. Compare a GENERATED document against the SOURCE material it was derived from.
+
+          Flag ONLY concrete claims in the GENERATED document that the SOURCE does not support:
+          - Invented numbers: metrics, percentages, dollar amounts, team sizes, timeframes not present in or directly computable from the SOURCE
+          - Skills, tools, technologies, or certifications never mentioned in the SOURCE
+          - Job titles, companies, degrees, or institutions not in the SOURCE
+          - Invented employer/company facts (mission, products, awards, news)
+
+          Do NOT flag: rephrasing, synonyms, stronger verbs, reordering, qualitative scope language ("cross-functional", "high-volume"), or standard letter/resume conventions.
+
+          Respond with JSON only: {"unsupported_claims": [{"claim": "<exact text from the generated document>", "reason": "<why it is unsupported>"}]}
+          If everything is grounded, return {"unsupported_claims": []}.
+        PROMPT
+        { role: "user", content: "SOURCE:\n#{source}\n\nGENERATED DOCUMENT:\n#{generated}" }
+      ],
+      model: GPT_4_MINI_MODEL,
+      max_tokens: 900,
+      temperature: 0.0,
+      provider: :openai,
+      json: true
+    )
+    Array(JSON.parse(raw)["unsupported_claims"]).select { |c| c.is_a?(Hash) && c["claim"].present? }
+  rescue StandardError => e
+    Rails.logger.warn "Grounding check failed (skipping guard): #{e.message}"
+    []
+  end
+
+  # Second half of the guard: rewrite `generated`, removing or softening only
+  # the flagged claims. Returns the original text if the fix fails.
+  def remove_unsupported_claims(generated:, violations:, style_note: nil)
+    claims_list = violations.map { |v| "- \"#{v['claim']}\" (#{v['reason']})" }.join("\n")
+
+    generate_completion(
+      messages: [
+        { role: "system", content: <<~PROMPT },
+          You correct career documents that contain unsupported claims. Rewrite the document so every flagged claim is removed or softened to what the source material actually supports (e.g. drop an invented number but keep the achievement, remove a skill that was never mentioned).
+
+          Rules:
+          - Change ONLY the flagged claims. Preserve all other text exactly as written, including structure, order, and language.
+          - Never introduce new facts, numbers, or skills.
+          - Keep the document natural — no placeholder text, no commentary.
+          #{style_note}
+          - Output ONLY the corrected document. No explanations, no code fences.
+        PROMPT
+        { role: "user", content: "UNSUPPORTED CLAIMS TO FIX:\n#{claims_list}\n\nDOCUMENT:\n#{generated}" }
+      ],
+      model: GPT_4_MODEL,
+      max_tokens: 4000,
+      temperature: 0.2,
+      provider: :openai
+    )
+  rescue StandardError => e
+    Rails.logger.warn "Grounding fix failed (returning unfixed content): #{e.message}"
+    generated
+  end
+
+  # Runs the full guard: verify, and revise once if violations are found.
+  def with_grounding_guard(source:, generated:, style_note: nil)
+    violations = grounding_violations(source: source, generated: generated)
+    return generated if violations.empty?
+
+    Rails.logger.info "Grounding guard: fixing #{violations.size} unsupported claim(s)"
+    remove_unsupported_claims(generated: generated, violations: violations, style_note: style_note)
   end
 
   # Allow switching providers for different use cases
@@ -115,20 +187,19 @@ class AiService
     end
   end
 
-  def generate_with_openai_gem(messages, model, max_tokens, temperature)
+  def generate_with_openai_gem(messages, model, max_tokens, temperature, json: false)
     client = OpenAI::Client.new
 
-    response = client.chat(
-      parameters: {
-        model: model || GPT_4_MINI_MODEL,
-        messages: messages,
-        max_tokens: max_tokens,
-        temperature: temperature,
-        user: user_id&.to_s
-      }
-    )
+    parameters = {
+      model: model || GPT_4_MINI_MODEL,
+      messages: messages,
+      max_tokens: max_tokens,
+      temperature: temperature,
+      user: user_id&.to_s
+    }
+    parameters[:response_format] = { type: "json_object" } if json
 
-    response
+    client.chat(parameters: parameters)
   end
 
   def validate!

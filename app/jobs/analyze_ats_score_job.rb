@@ -21,11 +21,15 @@ class AnalyzeAtsScoreJob < ApplicationJob
         provider: resume.provider
       )
 
-      # Generate ATS score analysis
-      ats_analysis = service.ats_score
+      # Deterministic keyword gap data anchors the score so it is
+      # reproducible instead of LLM guesswork
+      keyword_match = compute_keyword_match(service, resume)
 
-      # Parse the score from the analysis (assuming it returns structured data)
+      # Generate ATS score analysis
+      ats_analysis = service.ats_score(keyword_match: keyword_match)
+
       score = extract_score_from_analysis(ats_analysis)
+      raise StandardError, "ATS analysis contained no parseable score" if score.nil?
 
       # Update resume with ATS score and full analysis
       resume.update!(
@@ -45,6 +49,23 @@ class AnalyzeAtsScoreJob < ApplicationJob
 
   private
 
+  # Extract keywords from the JD once, then match them deterministically
+  # against the resume text. Degrades to nil (unanchored scoring) on failure.
+  def compute_keyword_match(service, resume)
+    return nil if resume.job_description.blank?
+
+    keywords = service.extract_keywords_structured
+    return nil if keywords.empty?
+
+    KeywordMatchService.new(
+      resume_text: resume.optimized_content,
+      keywords: keywords
+    ).match
+  rescue StandardError => e
+    Rails.logger.warn "Keyword match computation failed for resume #{resume.id}: #{e.message}"
+    nil
+  end
+
   def extract_score_from_analysis(analysis)
     # Preferred: the exact machine-readable line the prompt pins to English,
     # which stays stable even when the rest of the analysis is not in English
@@ -54,24 +75,10 @@ class AnalyzeAtsScoreJob < ApplicationJob
     # Extract numeric score from AI analysis
     # Look for patterns like "Score: 85", "ATS Score (0-100): 72", etc.
     score_match = analysis.match(/(?:score|ats).*?(\d{1,3})/i)
+    return [ score_match[1].to_i, 100 ].min if score_match
 
-    if score_match
-      score = score_match[1].to_i
-      return [ score, 100 ].min # Cap at 100
-    end
-
-    # Fallback: estimate based on keywords in analysis
-    case analysis.downcase
-    when /excellent|outstanding|perfect/
-      85 + rand(16) # 85-100
-    when /good|strong|solid/
-      70 + rand(16) # 70-85
-    when /average|fair|moderate/
-      50 + rand(21) # 50-70
-    when /poor|weak|low/
-      20 + rand(31) # 20-50
-    else
-      60 + rand(21) # Default range 60-80
-    end
+    # No parseable score — the caller raises so the job retries rather than
+    # fabricating a number the user would trust
+    nil
   end
 end

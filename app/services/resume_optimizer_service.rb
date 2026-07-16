@@ -12,11 +12,18 @@ class ResumeOptimizerService < AiService
     messages = build_optimization_messages
     # Higher temperature for re-optimization to ensure meaningfully different output
     temp = previous_ats_score.present? ? 0.7 : 0.5
-    generate_completion(
+    optimized = generate_completion(
       messages: messages,
       model: GPT_4_MODEL,
       max_tokens: 4000,
       temperature: temp
+    )
+
+    # Hallucination guard: strip any claims not traceable to the original resume
+    with_grounding_guard(
+      source: content,
+      generated: optimized,
+      style_note: "- This is a resume: keep bullet structure and section headers intact."
     )
   end
 
@@ -30,14 +37,50 @@ class ResumeOptimizerService < AiService
     )
   end
 
-  def ats_score
-    messages = build_ats_scoring_messages
+  def ats_score(keyword_match: nil)
+    messages = build_ats_scoring_messages(keyword_match)
     generate_completion(
       messages: messages,
       model: GPT_4_MINI_MODEL,
       max_tokens: 1200,
       temperature: 0.1
     )
+  end
+
+  # Categorized keyword extraction as structured data, for deterministic
+  # matching via KeywordMatchService. Returns [{ term:, category: }].
+  KEYWORD_CATEGORIES = %w[
+    required_hard_skills preferred_hard_skills domain_expertise certifications soft_skills
+  ].freeze
+
+  def extract_keywords_structured
+    return [] if job_description.blank?
+
+    raw = generate_completion(
+      messages: [
+        { role: "system", content: <<~PROMPT },
+          You are an ATS keyword extraction specialist. Extract the keywords recruiters and ATS systems would search for from a job description. Use the EXACT terms as they appear in the posting (keep "Search Engine Optimization (SEO)"-style acronym pairs together as one term). Respond with JSON only, using exactly these keys, each mapping to an array of strings:
+          {"required_hard_skills": [], "preferred_hard_skills": [], "domain_expertise": [], "certifications": [], "soft_skills": []}
+          Limit to the 25 most important terms overall. Empty arrays are fine.
+        PROMPT
+        { role: "user", content: job_description }
+      ],
+      model: GPT_4_MINI_MODEL,
+      max_tokens: 700,
+      temperature: 0.0,
+      provider: :openai,
+      json: true
+    )
+
+    data = JSON.parse(raw)
+    KEYWORD_CATEGORIES.flat_map do |category|
+      Array(data[category]).filter_map do |term|
+        { term: term.to_s.strip, category: category } if term.to_s.strip.present?
+      end
+    end
+  rescue JSON::ParserError => e
+    Rails.logger.warn "Structured keyword extraction returned invalid JSON: #{e.message}"
+    []
   end
 
   private
@@ -105,6 +148,8 @@ class ResumeOptimizerService < AiService
          - Avoid repetitive sentence patterns that signal AI-generated content
          - Preserve the candidate's authentic voice — if they write concisely, keep it concise
          - Do NOT stuff buzzwords or use corporate jargon unnaturally
+         - NEVER use AI-tell words recruiters flag as machine-written: "delve," "pivotal," "dynamic professional," "results-driven professional," "proven track record," "synergy," "leverage" (as a verb), "spearheaded initiatives to"
+         - Use em-dashes sparingly — at most one across the whole resume
 
       8. **Formatting:**
          - Use standard section headers in the resume's language (English: "Professional Summary," "Professional Experience," "Skills," "Education," "Certifications" — or their standard equivalents when the resume is in another language)
@@ -216,6 +261,26 @@ class ResumeOptimizerService < AiService
     end
   end
 
+  # Renders deterministic keyword-match data (from KeywordMatchService) as
+  # ground truth for the scoring prompt, so the keyword component of the
+  # score is computed, not guessed — stable across runs.
+  def computed_keyword_section(keyword_match)
+    return "" if keyword_match.blank?
+
+    matched = Array(keyword_match[:matched]).map { |e| "#{e[:term]} (x#{e[:count]})" }.join(", ")
+    missing = Array(keyword_match[:missing]).map { |e| e[:term] }.join(", ")
+
+    <<~SECTION
+
+      COMPUTED KEYWORD DATA (deterministic exact-text matching — GROUND TRUTH, do not recount):
+      - Keyword match rate: #{keyword_match[:match_rate]}%
+      - Matched keywords with occurrence counts: #{matched.presence || 'none'}
+      - Missing keywords: #{missing.presence || 'none'}
+
+      Use this match rate verbatim for the "KEYWORD MATCH RATE" line, list these exact matched/missing keywords in sections 3 and 4, and base the keyword component (40%) of the overall score on this data.
+    SECTION
+  end
+
   def industry_context
     return "" unless industry.present?
 
@@ -320,7 +385,7 @@ class ResumeOptimizerService < AiService
     ]
   end
 
-  def build_ats_scoring_messages
+  def build_ats_scoring_messages(keyword_match = nil)
     [
       {
         role: "system",
@@ -338,6 +403,7 @@ class ResumeOptimizerService < AiService
           #{job_description}
 
           TARGET ROLE: #{target_role}
+          #{computed_keyword_section(keyword_match)}
 
           Provide a comprehensive ATS compatibility analysis.
 

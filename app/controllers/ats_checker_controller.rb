@@ -75,7 +75,7 @@ class AtsCheckerController < ApplicationController
 
     response = client.chat(
       parameters: {
-        model: "gpt-4o-mini",
+        model: AiService::GPT_4_MINI_MODEL,
         messages: messages,
         max_tokens: 1200,
         temperature: 0.1

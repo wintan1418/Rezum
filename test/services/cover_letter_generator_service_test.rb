@@ -15,7 +15,7 @@ class CoverLetterGeneratorServiceTest < ActiveSupport::TestCase
   end
 
   test "generate honors selected provider and returns body only" do
-    captured = nil
+    captured = []
     service = CoverLetterGeneratorService.new(
       resume_content: "Experienced product manager. " * 10,
       company_name: "Acme",
@@ -25,13 +25,19 @@ class CoverLetterGeneratorServiceTest < ActiveSupport::TestCase
       provider: "google"
     )
     service.define_singleton_method(:generate_completion) do |**kwargs|
-      captured = kwargs
-      "Dear Hiring Manager,\n\nI am excited to bring product leadership to Acme.\n\nSincerely,\nTaylor"
+      captured << kwargs
+      if kwargs[:json]
+        # Grounding-guard verification call: report no violations
+        '{"unsupported_claims": []}'
+      else
+        "Dear Hiring Manager,\n\nI am excited to bring product leadership to Acme.\n\nSincerely,\nTaylor"
+      end
     end
 
     content = service.generate
 
-    assert_equal :google, captured[:provider]
+    # First call is the letter generation; the guard's verification call follows
+    assert_equal :google, captured.first[:provider]
     assert_no_match(/Dear Hiring Manager/i, content)
     assert_no_match(/Sincerely/i, content)
     assert_match(/product leadership/, content)

@@ -31,7 +31,7 @@ class CoverLetterGeneratorService < AiService
       temperature: temperature_for_tone,
       provider: selected_provider
     )
-    sanitize_body_only(content)
+    apply_grounding_guard(sanitize_body_only(content))
   end
 
   def generate_variations(count: 3)
@@ -51,7 +51,7 @@ class CoverLetterGeneratorService < AiService
 
       variations << {
         version: i + 1,
-        content: sanitize_body_only(variation),
+        content: apply_grounding_guard(sanitize_body_only(variation)),
         language: detected_language,
         provider: current_provider,
         tone: tone,
@@ -114,6 +114,12 @@ class CoverLetterGeneratorService < AiService
       9. Follow #{regional_context} business letter conventions
       10. Never fabricate experience or skills not in the original resume
       11. Use only company facts present in the job posting or resume. Do not invent company mission, products, news, culture, awards, or values.
+
+      BANNED AI-TELL PHRASES (recruiters instantly flag these as machine-written — NEVER use):
+      - Openers: "I am writing to apply", "I am writing to express", "I am thrilled", "I am excited to apply", "I came across your posting"
+      - Words/phrases: "delve", "pivotal", "leverage my", "passionate about", "aligns perfectly", "unique blend", "proven track record", "wealth of experience", "esteemed organization", "hit the ground running", "fast-paced environment", "I believe I would be a great fit"
+      - Use em-dashes sparingly: at most one in the entire letter
+      - Instead, open with something concrete: a specific achievement relevant to the role, a specific requirement from the posting the candidate demonstrably meets, or a direct statement of what the candidate would do in the role
 
       OUTPUT CONTRACT:
       - The FIRST line of your response must be exactly "LANGUAGE: <code>" where <code> is the two-letter ISO 639-1 code of the language you wrote the letter in (e.g. "LANGUAGE: fr"). Then a blank line, then the letter body.
@@ -201,6 +207,26 @@ class CoverLetterGeneratorService < AiService
         PROMPT
       }
     ]
+  end
+
+  # Letters may only claim what the resume and job posting support; the
+  # fix pass re-sanitizes in case the rewrite reintroduces a greeting.
+  def apply_grounding_guard(body)
+    return body if body.blank?
+
+    guarded = with_grounding_guard(
+      source: <<~SOURCE,
+        CANDIDATE'S RESUME:
+        #{resume_content}
+
+        JOB POSTING (#{target_role} at #{company_name}):
+        #{job_description.presence || 'Not provided'}
+      SOURCE
+      generated: body,
+      style_note: "- This is a cover letter body: keep it as body paragraphs only, with no greeting, sign-off, or contact details, in the same language and tone."
+    )
+
+    guarded == body ? body : sanitize_body_only("LANGUAGE: #{detected_language}\n\n#{guarded}")
   end
 
   def job_description_section

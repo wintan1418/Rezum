@@ -73,6 +73,7 @@ class ResumeGeneratorService < AiService
       **Professional Summary:** Write a compelling 2-3 sentence summary using this formula:
       "[Strong Adjective] [Job Title] with [X] years of experience in [Domain]. [Signature achievement with metric if available]. [Key differentiator or specialized expertise relevant to target role]."
       - NEVER use generic phrases: "hard-working," "team player," "detail-oriented," "passionate," "results-oriented," "go-getter"
+      - NEVER use AI-tell words recruiters flag as machine-written: "delve," "pivotal," "dynamic professional," "results-driven professional," "proven track record," "synergy"
       - Tailor specifically to the target role
 
       **Experience Bullets:** Transform raw responsibilities into achievement-oriented bullets:
