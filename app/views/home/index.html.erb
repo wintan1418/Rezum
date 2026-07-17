@@ -27,7 +27,8 @@
   </script>
 <% end %>
 
-<div class="editorial">
+<div class="editorial" data-controller="reveal spotlight">
+  <div class="scroll-progress" aria-hidden="true"></div>
 
   <!-- ============================================================
        NAV
@@ -102,6 +103,11 @@
        ============================================================ -->
   <header class="hero" data-screen-label="01 Hero">
     <div class="wrap">
+      <div class="hero-meta" aria-hidden="true">
+        SYS · RezumFit <b>v3</b><br>
+        18 tools · 5 templates · 3 models<br>
+        Match rates <b>computed</b>, not guessed
+      </div>
       <div class="hero-eyebrow">
         <span class="dot"></span>
         <span class="mono">AI-powered career tools · Free to start</span>
@@ -109,11 +115,13 @@
 
       <h1>
         Is your resume<br>
-        <span class="ampline">getting <em>rejected</em>&thinsp;?</span>
+        <span class="ampline">getting
+          <span class="word-roll" role="text" aria-label="rejected?"><span class="roll-track" aria-hidden="true"><span class="roll-line"><em>rejected</em>&thinsp;?<span class="hero-star">✱</span></span><span class="roll-line"><em>ignored</em>&thinsp;?<span class="hero-star">✱</span></span><span class="roll-line"><em>buried</em>&thinsp;?<span class="hero-star">✱</span></span><span class="roll-line"><em>skipped</em>&thinsp;?<span class="hero-star">✱</span></span><span class="roll-line"><em>rejected</em>&thinsp;?<span class="hero-star">✱</span></span></span></span>
+        </span>
       </h1>
 
       <div class="sub">
-        <p class="lede">75% of resumes are rejected by ATS before a human ever sees them. RezumFit reads the listing, rewrites your draft, and returns a document that passes — without losing the voice that made it yours.</p>
+        <p class="lede">Most resumes are never truly read — they're buried by keyword searches and six-second skims. RezumFit reads the listing, rewrites your draft, and shows you the exact gaps, computed rather than guessed — without losing the voice that made it yours.</p>
         <div class="actions">
           <div class="pair">
             <%= link_to ats_checker_path, class: "btn-primary" do %>
@@ -154,6 +162,30 @@
         <span>McKinsey</span><span class="dot">✦</span>
       </div>
     </div>
+
+    <!-- Process ticker — counter-rotating on ink -->
+    <div class="marquee marquee-verbs" aria-hidden="true">
+      <div class="track">
+        <% 2.times do %>
+          <span>Parsed</span><span class="dot">✦</span>
+          <span>Matched</span><span class="dot">✦</span>
+          <span>Scored</span><span class="dot">✦</span>
+          <span>Tailored</span><span class="dot">✦</span>
+          <span>Fact-checked</span><span class="dot">✦</span>
+          <span>Downloaded</span><span class="dot">✦</span>
+          <span>Interviewed</span><span class="dot">✦</span>
+          <span>Hired</span><span class="dot">✦</span>
+          <span>Parsed</span><span class="dot">✦</span>
+          <span>Matched</span><span class="dot">✦</span>
+          <span>Scored</span><span class="dot">✦</span>
+          <span>Tailored</span><span class="dot">✦</span>
+          <span>Fact-checked</span><span class="dot">✦</span>
+          <span>Downloaded</span><span class="dot">✦</span>
+          <span>Interviewed</span><span class="dot">✦</span>
+          <span>Hired</span><span class="dot">✦</span>
+        <% end %>
+      </div>
+    </div>
   </header>
 
   <!-- ============================================================
@@ -161,14 +193,14 @@
        ============================================================ -->
   <section data-screen-label="02 Numbers">
     <div class="wrap">
-      <div class="stats">
+      <div class="stats" data-reveal-group>
         <div class="stat">
-          <div class="n"><em>+47</em></div>
+          <div class="n"><em data-controller="count-up" data-count-up-to-value="47" data-count-up-prefix-value="+">+47</em></div>
           <div class="l">Avg ATS score boost</div>
           <div class="d">After a single RezumFit pass</div>
         </div>
         <div class="stat">
-          <div class="n">30<em>s</em></div>
+          <div class="n"><span data-controller="count-up" data-count-up-to-value="30">30</span><em>s</em></div>
           <div class="l">Median draft time</div>
           <div class="d">From paste to polished</div>
         </div>
@@ -178,7 +210,7 @@
           <div class="d">vs. an untailored resume</div>
         </div>
         <div class="stat">
-          <div class="n">95<em>%</em></div>
+          <div class="n"><span data-controller="count-up" data-count-up-to-value="95">95</span><em>%</em></div>
           <div class="l">Satisfaction rate</div>
           <div class="d">From verified RezumFit users</div>
         </div>
@@ -198,7 +230,7 @@
       </div>
 
       <div class="artifact-wrap">
-        <article class="artifact" aria-label="Sample tailored resume">
+        <article class="artifact" aria-label="Sample tailored resume" data-reveal="left">
           <div class="topline">
             <div>
               <div class="name">Adaeze Eze</div>
@@ -245,7 +277,7 @@
           </p>
         </article>
 
-        <aside class="artifact-side">
+        <aside class="artifact-side" data-reveal="right">
           <div class="jd-card">
             <div class="label"><span>Job listing · pasted</span><span class="live">Analyzing</span></div>
             <div class="title">Lead Product Designer</div>
@@ -286,17 +318,136 @@
   </section>
 
   <!-- ============================================================
+       PRODUCT TOUR — real screenshots of the app
+       ============================================================ -->
+  <section data-screen-label="03b Product">
+    <style>
+      .tour-row{display:grid;grid-template-columns:7fr 4fr;gap:56px;align-items:center;margin-top:64px}
+      .tour-row.flip{grid-template-columns:4fr 7fr}
+      .tour-row.flip .tour-copy{order:-1}
+      .tour-frame{background:#FBFBFC;border:1px solid color-mix(in oklab, var(--ink) 14%, transparent);border-radius:10px;overflow:hidden;box-shadow:0 24px 60px color-mix(in oklab, var(--ink) 14%, transparent)}
+      .tour-bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid color-mix(in oklab, var(--ink) 10%, transparent);background:var(--paper-2)}
+      .tour-bar i{width:9px;height:9px;border-radius:999px;background:color-mix(in oklab, var(--ink) 18%, transparent)}
+      .tour-frame img{display:block;width:100%;height:auto}
+      .tour-copy .kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+      .tour-copy h3{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(24px,2.6vw,32px);letter-spacing:-0.02em;line-height:1.1;margin:10px 0 12px}
+      .tour-copy p{font-size:15px;line-height:1.6;color:var(--graphite);margin:0 0 16px}
+      .tour-copy a{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+      @media (max-width:900px){.tour-row,.tour-row.flip{grid-template-columns:1fr;gap:24px;margin-top:48px}.tour-row.flip .tour-copy{order:0}}
+    </style>
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">02 / Inside the product</div>
+        <h2>Not a mockup.<br>This is the <em>actual app.</em></h2>
+        <p>Calm, uncluttered, and built around one loop: upload, optimize, close the gaps, send. Here's what you're working in from day one.</p>
+      </div>
+
+      <div class="tour-stack">
+      <div class="tour-row">
+        <figure class="tour-frame" style="margin:0">
+          <div class="tour-bar"><i></i><i></i><i></i></div>
+          <%= image_tag "screenshots/dashboard.webp", alt: "RezumFit dashboard showing credits, resumes, cover letters, and average ATS score", loading: "lazy" %>
+        </figure>
+        <div class="tour-copy" data-reveal>
+          <span class="kicker">The dashboard</span>
+          <h3>Your whole search on one calm surface.</h3>
+          <p>Credits, resumes, cover letters, and your average ATS score at a glance — then straight into what's next. Fresh job matches from the scraper land at the bottom, ranked by how well they fit your actual skills.</p>
+          <%= link_to "Create your free account →", new_user_registration_path %>
+        </div>
+      </div>
+
+      <div class="tour-row flip">
+        <div class="tour-copy" data-reveal>
+          <span class="kicker">Tailoring Studio</span>
+          <h3>Close keyword gaps, one honest bullet at a time.</h3>
+          <p>Your match rate is computed by exact text matching against the job description — not AI guesswork, so it's the same number every time. Click a missing keyword and get three bullet suggestions grounded in your real experience. If a keyword isn't yours to claim, we say so instead of inventing it.</p>
+          <%= link_to "See how optimization works →", ats_checker_path %>
+        </div>
+        <figure class="tour-frame" style="margin:0">
+          <div class="tour-bar"><i></i><i></i><i></i></div>
+          <%= image_tag "screenshots/studio.webp", alt: "RezumFit Tailoring Studio with keyword match rate, missing keywords, and live resume", loading: "lazy" %>
+        </figure>
+      </div>
+
+      <div class="tour-row">
+        <figure class="tour-frame" style="margin:0">
+          <div class="tour-bar"><i></i><i></i><i></i></div>
+          <%= image_tag "screenshots/resume.webp", alt: "RezumFit resume page with before and after comparison, ATS analysis, and downloads", loading: "lazy" %>
+        </figure>
+        <div class="tour-copy" data-reveal>
+          <span class="kicker">Before &amp; after</span>
+          <h3>See every change before you send it.</h3>
+          <p>Original and optimized side by side, a changes view that highlights exactly what moved, and an ATS breakdown with your top improvements. When it reads right, download as PDF, Word, or plain text in any of five recruiter-tested templates.</p>
+          <%= link_to "Check your resume free →", ats_checker_path %>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HOW IT WORKS
+       ============================================================ -->
+  <section id="how-it-works" data-screen-label="05 How it works">
+    <div class="wrap">
+      <div class="sect-head">
+        <div class="index">03 / How it works</div>
+        <h2>Three quiet steps.<br><em>One</em> sharp document.</h2>
+        <p>No magic, no melodrama. RezumFit is a careful editor — not a generator — that respects what's already on the page.</p>
+      </div>
+    </div>
+
+    <div class="steps" data-reveal-group>
+      <div class="step">
+        <span class="num mono">Step 01</span>
+        <div class="ill">
+<pre class="diagram">┌─────────────────────┐
+│  resume.pdf      ⤴  │
+│  cover_v3.docx   ⤴  │
+│  <span class="acc">linkedin.json    ✓</span>  │
+└─────────────────────┘</pre>
+        </div>
+        <h4>Bring what you <em>already</em> have.</h4>
+        <p>Drop a PDF, a DOCX, a LinkedIn export — even a half-finished draft. We read structure, not just words.</p>
+      </div>
+      <div class="step">
+        <span class="num mono">Step 02</span>
+        <div class="ill">
+<pre class="diagram">                ┌──────────────┐
+   listing  ──▶ │  <span class="acc">tailor()</span>     │ ──▶ draft
+                └──────────────┘
+   "we're looking for someone who..."
+        ↳ <span class="acc">match: workflow, B2B, mentor</span></pre>
+        </div>
+        <h4>Paste the listing. We do the <em>reading</em>.</h4>
+        <p>RezumFit identifies what the role actually rewards — then re-orders, rewrites, and re-emphasises with surgical restraint.</p>
+      </div>
+      <div class="step">
+        <span class="num mono">Step 03</span>
+        <div class="ill">
+<pre class="diagram">  draft.v07 ──▶  <span class="acc">[ you, editing ]</span>  ──▶ final
+       ▲                  │
+       └──────  redo ◀────┘
+            "make it warmer"</pre>
+        </div>
+        <h4>Edit in plain <em>English</em>.</h4>
+        <p>"Make it warmer." "Cut the jargon." "Lead with the metric." Type the note; the document obliges. You're always editor-in-chief.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
        PERKS — what you get free
        ============================================================ -->
   <section data-screen-label="04 Perks">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">02 / What you get free</div>
+        <div class="index">04 / What you get free</div>
         <h2>Start <em>free.</em><br>No strings attached.</h2>
         <p>Every account comes loaded from day one — no credit card, no trial timer, no upsell ambush. Two credits, all the AI providers, real exports.</p>
       </div>
 
-      <div class="steps">
+      <div class="steps" data-reveal-group>
         <div class="step">
           <span class="num mono">Perk 01</span>
           <div class="ill">
@@ -364,56 +515,6 @@
     </div>
   </section>
 
-  <!-- ============================================================
-       HOW IT WORKS
-       ============================================================ -->
-  <section id="how-it-works" data-screen-label="05 How it works">
-    <div class="wrap">
-      <div class="sect-head">
-        <div class="index">03 / How it works</div>
-        <h2>Three quiet steps.<br><em>One</em> sharp document.</h2>
-        <p>No magic, no melodrama. RezumFit is a careful editor — not a generator — that respects what's already on the page.</p>
-      </div>
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <span class="num mono">Step 01</span>
-        <div class="ill">
-<pre class="diagram">┌─────────────────────┐
-│  resume.pdf      ⤴  │
-│  cover_v3.docx   ⤴  │
-│  <span class="acc">linkedin.json    ✓</span>  │
-└─────────────────────┘</pre>
-        </div>
-        <h4>Bring what you <em>already</em> have.</h4>
-        <p>Drop a PDF, a DOCX, a LinkedIn export — even a half-finished draft. We read structure, not just words.</p>
-      </div>
-      <div class="step">
-        <span class="num mono">Step 02</span>
-        <div class="ill">
-<pre class="diagram">                ┌──────────────┐
-   listing  ──▶ │  <span class="acc">tailor()</span>     │ ──▶ draft
-                └──────────────┘
-   "we're looking for someone who..."
-        ↳ <span class="acc">match: workflow, B2B, mentor</span></pre>
-        </div>
-        <h4>Paste the listing. We do the <em>reading</em>.</h4>
-        <p>RezumFit identifies what the role actually rewards — then re-orders, rewrites, and re-emphasises with surgical restraint.</p>
-      </div>
-      <div class="step">
-        <span class="num mono">Step 03</span>
-        <div class="ill">
-<pre class="diagram">  draft.v07 ──▶  <span class="acc">[ you, editing ]</span>  ──▶ final
-       ▲                  │
-       └──────  redo ◀────┘
-            "make it warmer"</pre>
-        </div>
-        <h4>Edit in plain <em>English</em>.</h4>
-        <p>"Make it warmer." "Cut the jargon." "Lead with the metric." Type the note; the document obliges. You're always editor-in-chief.</p>
-      </div>
-    </div>
-  </section>
 
   <!-- ============================================================
        WHY NOT JUST USE CHATGPT?
@@ -421,14 +522,16 @@
   <section data-screen-label="06 vs ChatGPT">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">04 / vs ChatGPT</div>
+        <div class="index">05 / vs ChatGPT</div>
         <h2>"Can't I just use <em>ChatGPT</em>?"</h2>
         <p>You could. But here's what that actually looks like — and why most candidates abandon the prompt-engineering approach by application three.</p>
       </div>
 
+      <div class="vs-wrap" data-reveal>
+      <div class="vs-badge" aria-hidden="true">VS</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden" class="vs-grid">
         <!-- ChatGPT side (paper) -->
-        <div style="background:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:20px">
+        <div data-reveal="left" style="background:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:20px">
           <div>
             <span class="mono" style="color:var(--muted)">Option A</span>
             <h3 style="font-family:'Fraunces',serif;font-size:28px;letter-spacing:-0.02em;font-weight:400;font-variation-settings:'opsz' 36;margin-top:8px">The ChatGPT way<em style="font-style:italic;color:var(--muted)">.</em></h3>
@@ -461,7 +564,7 @@
         </div>
 
         <!-- RezumFit side (ink dark) -->
-        <div style="background:var(--ink);color:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:20px;position:relative">
+        <div data-reveal="right" style="background:var(--ink);color:var(--paper);padding:40px 32px;display:flex;flex-direction:column;gap:20px;position:relative">
           <div style="position:absolute;top:-1px;right:24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:0 0 4px 4px">Recommended</div>
           <div>
             <span class="mono" style="color:color-mix(in oklab, var(--paper) 60%, transparent)">Option B</span>
@@ -494,6 +597,7 @@
           </div>
         </div>
       </div>
+      </div>
 
       <div style="text-align:center;padding:48px 0 24px">
         <p style="font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--muted);max-width:46ch;margin:0 auto 24px;line-height:1.45;font-style:italic">ChatGPT is a blank canvas. RezumFit is the finished document.</p>
@@ -512,7 +616,14 @@
        MID-PAGE CTA
        ============================================================ -->
   <section data-screen-label="07 Mid CTA" style="padding:48px 0">
-    <div class="wrap" style="text-align:center;border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding:64px 0">
+    <div class="wrap cta-kinetic" style="text-align:center;border-block:1px solid color-mix(in oklab, var(--ink) 12%, transparent);padding:88px 0">
+      <div class="cta-ghost" aria-hidden="true">
+        <div class="track">
+          <% 2.times do %>
+            <span>tailored</span><span>·</span><span>scored</span><span>·</span><span>grounded</span><span>·</span><span>hired</span><span>·</span>
+          <% end %>
+        </div>
+      </div>
       <span class="mono" style="color:var(--accent)">Ready to begin</span>
       <h2 style="font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);letter-spacing:-0.035em;line-height:0.95;font-weight:400;font-variation-settings:'opsz' 96;margin-top:16px;text-wrap:balance">Watch your ATS score <em style="font-style:italic;color:var(--accent)">jump</em> in 30 seconds.</h2>
       <p style="color:var(--muted);font-size:16px;max-width:48ch;margin:18px auto 32px;line-height:1.55">Upload your resume, paste any listing, and see the difference before you commit. No credit card required.</p>
@@ -529,13 +640,13 @@
   <section id="features" data-screen-label="08 Features">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">05 / Features</div>
+        <div class="index">06 / Features</div>
         <h2>Everything you need<br>to <em>land</em> the job.</h2>
         <p>Nine quiet tools, working in concert. Each one designed to give your application the unfair advantage it deserves.</p>
       </div>
     </div>
 
-    <div class="steps steps-3">
+    <div class="steps steps-3" data-reveal-group>
       <% [
         ["Feature 01", "ATS Optimization", "Get a compatibility score and optimize your resume to pass the applicant tracking systems that screen 75% of applications."],
         ["Feature 02", "AI Cover Letters", "Generate personalized cover letters that match the job posting, with customizable tone and length. Get multiple variations instantly."],
@@ -626,7 +737,7 @@
   <section data-screen-label="10 Comparison">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">06 / Side by side</div>
+        <div class="index">07 / Side by side</div>
         <h2>Manual editing<br>vs. <em>RezumFit</em>.</h2>
         <p>The same resume, the same listing, two different approaches. Here's what changes when AI does the heavy lifting.</p>
       </div>
@@ -640,7 +751,7 @@
               <th style="text-align:center;padding:18px 24px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:500;width:30%;background:var(--ink);color:var(--accent)">RezumFit</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-reveal-group>
             <% [
               ["Time per resume", "45–60 minutes", "30 seconds"],
               ["ATS pass rate", "~34%", "89%"],
@@ -668,13 +779,13 @@
   <section data-screen-label="11 Platform">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">07 / Platform tools</div>
+        <div class="index">08 / Platform tools</div>
         <h2>More than just<br>a resume <em>optimizer</em>.</h2>
         <p>A full suite of AI-powered tools to manage your entire job search — from first application to signed offer.</p>
       </div>
     </div>
 
-    <div class="steps steps-2">
+    <div class="steps steps-2" data-reveal-group>
       <% [
         ["Tool 01", "Job Application Tracker", "Track every application on a Kanban board. Set follow-up reminders, link resumes and cover letters, and never lose a thread."],
         ["Tool 02", "AI Interview Prep", "Get role-specific interview questions with STAR-method answer frameworks. Walk in prepared, walk out confident."],
@@ -697,12 +808,12 @@
   <section data-screen-label="12 Before / After">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">08 / Before & after</div>
+        <div class="index">09 / Before & after</div>
         <h2>See the difference<br>AI <em>actually</em> makes.</h2>
         <p>Average ATS score improvement of 47 points after a single optimization. Same resume. Same listing. Different document.</p>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden" class="ba-grid">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:color-mix(in oklab, var(--ink) 12%, transparent);border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:8px;overflow:hidden" class="ba-grid" data-reveal="scale">
         <!-- Before -->
         <div style="background:var(--paper);padding:40px 32px">
           <div style="display:flex;align-items:baseline;justify-content:space-between">
@@ -754,7 +865,7 @@
         <span class="mono" style="color:var(--accent)">Proven results</span>
         <h2 style="font-family:'Fraunces',serif;font-size:clamp(36px,5vw,72px);letter-spacing:-0.035em;line-height:0.95;font-weight:400;font-variation-settings:'opsz' 96;color:var(--paper);margin-top:14px;text-wrap:balance">Numbers that speak <em style="font-style:italic;color:var(--accent)">for themselves</em>.</h2>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-block:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding:48px 0;margin-top:56px" class="roi-grid">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-block:1px solid color-mix(in oklab, var(--paper) 14%, transparent);padding:48px 0;margin-top:56px" class="roi-grid" data-reveal-group>
           <% [["3×", "More interview callbacks"], ["89%", "Avg ATS score after"], ["+47", "ATS point improvement"]].each_with_index do |(n, l), i| %>
             <div style="<%= 'border-left:1px solid color-mix(in oklab, var(--paper) 14%, transparent);' unless i == 0 %>padding:0 24px">
               <div style="font-family:'Fraunces',serif;font-size:clamp(56px,8vw,112px);letter-spacing:-0.04em;line-height:0.9;font-weight:400;font-variation-settings:'opsz' 144;color:var(--paper)"><em style="font-style:italic;color:var(--accent)"><%= n %></em></div>
@@ -781,7 +892,7 @@
   <section id="pricing" data-screen-label="14 Pricing">
     <div class="wrap">
       <div class="sect-head">
-        <div class="index">09 / Pricing</div>
+        <div class="index">10 / Pricing</div>
         <h2>Simple <em>pricing.</em><br>Honest defaults.</h2>
         <p>Start free. Upgrade when you need more power. Credits never expire — buy what you need, use it when you're ready.</p>
       </div>
@@ -793,7 +904,7 @@
         </span>
       </div>
 
-      <div class="pricing pricing-4">
+      <div class="pricing pricing-4" data-reveal-group="scale">
         <!-- Free -->
         <div class="plan">
           <span class="tag">For trying it</span>
@@ -887,7 +998,7 @@
         </span>
       </div>
 
-      <div class="steps steps-3">
+      <div class="steps steps-3" data-reveal-group>
         <% [
           ["★★★★★", "RezumFit helped me land a senior engineering role at a top tech company. My ATS score went from 31% to 92% and I got 3× more callbacks.", "Sarah K.", "Software Engineer", "SK"],
           ["★★★★☆", "Cover letter generator is great and saves me hours. The only reason it's not 5 stars is I wish there were more template layouts. AI output quality is top notch.", "Marcus R.", "Product Manager", "MR"],
@@ -939,7 +1050,7 @@
        ============================================================ -->
   <section id="faq" data-screen-label="17 FAQ">
     <div class="wrap">
-      <div class="faq">
+      <div class="faq" data-reveal-group>
         <h2>Reasonable <em>questions,</em><br>asked often.</h2>
         <div class="list">
           <% if defined?(FaqHelper) && FaqHelper.const_defined?(:FAQ_ITEMS) && FaqHelper::FAQ_ITEMS.any? %>

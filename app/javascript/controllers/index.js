@@ -102,3 +102,12 @@ application.register("tailor-studio", TailorStudioController)
 
 import PollResultController from "./poll_result_controller"
 application.register("poll-result", PollResultController)
+
+import RevealController from "./reveal_controller"
+application.register("reveal", RevealController)
+
+import CountUpController from "./count_up_controller"
+application.register("count-up", CountUpController)
+
+import SpotlightController from "./spotlight_controller"
+application.register("spotlight", SpotlightController)

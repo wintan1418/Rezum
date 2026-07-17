@@ -164,6 +164,282 @@ html:has(.editorial), body:has(.editorial){overflow-x:clip}
   color:var(--accent) !important;
   background:none !important;
 }
+/* ===========================================================
+   Motion system — Framer-Motion-style reveals, scroll-driven
+   parallax, and page transitions. Everything respects
+   prefers-reduced-motion and degrades to static content.
+   =========================================================== */
+@media (prefers-reduced-motion: no-preference){
+
+  /* Scroll reveals (driven by reveal_controller.js) */
+  [data-reveal].reveal-init{
+    opacity:0;
+    transform:translateY(26px);
+    filter:blur(5px);
+    transition:
+      opacity .8s cubic-bezier(.22,1,.36,1),
+      transform .8s cubic-bezier(.22,1,.36,1),
+      filter .6s ease-out;
+    transition-delay:calc(var(--reveal-i, 0) * 90ms);
+    will-change:opacity,transform,filter;
+  }
+  [data-reveal="left"].reveal-init{transform:translateX(-36px)}
+  [data-reveal="right"].reveal-init{transform:translateX(36px)}
+  [data-reveal="scale"].reveal-init{transform:scale(.94) translateY(14px)}
+  .reveal-init.is-revealed{opacity:1;transform:none;filter:none}
+
+  /* ATS score bar fills only once its card is revealed */
+  .artifact-side .bar i{transition:width 1.2s cubic-bezier(.22,1,.36,1) .45s}
+  .artifact-side.reveal-init:not(.is-revealed) .bar i{width:0 !important}
+
+  /* Hero entrance choreography — plays on load, no scroll needed */
+  @keyframes hero-in{
+    from{opacity:0;transform:translateY(24px);filter:blur(4px)}
+    to{opacity:1;transform:none;filter:none}
+  }
+  .editorial .hero .wrap > *{animation:hero-in .85s cubic-bezier(.22,1,.36,1) backwards}
+  .editorial .hero .wrap > *:nth-child(1){animation-delay:.08s}
+  .editorial .hero .wrap > *:nth-child(2){animation-delay:.2s}
+  .editorial .hero .wrap > *:nth-child(3){animation-delay:.34s}
+  .editorial .hero .marquee{animation:hero-in 1s ease-out .55s backwards}
+
+  /* Native scroll-driven parallax (Chromium; others fall back to reveals) */
+  @supports (animation-timeline: view()){
+    .editorial .tour-frame{
+      animation:tour-drift linear both;
+      animation-timeline:view();
+      animation-range:entry 0% cover 45%;
+    }
+    @keyframes tour-drift{
+      from{transform:translateY(40px) scale(.965);opacity:.4}
+      to{transform:none;opacity:1}
+    }
+    .editorial .sect-head h2{
+      animation:head-rise linear both;
+      animation-timeline:view();
+      animation-range:entry 0% entry 90%;
+    }
+    @keyframes head-rise{
+      from{transform:translateY(18px)}
+      to{transform:none}
+    }
+  }
+
+  /* Micro-interactions: cards physically respond to the cursor */
+  .editorial .tour-frame,
+  .editorial .steps > *{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease}
+  .editorial .tour-frame:hover{transform:translateY(-5px);box-shadow:0 32px 70px color-mix(in oklab, var(--ink) 20%, transparent)}
+  .editorial .steps > *:hover{transform:translateY(-4px)}
+}
+
+/* ===========================================================
+   2030 layer — post-modern editorial chrome: ghost typography,
+   scroll beam, auto section numerals, kinetic tickers, grain.
+   =========================================================== */
+.editorial{position:relative;counter-reset:sect}
+
+/* Film grain over everything — barely-there analog texture */
+.editorial::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9990;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+
+/* Scroll progress beam — cobalt thread across the top of the page */
+.editorial .scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--accent);transform-origin:0 50%;transform:scaleX(0);z-index:9999;pointer-events:none}
+@supports (animation-timeline: scroll()){
+  .editorial .scroll-progress{animation:beam-grow linear both;animation-timeline:scroll()}
+}
+@keyframes beam-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* Hero word roll — the fate of the resume cycles in the headline */
+.editorial .hero .wrap{position:relative;z-index:1}
+.editorial .word-roll{display:inline-block;overflow:hidden;height:1.16em;vertical-align:-0.26em}
+.editorial .word-roll .roll-track{display:flex;flex-direction:column}
+.editorial .word-roll .roll-line{display:block;height:1.16em}
+@media (prefers-reduced-motion: no-preference){
+  .editorial .word-roll .roll-track{animation:word-roll 10s cubic-bezier(.76,0,.24,1) infinite}
+}
+@keyframes word-roll{
+  0%,19%{transform:translateY(0)}
+  25%,44%{transform:translateY(-1.16em)}
+  50%,69%{transform:translateY(-2.32em)}
+  75%,94%{transform:translateY(-3.48em)}
+  100%{transform:translateY(-4.64em)}
+}
+
+/* Scan beam — an ATS reading pass sweeps the headline every few seconds */
+.editorial .hero h1{position:relative}
+.editorial .hero h1::after{
+  content:"";position:absolute;top:-6%;bottom:-6%;left:0;width:130px;
+  background:linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 22%, transparent), transparent);
+  transform:skewX(-14deg) translateX(-200px);
+  mix-blend-mode:multiply;pointer-events:none;opacity:0;
+}
+@media (prefers-reduced-motion: no-preference){
+  .editorial .hero h1::after{animation:scan-sweep 7s ease-in-out infinite}
+}
+@keyframes scan-sweep{
+  0%{transform:skewX(-14deg) translateX(-200px);opacity:0}
+  6%{opacity:1}
+  38%{transform:skewX(-14deg) translateX(calc(100vw - 180px));opacity:1}
+  44%,100%{transform:skewX(-14deg) translateX(calc(100vw - 180px));opacity:0}
+}
+
+/* Hero metadata rail — technical chrome, top right */
+.editorial .hero-meta{
+  position:absolute;top:10px;right:var(--pad, 48px);text-align:right;
+  font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);line-height:2;
+}
+.editorial .hero-meta b{color:var(--accent);font-weight:500}
+
+/* Spinning accent glyph in the headline */
+.editorial .hero-star{display:inline-block;color:var(--accent);font-style:normal;font-size:.5em;vertical-align:.35em;margin-left:.08em}
+@media (prefers-reduced-motion: no-preference){
+  .editorial .hero-star{animation:star-spin 16s linear infinite}
+}
+@keyframes star-spin{to{transform:rotate(360deg)}}
+
+/* Second ticker — process verbs, counter-rotating on ink */
+.editorial .marquee-verbs{margin-top:0;border-top:none;background:var(--ink);border-block:1px solid var(--ink)}
+.editorial .marquee-verbs .track{animation-direction:reverse;animation-duration:44s;color:color-mix(in oklab, var(--paper) 80%, transparent)}
+.editorial .marquee-verbs .track span{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-style:normal;font-weight:500}
+.editorial .marquee-verbs .track .dot{color:var(--accent)}
+
+/* Auto ghost numerals on every section head — no markup needed */
+.editorial .sect-head{position:relative;counter-increment:sect}
+.editorial .sect-head::before{
+  content:counter(sect, decimal-leading-zero);
+  position:absolute;right:0;top:28px;z-index:0;pointer-events:none;user-select:none;
+  font-family:"Fraunces",serif;font-size:clamp(100px,13vw,200px);line-height:1;letter-spacing:-0.04em;
+  color:transparent;-webkit-text-stroke:1px color-mix(in oklab, var(--ink) 13%, transparent);
+}
+.editorial .sect-head > *{position:relative;z-index:1}
+
+/* Product tour — sticky card deck: each screenshot pins, the next
+   slides over it. Pure CSS, the modern "stacked panels" scroll pattern. */
+.editorial .tour-stack{display:flex;flex-direction:column;gap:40px;padding-bottom:64px}
+.editorial .tour-stack .tour-row{
+  position:sticky;background:var(--paper);
+  border:1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  border-radius:16px;padding:40px 44px;margin-top:0;
+  box-shadow:0 -18px 50px color-mix(in oklab, var(--ink) 10%, transparent);
+}
+.editorial .tour-stack .tour-row:nth-child(1){top:96px}
+.editorial .tour-stack .tour-row:nth-child(2){top:112px}
+.editorial .tour-stack .tour-row:nth-child(3){top:128px}
+@media (max-width:900px){
+  .editorial .tour-stack .tour-row{position:static;padding:24px}
+}
+
+/* Stats band — inverted to ink, cobalt underlines draw in on reveal */
+.editorial section[data-screen-label="02 Numbers"]{background:var(--ink);color:var(--paper)}
+.editorial section[data-screen-label="02 Numbers"] .stats{border-color:color-mix(in oklab, var(--paper) 16%, transparent)}
+.editorial section[data-screen-label="02 Numbers"] .stat .n{color:var(--paper)}
+.editorial section[data-screen-label="02 Numbers"] .stat .n em{color:var(--accent)}
+.editorial section[data-screen-label="02 Numbers"] .stat .l{color:var(--paper)}
+.editorial section[data-screen-label="02 Numbers"] .stat .d{color:color-mix(in oklab, var(--paper) 55%, transparent)}
+.editorial section[data-screen-label="02 Numbers"] .stat{position:relative}
+.editorial section[data-screen-label="02 Numbers"] .stat::after{
+  content:"";position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--accent);
+  transition:width .9s cubic-bezier(.22,1,.36,1) .3s;
+}
+.editorial section[data-screen-label="02 Numbers"] .stat.is-revealed::after{width:44px}
+
+/* Cursor spotlight — cards carry a soft cobalt glow that follows the mouse */
+.editorial .spot-card{position:relative;overflow:hidden}
+.editorial .spot-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;z-index:0;
+  background:radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--accent) 9%, transparent), transparent 70%);
+  transition:opacity .3s ease;
+}
+.editorial .spot-card:hover::before{opacity:1}
+.editorial .spot-card > *{position:relative;z-index:1}
+
+/* How it works — a cobalt thread draws itself across the three steps */
+.editorial #how-it-works .steps{position:relative}
+.editorial #how-it-works .steps::after{
+  content:"";position:absolute;top:-1px;left:0;height:2px;width:100%;background:var(--accent);
+  transform:scaleX(0);transform-origin:0 50%;z-index:2;
+}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .editorial #how-it-works .steps::after{
+      animation:thread-draw linear both;
+      animation-timeline:view();
+      animation-range:entry 20% cover 70%;
+    }
+  }
+}
+@keyframes thread-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.editorial #how-it-works .step .num{transition:color .5s ease .3s}
+.editorial #how-it-works .step.is-revealed .num{color:var(--accent)}
+
+/* vs ChatGPT — the two philosophies collide; a spring-loaded VS medallion */
+.editorial .vs-wrap{position:relative}
+.editorial .vs-badge{
+  position:absolute;top:50%;left:50%;z-index:5;width:64px;height:64px;margin:-32px 0 0 -32px;
+  display:flex;align-items:center;justify-content:center;border-radius:999px;
+  background:var(--accent);color:#fff;font-family:"JetBrains Mono",monospace;
+  font-size:13px;font-weight:700;letter-spacing:.08em;
+  box-shadow:0 8px 30px color-mix(in oklab, var(--accent) 45%, transparent);
+  transform:scale(0) rotate(-24deg);
+}
+.editorial .vs-wrap.is-revealed .vs-badge{
+  transform:scale(1) rotate(0deg);
+  transition:transform .7s cubic-bezier(.34,1.56,.64,1) .55s;
+}
+@media (max-width:960px){.editorial .vs-badge{display:none}}
+
+/* Mid CTA — giant outlined verbs stream behind the call to action */
+.editorial .cta-kinetic{position:relative;overflow:hidden}
+.editorial .cta-kinetic .cta-ghost{
+  position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);
+  white-space:nowrap;pointer-events:none;user-select:none;z-index:0;
+}
+.editorial .cta-kinetic .cta-ghost .track{
+  display:inline-flex;gap:48px;
+  font-family:"Fraunces",serif;font-style:italic;font-weight:400;font-size:clamp(90px,11vw,170px);
+  line-height:1;letter-spacing:-0.03em;color:transparent;
+  -webkit-text-stroke:1px color-mix(in oklab, var(--ink) 10%, transparent);
+}
+@media (prefers-reduced-motion: no-preference){
+  .editorial .cta-kinetic .cta-ghost .track{animation:edit-slide 70s linear infinite}
+}
+.editorial .cta-kinetic > *:not(.cta-ghost){position:relative;z-index:1}
+
+/* Comparison rows cascade in */
+.editorial table tr[data-reveal]{transition-duration:.55s}
+
+/* Pricing — cards breathe; hovered card sharpens */
+@media (prefers-reduced-motion: no-preference){
+  .editorial .pricing > *:hover{transform:translateY(-6px)}
+  .editorial .pricing > *{transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease}
+}
+
+/* Figure labels — the artifact reads like a plate in a manual */
+.editorial .artifact::after{
+  content:"FIG. 01 — THE DOCUMENT";
+  position:absolute;bottom:16px;right:20px;
+  font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;
+  color:var(--muted);text-transform:uppercase;
+}
+
+@media (max-width: 1100px){
+  .editorial .hero-ghost,.editorial .hero-meta{display:none}
+  .editorial .sect-head::before{font-size:clamp(72px,16vw,120px);top:44px}
+}
+
+/* Cross-page transitions (Turbo 8 + View Transitions API) */
+::view-transition-old(root),
+::view-transition-new(root){animation-duration:.22s}
+@media (prefers-reduced-motion: reduce){
+  ::view-transition-old(root),
+  ::view-transition-new(root){animation:none}
+}
+
 .editorial ::selection{background:var(--ink);color:var(--paper)}
 .editorial a{color:inherit;text-decoration:none}
 .editorial .serif{font-family:"Fraunces",Georgia,serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 0;letter-spacing:-0.02em;line-height:0.92}
