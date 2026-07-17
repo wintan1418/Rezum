@@ -112,7 +112,7 @@
 
       <!-- Content -->
       <div class="article-prose">
-        <%= sanitize @article.content, tags: %w[h1 h2 h3 h4 h5 h6 p br a ul ol li strong em b i u s del blockquote pre code img hr div span table thead tbody tr th td figure figcaption action-text-attachment], attributes: %w[href src alt class id target rel width height sgid content-type url filename filesize] %>
+        <%= sanitize @article.content, tags: %w[h1 h2 h3 h4 h5 h6 p br a ul ol li strong em b i u s del blockquote pre code img hr div span table thead tbody tr th td figure figcaption action-text-attachment], attributes: %w[href src alt class id target rel width height start sgid content-type url filename filesize] %>
       </div>
 
       <!-- Tags -->

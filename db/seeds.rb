@@ -6,6 +6,8 @@ load Rails.root.join('db', 'seeds', 'countries.rb')
 
 # Load blog articles
 load Rails.root.join('db', 'seeds', 'articles.rb')
+load Rails.root.join('db', 'seeds', 'articles_batch2.rb')
+load Rails.root.join('db', 'seeds', 'articles_batch3.rb')
 
 # Load test accounts (development only)
 if Rails.env.development?
