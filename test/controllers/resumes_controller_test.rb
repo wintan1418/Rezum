@@ -34,6 +34,25 @@ class ResumesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "show renders optimized text as formatted markup, not a raw blob" do
+    @optimized.update!(optimized_content: "Jane Doe\njane@example.com\n\nPROFESSIONAL SUMMARY\nEngineer with eight years shipping payments infrastructure.\n\nSKILLS\n- Ruby\n- Postgres")
+    get resume_path(@optimized)
+    assert_response :success
+    assert_select "div.resume-text h3.rt-h", text: "PROFESSIONAL SUMMARY"
+    assert_select "div.resume-text li.rt-li", text: "Ruby"
+    assert_select "button[data-mode=formatted]", count: 0
+  end
+
+  test "show defaults to the inline template when sections were parsed" do
+    @optimized.resume_sections.create!(section_type: "summary", content: { "text" => "Engineer with eight years shipping payments infrastructure." }, position: 0)
+    @optimized.resume_sections.create!(section_type: "skills", content: { "items" => [ "Ruby", "Postgres" ] }, position: 1)
+    get resume_path(@optimized)
+    assert_response :success
+    assert_select "button[data-mode=formatted].bg-blue-600", text: "Formatted"
+    assert_select "div[data-mode=formatted] .resume-sheet"
+    assert_select "div[data-mode=side-by-side].hidden"
+  end
+
   test "should create resume with valid params" do
     assert_difference("Resume.count") do
       post resumes_path, params: {

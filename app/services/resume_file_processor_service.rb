@@ -184,6 +184,10 @@ class ResumeFileProcessorService
                     .gsub(/[\u0000-\u001F&&[^\n\t]]/, "") # Control characters except newline and tab
                     .gsub(/\u00A0/, " ") # Non-breaking spaces
 
+    # Extractors emit one line per visual line: rejoin wrapped sentences and
+    # split two-column bullet grids that were read across the page
+    cleaned = ResumeTextReflowService.new(cleaned).reflow
+
     # Basic content validation
     if cleaned.length < 50
       raise ResumeProcessingError.new("Extracted text is too short. Please ensure your resume contains readable text.")

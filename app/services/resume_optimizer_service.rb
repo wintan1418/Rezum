@@ -207,6 +207,7 @@ class ResumeOptimizerService < AiService
          - Keep consistent date format throughout (Mon YYYY - Mon YYYY)
          - 3-5 bullets per recent role, 2-3 for older roles
          - Most impactful bullet first within each role
+         - The ORIGINAL RESUME may contain line breaks mid-sentence or several bullets squeezed onto one line — these are text-extraction artifacts, not content. Reflow them into clean sentences and one bullet per line.
 
       #{industry_context}
 
@@ -215,6 +216,15 @@ class ResumeOptimizerService < AiService
       - NEVER include text like "This resume has been optimized..." or "Key changes made..." or any explanation
       - Do NOT wrap output in code fences or markdown formatting
       - The output should be ready to use as-is
+
+      ## OUTPUT LAYOUT (plain text that software parses into a designed template — follow EXACTLY)
+      - Line 1: the candidate's full name. Line 2: contact details on ONE line separated by " | " (phone | email | location | links). Then a blank line.
+      - Every section header on its own line in UPPERCASE (e.g. PROFESSIONAL SUMMARY, SKILLS, PROFESSIONAL EXPERIENCE, EDUCATION, CERTIFICATIONS), with one blank line before it. Section headers carry no bullets, colons, or decoration.
+      - PROFESSIONAL EXPERIENCE: each role begins with exactly one line in the form "Job Title | Company | Mon YYYY - Mon YYYY", followed by its bullets, then a blank line before the next role.
+      - EDUCATION: one line per entry in the form "Degree | Institution | Year" (add a second line only for honors or relevant coursework).
+      - SKILLS: comma-separated on one line, or a few lines in the form "Category: skill, skill, skill".
+      - Every bullet is ONE line that starts with "- ". Never place two bullets on one line, and never break a bullet or sentence across lines, however long it is.
+      - No markdown of any kind: no **bold**, no # headings, no tables, no horizontal rules.
 
       ## EXAMPLE OF AN EXCELLENT BULLET POINT
       BEFORE: "Responsible for managing social media accounts and creating content"

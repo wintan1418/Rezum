@@ -6,7 +6,7 @@ class ResumeContentParserService
     "summary" => /\A\s*(summary|profile|objective|about\s*me|professional\s*summary|career\s*summary|personal\s*statement|profil(\s*professionnel)?|r[ée]sum[ée](\s*professionnel)?|[àa]\s*propos(\s*de\s*moi)?|objectif(\s*professionnel)?|pr[ée]sentation|perfil(\s*profesional|\s*profissional)?|resumen(\s*profesional)?|extracto|acerca\s*de\s*m[íi]|resumo(\s*profissional)?|sobre\s*mim|zusammenfassung|kurzprofil|berufsprofil|[üu]ber\s*mich|profilo(\s*professionale)?|riepilogo|sommario|obiettivo)\s*\z/i,
     "experience" => /\A\s*(experience|work\s*history|employment|professional\s*experience|work\s*experience|career\s*history|exp[ée]riences?(\s*professionnelles?)?|parcours\s*professionnel|experiencia(\s*profesional|\s*laboral)?|historial\s*laboral|trayectoria(\s*profesional)?|experi[êe]ncia(\s*profissional)?|berufserfahrung|berufliche\s*erfahrung|arbeitserfahrung|beruflicher\s*werdegang|esperienza(\s*professionale|\s*lavorativa)?|esperienze\s*lavorative)\s*\z/i,
     "education" => /\A\s*(education|academic|qualifications|degrees?|schooling|formations?(\s*acad[ée]mique)?|[ée]tudes|dipl[ôo]mes?|scolarit[ée]|educaci[óo]n|formaci[óo]n(\s*acad[ée]mica)?|estudios|educa[çc][ãa]o|forma[çc][ãa]o(\s*acad[êe]mica)?|escolaridade|ausbildung|bildung|studium|akademische\s*ausbildung|istruzione|formazione|educazione|studi)\s*\z/i,
-    "skills" => /\A\s*(skills|technical\s*skills|core\s*competencies|competencies|proficiencies|expertise|technologies|comp[ée]tences(\s*techniques)?|savoir-faire|aptitudes|habilidades(\s*t[ée]cnicas)?|competencias|conocimientos|compet[êe]ncias|f[äa]higkeiten|kenntnisse|kompetenzen|technische\s*f[äa]higkeiten|competenze(\s*tecniche)?|abilit[àa])\s*\z/i,
+    "skills" => /\A\s*(skills|technical\s*skills|core\s*competencies|(?:digital|technical|software|it)?\s*tools|software|tech\s*stack|competencies|proficiencies|expertise|technologies|comp[ée]tences(\s*techniques)?|savoir-faire|aptitudes|habilidades(\s*t[ée]cnicas)?|competencias|conocimientos|compet[êe]ncias|f[äa]higkeiten|kenntnisse|kompetenzen|technische\s*f[äa]higkeiten|competenze(\s*tecniche)?|abilit[àa])\s*\z/i,
     "certifications" => /\A\s*(certifications?|licenses?|accreditations?|credentials?|certificats?|licences?|habilitations?|certificaciones|certificados?|licencias|certifica[çc][õo]es|licen[çc]as|zertifikate|zertifizierungen|lizenzen|certificazioni|certificati)\s*\z/i,
     "projects" => /\A\s*(projects?|portfolio|key\s*projects|selected\s*projects|projets?|proyectos?|projetos?|projekte|progetti)\s*\z/i,
     "languages" => /\A\s*(languages?|language\s*skills|langues|idiomas?|l[íi]nguas?|sprachen|sprachkenntnisse|lingue)\s*\z/i,
@@ -21,10 +21,25 @@ class ResumeContentParserService
   DEGREE_RE = /\b(bachelor|master|mba|ph\.?d|b\.?s\.?c?|m\.?s\.?c?|b\.?a\.?|m\.?a\.?|associate|diploma|certificate|degree|bsc|msc)\b/i
   SCHOOL_RE = /\b(university|college|institute|school|academy|polytechnic|microverse|bootcamp)\b/i
 
+  # Leading qualifiers that resumes commonly prefix to standard headers
+  # ("Core Skills", "Relevant Experience", "Key Projects"). Stripped before
+  # matching so the base header patterns still apply.
+  HEADER_QUALIFIER_RE = /\A(core|key|relevant|selected|notable|main|principal|primary|other|additional|professional|technical|work|academic|personal)\s+/i
+
   def initialize(content)
     @content = content.to_s.strip
     # Strip any remaining code fences
     @content = @content.sub(/\A\s*```\w*\s*\n?/, "").sub(/\n?\s*```\s*\z/, "").strip
+  end
+
+  # Public so other services (reflow, text renderer) can recognise a
+  # section header line without re-implementing the patterns.
+  def self.section_header?(line)
+    new("").send(:detect_section_type, line).present?
+  end
+
+  def self.section_type_for(line)
+    new("").send(:detect_section_type, line)
   end
 
   def parse
@@ -95,8 +110,11 @@ class ResumeContentParserService
 
     # Regexp /i doesn't case-fold accented characters (É → é), so match
     # against Unicode-downcased text for non-English headers.
+    candidates = [ cleaned.downcase, stripped.downcase ]
+    candidates += candidates.map { |c| c.sub(HEADER_QUALIFIER_RE, "") }
+
     SECTION_PATTERNS.each do |type, pattern|
-      return type if cleaned.downcase.match?(pattern) || stripped.downcase.match?(pattern)
+      return type if candidates.any? { |c| c.match?(pattern) }
     end
 
     nil
@@ -106,19 +124,36 @@ class ResumeContentParserService
 
   def build_structured_sections(raw_sections)
     result = []
-    position = 0
 
     raw_sections.each do |section|
       next if section[:type] == "header"
+      next if section[:type] == "location"
 
       content = build_content(section[:type], section[:lines])
       next if content_empty?(section[:type], content)
 
-      result << { section_type: section[:type], content: content, position: position }
-      position += 1
+      existing = result.find { |r| r[:section_type] == section[:type] }
+      if existing
+        merge_content!(existing[:content], content)
+      else
+        result << { section_type: section[:type], content: content, position: result.size }
+      end
     end
 
     result
+  end
+
+  # A resume can carry two headers that map to one section type ("Core
+  # Skills" and "Digital Tools" are both skills). Rather than rendering two
+  # sections with the same label, fold the later one into the first.
+  def merge_content!(target, extra)
+    if target.key?("items")
+      target["items"] = (Array(target["items"]) + Array(extra["items"])).uniq
+    elsif target.key?("entries")
+      target["entries"] = Array(target["entries"]) + Array(extra["entries"])
+    elsif target.key?("text")
+      target["text"] = [ target["text"], extra["text"] ].reject(&:blank?).join("\n\n")
+    end
   end
 
   def build_content(type, lines)
@@ -197,6 +232,12 @@ class ResumeContentParserService
   def classify_experience_block(header_lines, bullets)
     entry = { "title" => "", "company" => "", "dates" => "", "bullets" => bullets }
 
+    # Canonical one-line form the optimizer is instructed to emit:
+    #   "Job Title | Company | Mon YYYY - Mon YYYY"
+    if (pipe_entry = parse_pipe_role_line(header_lines, bullets))
+      return pipe_entry
+    end
+
     date_line = nil
     title_line = nil
     company_line = nil
@@ -252,6 +293,27 @@ class ResumeContentParserService
     remaining.each { |l| entry["bullets"].unshift(l.strip) } if remaining.any?
 
     entry
+  end
+
+  def parse_pipe_role_line(header_lines, bullets)
+    # Only the canonical form, where the pipe line opens the role. A pipe
+    # line in second position is the stacked "Title / Company | City | Dates"
+    # layout, which the heuristic classifier below already handles.
+    first = header_lines.first.to_s
+    return nil unless first.include?("|") && first.match?(DATE_RE)
+
+    parts = first.split("|").map(&:strip).reject(&:blank?)
+    date_parts = parts.select { |p| p.match?(DATE_RE) && p.length <= 40 }
+    text_parts = parts - date_parts
+    return nil if text_parts.empty? || date_parts.empty?
+
+    extra = header_lines.drop(1)
+    {
+      "title" => text_parts[0].to_s,
+      "company" => (text_parts[1] || extra.shift).to_s,
+      "dates" => date_parts.join(" – "),
+      "bullets" => extra + bullets
+    }
   end
 
   def looks_like_title?(text)

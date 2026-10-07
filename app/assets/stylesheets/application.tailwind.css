@@ -1106,3 +1106,26 @@ trix-toolbar + trix-editor {
   color: #6b7280;
   border-left: 3px solid transparent;
 }
+
+/* ===========================================================
+   Resume text renderer (ResumesHelper#formatted_resume_html) and the
+   inline template sheet on the resume page
+   =========================================================== */
+.resume-text{font-size:14px;line-height:1.6;color:var(--ink)}
+.resume-text-lg{font-size:15px;line-height:1.7}
+.resume-text-muted{font-size:13px;color:var(--muted)}
+.resume-text .rt-name{font-family:"Fraunces",Georgia,serif;font-size:1.45em;font-weight:500;letter-spacing:-0.01em;line-height:1.15;margin:0 0 4px}
+.resume-text .rt-contact{font-size:.9em;color:var(--muted);margin:0 0 2px}
+.resume-text .rt-h{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:18px 0 6px;padding-bottom:4px;border-bottom:1px solid color-mix(in oklab, var(--ink) 12%, transparent)}
+.resume-text-muted .rt-h{color:var(--muted)}
+.resume-text .rt-h:first-child{margin-top:0}
+.resume-text .rt-p{margin:0 0 6px}
+.resume-text .rt-role{margin:10px 0 4px}
+.resume-text .rt-role strong{font-weight:600}
+.resume-text .rt-role-meta{color:var(--muted)}
+.resume-text .rt-ul{list-style:none;margin:0 0 6px;padding:0}
+.resume-text .rt-li{position:relative;padding-left:16px;margin:0 0 4px}
+.resume-text .rt-li::before{content:"";position:absolute;left:2px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.resume-text-muted .rt-li::before{background:color-mix(in oklab, var(--ink) 35%, transparent)}
+.resume-sheet{background:#fff;border:1px solid color-mix(in oklab, var(--ink) 12%, transparent);border-radius:4px;padding:48px 52px;max-width:816px;margin:0 auto;box-shadow:0 10px 30px -18px color-mix(in oklab, var(--ink) 35%, transparent)}
+@media (max-width:640px){.resume-sheet{padding:24px 20px}}

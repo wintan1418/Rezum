@@ -29,44 +29,62 @@
     </div>
 
   <% elsif resume.optimized? && resume.optimized_content.present? %>
-    <!-- Before/After -->
-    <div class="card-paper" data-controller="view-toggle" style="background: #FBFBFC;">
+    <% template_html = resume_template_preview_html(resume) %>
+    <% default_mode = template_html ? "formatted" : "side-by-side" %>
+    <% tab_classes = ->(mode) { mode == default_mode ? "bg-blue-600 text-white" : "bg-white text-gray-700" } %>
+    <!-- Formatted / Before / After -->
+    <div class="card-paper" data-controller="view-toggle" data-view-toggle-current-value="<%= default_mode %>" style="background: #FBFBFC;">
       <div style="padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);">
         <div style="display: flex; align-items: baseline; gap: 16px;">
-          <span class="font-mono-label">Before & after</span>
-          <% if resume.resume_sections.visible.any? %>
-            <%= link_to "Formatted preview ↗", preview_resume_builder_path(resume), target: "_blank", class: "font-mono-label", style: "color: var(--accent);" %>
+          <span class="font-mono-label">Your optimized resume</span>
+          <% if template_html %>
+            <%= link_to "Change design ↗", preview_resume_builder_path(resume), target: "_blank", class: "font-mono-label", style: "color: var(--accent);" %>
           <% end %>
         </div>
         <div style="display: inline-flex; border: 1px solid color-mix(in oklab, var(--ink) 15%, transparent); border-radius: 999px; padding: 3px;">
+          <% if template_html %>
+            <button type="button" data-view-toggle-target="button" data-mode="formatted" data-action="click->view-toggle#switch"
+                    class="<%= tab_classes.call("formatted") %>" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Formatted</button>
+          <% end %>
           <button type="button" data-view-toggle-target="button" data-mode="side-by-side" data-action="click->view-toggle#switch"
-                  class="bg-blue-600 text-white" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Side by side</button>
+                  class="<%= tab_classes.call("side-by-side") %>" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Side by side</button>
           <button type="button" data-view-toggle-target="button" data-mode="full-width" data-action="click->view-toggle#switch"
-                  class="bg-white text-gray-700" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Optimized only</button>
+                  class="<%= tab_classes.call("full-width") %>" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Optimized only</button>
           <button type="button" data-view-toggle-target="button" data-mode="diff" data-action="click->view-toggle#switch"
-                  class="bg-white text-gray-700" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Changes</button>
+                  class="<%= tab_classes.call("diff") %>" style="padding: 6px 14px; font-size: 12px; border-radius: 999px; border: none; cursor: pointer;">Changes</button>
         </div>
       </div>
 
       <div style="padding: 24px;">
+        <% if template_html %>
+          <!-- Formatted: the designed template, inline -->
+          <div data-view-toggle-target="view" data-mode="formatted">
+            <div class="resume-sheet"><%= template_html %></div>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 14px; text-align: center;">
+              <%= ResumeTemplateService::TEMPLATE_META.dig(resume.template, :label) || resume.template.to_s.humanize %> template ·
+              <%= link_to "switch template or edit sections", edit_resume_builder_path(resume), style: "color: var(--accent);" %>
+            </p>
+          </div>
+        <% end %>
+
         <!-- Side by side -->
-        <div data-view-toggle-target="view" data-mode="side-by-side" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div data-view-toggle-target="view" data-mode="side-by-side" class="grid grid-cols-1 lg:grid-cols-2 gap-6 <%= 'hidden' if template_html %>">
           <div>
             <span class="font-mono-label">Original</span>
-            <div style="margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--muted); white-space: pre-wrap; max-height: 560px; overflow-y: auto;"><%= resume.original_content %></div>
+            <div class="resume-text resume-text-muted" style="margin-top: 10px; max-height: 560px; overflow-y: auto;"><%= formatted_resume_html(resume.original_content) %></div>
           </div>
           <div style="border-left: 2px solid var(--accent); padding-left: 20px;">
             <span class="font-mono-label" style="color: var(--accent);">Optimized</span>
-            <div style="margin-top: 10px; font-size: 14px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; max-height: 560px; overflow-y: auto;"><%= resume.optimized_content %></div>
+            <div class="resume-text" style="margin-top: 10px; max-height: 560px; overflow-y: auto;"><%= formatted_resume_html(resume.optimized_content) %></div>
           </div>
         </div>
 
         <!-- Optimized only -->
         <div data-view-toggle-target="view" data-mode="full-width" class="hidden">
-          <div style="font-size: 15px; line-height: 1.7; white-space: pre-wrap;"><%= resume.optimized_content %></div>
+          <div class="resume-text resume-text-lg"><%= formatted_resume_html(resume.optimized_content) %></div>
           <details style="margin-top: 24px;">
             <summary class="font-mono-label" style="cursor: pointer;">Show original</summary>
-            <div style="margin-top: 12px; font-size: 13px; line-height: 1.6; color: var(--muted); white-space: pre-wrap;"><%= resume.original_content %></div>
+            <div class="resume-text resume-text-muted" style="margin-top: 12px;"><%= formatted_resume_html(resume.original_content) %></div>
           </details>
         </div>
 
@@ -114,7 +132,7 @@
     <div class="card-paper" style="padding: 24px; background: #FBFBFC;">
       <span class="font-mono-label">Original resume</span>
       <% if resume.original_content.present? %>
-        <div style="margin-top: 14px; font-size: 14px; line-height: 1.65; white-space: pre-wrap;"><%= resume.original_content %></div>
+        <div class="resume-text" style="margin-top: 14px;"><%= formatted_resume_html(resume.original_content) %></div>
       <% else %>
         <p style="margin-top: 14px; font-size: 14px; color: var(--muted);">No content yet — upload a file or paste your resume text.</p>
       <% end %>
