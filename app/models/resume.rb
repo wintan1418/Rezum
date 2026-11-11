@@ -18,18 +18,18 @@ class Resume < ApplicationRecord
   validates :provider, inclusion: { in: %w[openai anthropic google] }, allow_blank: true
   validates :ats_score, numericality: { in: 0..100 }, allow_nil: true
 
-  enum status: {
+  enum :status, {
     draft: "draft",
     processing: "processing",
     optimized: "optimized",
     failed: "failed"
   }
 
-  enum provider: {
+  enum :provider, {
     openai: "openai",
     anthropic: "anthropic",
     google: "google"
-  }, _prefix: true
+  }, prefix: true
 
   scope :optimized, -> { where(status: "optimized") }
   scope :recent, -> { order(created_at: :desc) }

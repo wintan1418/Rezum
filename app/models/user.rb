@@ -4,8 +4,8 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
   # Enums
-  enum experience_level: { entry: 0, mid: 1, senior: 2, executive: 3 }
-  enum subscription_status: { free: 0, trial: 1, active: 2, cancelled: 3, past_due: 4 }
+  enum :experience_level, { entry: 0, mid: 1, senior: 2, executive: 3 }
+  enum :subscription_status, { free: 0, trial: 1, active: 2, cancelled: 3, past_due: 4 }
 
   # Avatar attachment
   has_one_attached :avatar do |attachable|
