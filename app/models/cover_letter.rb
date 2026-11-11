@@ -13,7 +13,7 @@ class CoverLetter < ApplicationRecord
   validates :status, inclusion: { in: %w[draft generating generated failed] }
   validates :provider, inclusion: { in: %w[openai anthropic google] }, allow_blank: true
 
-  enum status: {
+  enum :status, {
     draft: "draft",
     generating: "generating",
     generated: "generated",

@@ -2,7 +2,7 @@ class LinkedinOptimization < ApplicationRecord
   belongs_to :user
   belongs_to :resume, optional: true
 
-  enum status: {
+  enum :status, {
     draft: "draft",
     processing: "processing",
     optimized: "optimized",

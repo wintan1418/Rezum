@@ -3,7 +3,7 @@ class InterviewPrep < ApplicationRecord
   belongs_to :resume, optional: true
   belongs_to :job_application, optional: true
 
-  enum status: {
+  enum :status, {
     pending: "pending",
     generating: "generating",
     generated: "generated",

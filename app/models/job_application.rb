@@ -3,7 +3,7 @@ class JobApplication < ApplicationRecord
   belongs_to :resume, optional: true
   belongs_to :cover_letter, optional: true
 
-  enum status: {
+  enum :status, {
     wishlist: "wishlist",
     applied: "applied",
     phone_screen: "phone_screen",
