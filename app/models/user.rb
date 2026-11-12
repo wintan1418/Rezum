@@ -37,6 +37,12 @@ class User < ApplicationRecord
 
   # Validations
   validates :first_name, :last_name, presence: true
+  # Spam bots put adverts and links in the name fields, which our welcome
+  # email then delivers ("Hi $3,222 credit available…"). Names are letters only.
+  NAME_FORMAT = /\A[\p{L}\p{M}][\p{L}\p{M} .'\u2019-]*\z/
+  LINK_LIKE = /https?:|www\.|\p{L}\.\p{L}{2,}/i
+  validate :names_look_like_names
+  validate :email_not_disposable, on: :create
   validates :referral_code, uniqueness: true, allow_nil: true
   validates :email, format: { with: /\A[a-zA-Z0-9.!\#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}\z/, message: "must be a valid email address" }
   validates :country_code, inclusion: { in: ISO3166::Country.codes }, allow_nil: true
@@ -260,6 +266,37 @@ class User < ApplicationRecord
 
   def set_admin_if_owner
     self.admin = true if ADMIN_EMAILS.include?(email&.downcase)
+  end
+
+  # Throwaway inboxes (mailinator, merepost, fextemp…) are how sign-up bots
+  # test and abuse our emails and free credits.
+  DISPOSABLE_DOMAINS = Rails.root.join("config/disposable_email_domains.txt").then do |path|
+    path.exist? ? path.readlines(chomp: true).map(&:strip).reject { |l| l.empty? || l.start_with?("#") }.to_set : Set.new
+  end.freeze
+
+  def self.disposable_email?(email)
+    domain = email.to_s.split("@").last.to_s.downcase
+    return false if domain.empty?
+
+    parts = domain.split(".")
+    (0...parts.size - 1).any? { |i| DISPOSABLE_DOMAINS.include?(parts[i..].join(".")) }
+  end
+
+  # Only checked when a name is set or changed, so older accounts can still save.
+  def names_look_like_names
+    { first_name: first_name, last_name: last_name }.each do |attr, value|
+      next if value.blank? || (persisted? && !attribute_changed?(attr))
+
+      if value.length > 40
+        errors.add(attr, "is too long")
+      elsif !value.match?(NAME_FORMAT) || value.match?(LINK_LIKE)
+        errors.add(attr, "can only contain letters")
+      end
+    end
+  end
+
+  def email_not_disposable
+    errors.add(:email, "must be a real inbox, not a temporary one") if self.class.disposable_email?(email)
   end
 
   def send_welcome_email
